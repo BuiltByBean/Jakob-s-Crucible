@@ -3,24 +3,39 @@
 {% set active_nav = 'scripture' %}
 
 {% block title %}Explore Scripture — {{ MINISTRY.name }}{% endblock %}
-{% block meta_description %}Navigate the teaching library the way the Bible is arranged — testament, book, and chapter.{% endblock %}
+{% block meta_description %}Walk the shelves of the canon — testament, division, book, and chapter — and find the teachings that open each passage.{% endblock %}
 
-{% macro book_grid(books, counts) -%}
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-  {% for b in books %}
-  {% set n = counts.get(b.id, 0) %}
-  {% if n > 0 %}
-  <a href="{{ url_for('explore.scripture_book', slug=b.slug) }}"
-     class="card card-hover px-4 py-3 flex items-center justify-between gap-2 !rounded-xl border-flame-500/25">
-    <span class="text-sm font-medium text-surface-50">{{ b.name }}</span>
-    <span class="badge">{{ n }}</span>
-  </a>
-  {% else %}
-  <span class="px-4 py-3 flex items-center rounded-xl border border-white/5 text-sm text-surface-500 min-h-[44px]">
-    {{ b.name }}
-  </span>
-  {% endif %}
-  {% endfor %}
+{#- One shelf of the library: an engraved plaque, a row of book spines
+    standing on a board. Lit spines are books the teaching library has
+    reached; dimmed spines wait their turn. Spine height tracks chapter
+    count (and never clips a long title); stagger delay --i drives the
+    rise-into-place entrance. -#}
+{% macro shelf(division, counts) -%}
+<div class="shelf">
+  <p class="shelf-plaque"><span>{{ division.name }}</span></p>
+  <div class="shelf-row">
+    {% for b in division.books %}
+    {% set n = counts.get(b.id, 0) %}
+    {% set h = [7.4 + ([b.chapters, 150] | min) / 150 * 3.6, 2.4 + b.name | length * 0.62] | max %}
+    {% set w = 2.35 + ([b.chapters, 150] | min) / 150 * 0.85 %}
+    {% if n > 0 %}
+    <a href="{{ url_for('explore.scripture_book', slug=b.slug) }}"
+       class="spine spine-lit"
+       style="--spine-h: {{ '%.2f' | format(h) }}rem; --spine-w: {{ '%.2f' | format(w) }}rem; --i: {{ loop.index0 }};"
+       aria-label="{{ b.name }} — {{ n }} teaching{{ 's' if n != 1 }}">
+      <span class="spine-label">{{ b.name }}</span>
+      <span class="spine-count">{{ n }}</span>
+    </a>
+    {% else %}
+    <span class="spine spine-unlit"
+          style="--spine-h: {{ '%.2f' | format(h) }}rem; --spine-w: {{ '%.2f' | format(w) }}rem; --i: {{ loop.index0 }};"
+          aria-label="{{ b.name }} — no teachings yet">
+      <span class="spine-label">{{ b.name }}</span>
+    </span>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <div class="shelf-board" aria-hidden="true"></div>
 </div>
 {%- endmacro %}
 
@@ -29,20 +44,34 @@
   <header class="mb-10 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Explore Scripture</h1>
     <p class="mt-3 text-surface-300 leading-relaxed">
-      Find teachings by the passage they open — the way the Bible itself is arranged.
-      Books the library has reached are lit; the badge counts the teachings that
-      expound or reference each book. The rest of the canon is waiting its turn.
+      Walk the shelves. Books the crucible has opened burn with the flame — the
+      badge counts their teachings. The rest of the canon stands ready, waiting
+      its turn in the fire.
+    </p>
+    <p class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-surface-400">
+      <span class="inline-flex items-center gap-2">
+        <span class="inline-block w-3 h-4 rounded-[2px] border border-flame-400/60 bg-flame-500/25 shadow-[0_0_6px_rgba(34,154,232,0.5)]"></span>
+        has teachings — click to explore
+      </span>
+      <span class="inline-flex items-center gap-2">
+        <span class="inline-block w-3 h-4 rounded-[2px] border border-white/10 bg-surface-850"></span>
+        not yet opened
+      </span>
     </p>
   </header>
 
   <section class="section">
     <h2 class="section-title"><span>Old Testament</span></h2>
-    {{ book_grid(ot, counts) }}
+    {% for division in ot_shelves %}
+    {{ shelf(division, counts) }}
+    {% endfor %}
   </section>
 
   <section class="section">
     <h2 class="section-title"><span>New Testament</span></h2>
-    {{ book_grid(nt, counts) }}
+    {% for division in nt_shelves %}
+    {{ shelf(division, counts) }}
+    {% endfor %}
   </section>
 </div>
 {% endblock %}

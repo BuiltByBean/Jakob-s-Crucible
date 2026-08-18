@@ -200,4 +200,123 @@
   .skip-link:focus {
     @apply top-4;
   }
+
+  /* ---- Explore Scripture: the library ----------------------------------
+     Each canon division is a shelf; each book a spine. Spine size comes from
+     --spine-h/--spine-w (set inline from chapter count); --i staggers the
+     rise-into-place entrance. fill-mode is BACKWARDS on purpose: 'both'
+     would leave the keyframe transform winning over :hover forever. */
+  .shelf {
+    /* A shelf is only as wide as the books standing on it — a page-wide
+       board under one book reads as a mistake, not furniture. */
+    width: fit-content;
+    min-width: 14rem;
+    @apply mb-10 max-w-full;
+  }
+  .shelf-plaque {
+    @apply flex items-center gap-3 mb-4 text-[11px] font-semibold uppercase
+      tracking-[0.22em] text-flame-300/80;
+    animation: plaqueIn 0.5s ease-out backwards;
+  }
+  .shelf-plaque::before,
+  .shelf-plaque::after {
+    content: "";
+    @apply h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent;
+  }
+  .shelf-plaque::before {
+    @apply max-w-8;
+  }
+  .shelf-row {
+    @apply relative flex flex-wrap items-end gap-x-1.5 gap-y-6 px-3 pt-2;
+  }
+  .shelf-board {
+    height: 0.6rem;
+    margin: 0 0.125rem;
+    border-radius: 3px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(180deg, #1d2b42 0%, #101a2c 45%, #0a111e 100%);
+    box-shadow:
+      0 12px 26px -8px rgba(0, 0, 0, 0.85),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .spine {
+    width: var(--spine-w, 2.5rem);
+    height: var(--spine-h, 8rem);
+    border-radius: 3px 6px 6px 3px;
+    @apply relative flex flex-col items-center overflow-hidden;
+    animation: spineRise 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 45ms);
+  }
+  .spine-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    @apply flex-1 flex items-center justify-center py-2 text-[0.68rem]
+      font-semibold tracking-[0.05em] leading-tight text-center;
+  }
+  .spine-unlit {
+    background: linear-gradient(105deg, #1b2537 0%, #141d2e 30%, #0f1626 70%, #0a101c 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset -4px 0 8px -4px rgba(0, 0, 0, 0.6);
+    @apply text-surface-500;
+  }
+  .spine-lit {
+    background: linear-gradient(105deg, #2c4166 0%, #1e2e4d 30%, #16233c 70%, #101a2e 100%);
+    border: 1px solid rgba(74, 181, 246, 0.3);
+    box-shadow:
+      0 0 16px -5px rgba(34, 154, 232, 0.45),
+      inset -4px 0 10px -4px rgba(0, 0, 0, 0.55),
+      inset 1px 0 0 rgba(132, 207, 251, 0.25);
+    @apply text-flame-100;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s;
+  }
+  /* gilded head/tail bands */
+  .spine-lit::before,
+  .spine-lit::after {
+    content: "";
+    @apply absolute left-1 right-1 h-px;
+    background: linear-gradient(90deg, transparent, rgba(132, 207, 251, 0.65), transparent);
+  }
+  .spine-lit::before {
+    top: 0.45rem;
+  }
+  .spine-lit::after {
+    bottom: 1.85rem;
+  }
+  .spine-lit:hover,
+  .spine-lit:focus-visible {
+    transform: translateY(-8px);
+    box-shadow:
+      0 16px 30px -10px rgba(34, 154, 232, 0.5),
+      0 0 22px -3px rgba(34, 154, 232, 0.45),
+      inset -4px 0 10px -4px rgba(0, 0, 0, 0.55);
+  }
+  .spine-count {
+    writing-mode: horizontal-tb;
+    min-width: 1.3rem;
+    height: 1.3rem;
+    @apply flex items-center justify-center px-1 mb-1.5 rounded-full
+      text-[0.66rem] font-bold bg-flame-500 text-white
+      shadow-[0_0_10px_rgba(34,154,232,0.55)];
+  }
+
+  @keyframes spineRise {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes plaqueIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
 }

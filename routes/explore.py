@@ -12,17 +12,23 @@ bp = Blueprint("explore", __name__)
 
 @bp.route("/scripture")
 def scripture_index():
-    """Bible -> testament -> book. Books the library touches are lit; the rest
-    stay visible but dimmed (honest counts, no 'coming soon')."""
+    """Bible -> testament -> canon division -> book, rendered as a library of
+    shelves. Books the library touches are lit; the rest stay visible but
+    dimmed (honest counts, no 'coming soon')."""
     counts = dict(
         db.session.query(ScriptureRef.book_id, db.func.count(db.func.distinct(ScriptureRef.teaching_id)))
         .group_by(ScriptureRef.book_id)
         .all()
     )
-    books = ScriptureBook.query.order_by(ScriptureBook.id).all()
-    ot = [b for b in books if b.testament == "OT"]
-    nt = [b for b in books if b.testament == "NT"]
-    return render_template("scripture_index.html", ot=ot, nt=nt, counts=counts)
+    books = {b.id: b for b in ScriptureBook.query.order_by(ScriptureBook.id).all()}
+    shelves = [
+        {"name": name, "testament": testament,
+         "books": [books[n] for n in range(start, end + 1) if n in books]}
+        for name, testament, start, end in bible.DIVISIONS
+    ]
+    ot_shelves = [s for s in shelves if s["testament"] == "OT"]
+    nt_shelves = [s for s in shelves if s["testament"] == "NT"]
+    return render_template("scripture_index.html", ot_shelves=ot_shelves, nt_shelves=nt_shelves, counts=counts)
 
 
 @bp.route("/scripture/<slug>")

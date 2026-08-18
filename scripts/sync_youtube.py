@@ -102,6 +102,8 @@ def scrape() -> None:
 
 if __name__ == "__main__":
     scrape()
+    from scripts.fetch_thumbnails import run as fetch_thumbs
     from scripts.seed_db import run
 
+    fetch_thumbs()
     run()

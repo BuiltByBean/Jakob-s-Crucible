@@ -2,6 +2,19 @@
 
 User-facing change history, newest first.
 
+## 2026-08-18 — Scripture library redesign + self-hosted thumbnails
+
+Explore Scripture is now a library: canon divisions (The Law, History, Poetry
+& Wisdom, the Prophets, Gospels & Acts, Letters…) render as engraved shelf
+plaques with every book standing as a leather spine on a wooden board, sized
+by its chapter count. Books the crucible has opened glow with the flame and
+carry their teaching count; hovering pulls them off the shelf; the whole
+case rises into place on load (and sits still for reduced-motion visitors).
+
+Thumbnails are now self-hosted (scripts/fetch_thumbnails.py, wired into
+sync) after YouTube's image CDN visibly throttled hotlinked thumbnails —
+cards can no longer show empty tiles because of i.ytimg.com rate limits.
+
 ## 2026-08-18 — Review pass (5 specialist reviewers, findings verified)
 
 Fixed before first commit: both Psalm 110 episodes were missing their podcast

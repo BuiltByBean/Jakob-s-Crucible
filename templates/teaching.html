@@ -7,14 +7,18 @@
 {% block meta_description %}{{ (teaching.summary.split('\n') | first) or teaching.title }}{% endblock %}
 {% block og_type %}video.other{% endblock %}
 {% block og_extra %}
-  <meta property="og:image" content="{{ teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' }}">
+  {#- OG scrapers need an absolute URL; self-hosted thumbnails are stored as
+      site-relative paths. -#}
+  {% set og_thumb = teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' %}
+  {% if og_thumb.startswith('/') %}{% set og_thumb = request.url_root.rstrip('/') + og_thumb %}{% endif %}
+  <meta property="og:image" content="{{ og_thumb }}">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     "name": {{ teaching.title | tojson }},
     "description": {{ ((teaching.summary.split('\n') | first) or teaching.title) | tojson }},
-    "thumbnailUrl": {{ (teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg') | tojson }},
+    "thumbnailUrl": {{ og_thumb | tojson }},
     {% if teaching.published_at %}"uploadDate": "{{ teaching.published_at.strftime('%Y-%m-%d') }}",{% endif %}
     "embedUrl": "https://www.youtube-nocookie.com/embed/{{ teaching.youtube_id }}",
     "url": {{ teaching.youtube_url | tojson }}

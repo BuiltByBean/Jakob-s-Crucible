@@ -289,6 +289,14 @@ def _build_teaching(v: dict, series, position: int, podcast_by_title: dict, used
         if candidate != v["id"]:
             podcast_id = candidate
 
+    # Prefer the self-hosted thumbnail (scripts/fetch_thumbnails.py) — same-
+    # origin, immune to i.ytimg.com throttling. Hotlink only as a fallback.
+    local_thumb = REPO / "static" / "img" / "thumbs" / f"{v['id']}.jpg"
+    if local_thumb.is_file():
+        thumbnail = f"/static/img/thumbs/{v['id']}.jpg"
+    else:
+        thumbnail = v.get("thumbnail") or f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg"
+
     return Teaching(
         slug=slug,
         title=main.strip(),
@@ -299,7 +307,7 @@ def _build_teaching(v: dict, series, position: int, podcast_by_title: dict, used
         youtube_id=v["id"],
         podcast_youtube_id=podcast_id,
         notes_url=sections["notes_url"],
-        thumbnail_url=v.get("thumbnail") or f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg",
+        thumbnail_url=thumbnail,
         duration_seconds=int(v.get("duration") or 0),
         published_at=published,
         series=series,

@@ -88,6 +88,21 @@ BOOKS: list[tuple[str, str, str, int, list[str]]] = [
 ]
 
 
+# Canon divisions — the shelves of the Explore Scripture library.
+# (name, testament, first_book_number, last_book_number)
+DIVISIONS: list[tuple[str, str, int, int]] = [
+    ("The Law", "OT", 1, 5),
+    ("History", "OT", 6, 17),
+    ("Poetry & Wisdom", "OT", 18, 22),
+    ("Major Prophets", "OT", 23, 27),
+    ("Minor Prophets", "OT", 28, 39),
+    ("Gospels & Acts", "NT", 40, 44),
+    ("Letters of Paul", "NT", 45, 57),
+    ("General Letters", "NT", 58, 65),
+    ("Revelation", "NT", 66, 66),
+]
+
+
 def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", s.strip().lower().replace(".", ""))
 
