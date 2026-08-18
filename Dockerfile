@@ -17,5 +17,8 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-# Shell form so $PORT expands. Tuning mirrors the Procfile — keep them in step.
+# Shell form ON PURPOSE: $PORT must expand at runtime. This CMD is the ONLY
+# start command — railway.json must NOT set deploy.startCommand, because
+# Railway execs that override without a shell on Dockerfile builds and
+# gunicorn receives the literal string "$PORT" (failed deploy 2026-08-18).
 CMD gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --worker-class gthread --threads 8 --timeout 60 --graceful-timeout 10 --keep-alive 2
