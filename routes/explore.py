@@ -28,7 +28,17 @@ def scripture_index():
     ]
     ot_shelves = [s for s in shelves if s["testament"] == "OT"]
     nt_shelves = [s for s in shelves if s["testament"] == "NT"]
-    return render_template("scripture_index.html", ot_shelves=ot_shelves, nt_shelves=nt_shelves, counts=counts)
+
+    def _stats(testament):
+        total = sum(1 for b in books.values() if b.testament == testament)
+        opened = sum(1 for b in books.values() if b.testament == testament and counts.get(b.id, 0) > 0)
+        return {"total": total, "opened": opened}
+
+    return render_template(
+        "scripture_index.html",
+        ot_shelves=ot_shelves, nt_shelves=nt_shelves, counts=counts,
+        ot_stats=_stats("OT"), nt_stats=_stats("NT"),
+    )
 
 
 @bp.route("/scripture/<slug>")

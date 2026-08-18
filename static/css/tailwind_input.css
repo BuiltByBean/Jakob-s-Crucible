@@ -206,6 +206,38 @@
      --spine-h/--spine-w (set inline from chapter count); --i staggers the
      rise-into-place entrance. fill-mode is BACKWARDS on purpose: 'both'
      would leave the keyframe transform winning over :hover forever. */
+  .testament-header {
+    @apply flex items-center gap-6 mb-10 mt-2;
+    animation: plaqueIn 0.6s ease-out backwards;
+  }
+  .testament-title {
+    @apply font-display text-3xl sm:text-4xl font-semibold tracking-wide;
+    background: linear-gradient(100deg, #dbeffe 0%, #84cffb 45%, #eff8ff 75%, #b6e2fd 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 18px rgba(74, 181, 246, 0.25));
+  }
+  .testament-sub {
+    @apply mt-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-surface-400;
+  }
+  .testament-rule {
+    @apply relative h-px flex-1;
+    background: linear-gradient(90deg, transparent, rgba(132, 207, 251, 0.4));
+  }
+  .testament-rule::after {
+    content: "";
+    @apply absolute -right-1 top-1/2 w-2 h-2 -translate-y-1/2 rotate-45;
+    background: rgba(132, 207, 251, 0.75);
+    box-shadow: 0 0 8px rgba(34, 154, 232, 0.7);
+  }
+  .testament-rule-end {
+    background: linear-gradient(90deg, rgba(132, 207, 251, 0.4), transparent);
+  }
+  .testament-rule-end::after {
+    @apply -left-1 right-auto;
+  }
+
   .shelf {
     /* A shelf is only as wide as the books standing on it — a page-wide
        board under one book reads as a mistake, not furniture. */
@@ -214,8 +246,8 @@
     @apply mb-10 max-w-full;
   }
   .shelf-plaque {
-    @apply flex items-center gap-3 mb-4 text-[11px] font-semibold uppercase
-      tracking-[0.22em] text-flame-300/80;
+    @apply flex items-center gap-3 mb-4 text-xs font-semibold uppercase
+      tracking-[0.22em] text-flame-300/90;
     animation: plaqueIn 0.5s ease-out backwards;
   }
   .shelf-plaque::before,
@@ -250,8 +282,8 @@
   .spine-label {
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    @apply flex-1 flex items-center justify-center py-2 text-[0.68rem]
-      font-semibold tracking-[0.05em] leading-tight text-center;
+    @apply flex-1 flex items-center justify-center py-2 text-[0.82rem]
+      font-semibold tracking-[0.04em] leading-tight text-center;
   }
   .spine-unlit {
     background: linear-gradient(105deg, #1b2537 0%, #141d2e 30%, #0f1626 70%, #0a101c 100%);
@@ -291,12 +323,24 @@
       inset -4px 0 10px -4px rgba(0, 0, 0, 0.55);
   }
   .spine-count {
+    /* Medallion. Grid centering (not flex) because baseline alignment inside
+       a vertical-writing parent nudges digits off-center; fixed square box so
+       the circle is perfectly round; tabular figures so 1 and 2 sit alike. */
     writing-mode: horizontal-tb;
-    min-width: 1.3rem;
-    height: 1.3rem;
-    @apply flex items-center justify-center px-1 mb-1.5 rounded-full
-      text-[0.66rem] font-bold bg-flame-500 text-white
-      shadow-[0_0_10px_rgba(34,154,232,0.55)];
+    width: 1.5rem;
+    height: 1.5rem;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+    background: radial-gradient(circle at 35% 30%, #4ab5f6 0%, #229ae8 45%, #157cc6 100%);
+    border: 1px solid rgba(219, 239, 254, 0.55);
+    box-shadow:
+      0 0 10px rgba(34, 154, 232, 0.55),
+      inset 0 1px 2px rgba(255, 255, 255, 0.4),
+      inset 0 -1px 2px rgba(15, 45, 74, 0.5);
+    @apply mb-2 rounded-full text-[0.72rem] font-bold text-white;
   }
 
   @keyframes spineRise {

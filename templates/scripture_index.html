@@ -16,8 +16,10 @@
   <div class="shelf-row">
     {% for b in division.books %}
     {% set n = counts.get(b.id, 0) %}
-    {% set h = [7.4 + ([b.chapters, 150] | min) / 150 * 3.6, 2.4 + b.name | length * 0.62] | max %}
-    {% set w = 2.35 + ([b.chapters, 150] | min) / 150 * 0.85 %}
+    {#- Height: chapter count sets the baseline, but a long title must never
+        clip — 0.86rem per character tracks the 0.82rem vertical label. -#}
+    {% set h = [8.0 + ([b.chapters, 150] | min) / 150 * 3.8, 1.8 + b.name | length * 0.86] | max %}
+    {% set w = 2.7 + ([b.chapters, 150] | min) / 150 * 0.95 %}
     {% if n > 0 %}
     <a href="{{ url_for('explore.scripture_book', slug=b.slug) }}"
        class="spine spine-lit"
@@ -61,14 +63,28 @@
   </header>
 
   <section class="section">
-    <h2 class="section-title"><span>Old Testament</span></h2>
+    <header class="testament-header">
+      <span class="testament-rule" aria-hidden="true"></span>
+      <span class="text-center">
+        <h2 class="testament-title">Old Testament</h2>
+        <p class="testament-sub">{{ ot_stats.total }} books &middot; {{ ot_stats.opened }} opened in the crucible</p>
+      </span>
+      <span class="testament-rule testament-rule-end" aria-hidden="true"></span>
+    </header>
     {% for division in ot_shelves %}
     {{ shelf(division, counts) }}
     {% endfor %}
   </section>
 
   <section class="section">
-    <h2 class="section-title"><span>New Testament</span></h2>
+    <header class="testament-header">
+      <span class="testament-rule" aria-hidden="true"></span>
+      <span class="text-center">
+        <h2 class="testament-title">New Testament</h2>
+        <p class="testament-sub">{{ nt_stats.total }} books &middot; {{ nt_stats.opened }} opened in the crucible</p>
+      </span>
+      <span class="testament-rule testament-rule-end" aria-hidden="true"></span>
+    </header>
     {% for division in nt_shelves %}
     {{ shelf(division, counts) }}
     {% endfor %}
