@@ -1,0 +1,76 @@
+{% import "_icon_macros.html" as icons %}
+
+{#- The card used across home / library / series / topic / search. The
+    thumbnail button opens the video lightbox in place; the title links to the
+    full teaching page. size='wide' renders the featured horizontal variant. -#}
+{% macro teaching_card(t, size='normal') -%}
+<article class="card card-hover flex {{ 'flex-col md:flex-row' if size == 'wide' else 'flex-col' }}">
+  <button type="button"
+          class="group relative block w-full {{ 'md:w-3/5 md:self-stretch' if size == 'wide' }} aspect-video overflow-hidden bg-surface-850 text-left"
+          data-video-open="{{ t.youtube_id }}" data-video-title="{{ t.title }}"
+          data-video-page="{{ url_for('public.teaching_detail', slug=t.slug) }}"
+          aria-label="Play: {{ t.title }}">
+    <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"
+         alt="" loading="lazy" width="480" height="270"
+         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]">
+    <span class="absolute inset-0 bg-gradient-to-t from-surface-950/70 via-transparent to-transparent"></span>
+    <span class="absolute inset-0 flex items-center justify-center">
+      <span class="flex items-center justify-center w-14 h-14 rounded-full bg-surface-950/70 border border-white/20 text-flame-300
+                   transition-all duration-300 group-hover:bg-flame-500/90 group-hover:text-white group-hover:scale-110 backdrop-blur-sm">
+        {{ icons.icon('play', 22) }}
+      </span>
+    </span>
+    {% if t.duration_seconds %}
+    <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-surface-950/85 text-[11px] font-semibold text-surface-100 tabular-nums">
+      {{ t.duration_seconds | duration }}
+    </span>
+    {% endif %}
+  </button>
+
+  <div class="p-5 flex flex-col gap-2 flex-1 {{ 'md:justify-center md:p-7' if size == 'wide' }}">
+    {% if t.series %}
+    <p class="text-[11px] font-semibold uppercase tracking-wider text-flame-400/90">{{ t.series.title }}</p>
+    {% endif %}
+    <h3 class="font-display {{ 'text-2xl' if size == 'wide' else 'text-lg' }} font-semibold leading-snug">
+      <a href="{{ url_for('public.teaching_detail', slug=t.slug) }}" class="text-surface-50 hover:text-flame-200 transition-colors">
+        {{ t.title }}
+      </a>
+    </h3>
+    {% if t.subtitle %}
+    <p class="text-sm text-surface-300">{{ t.subtitle }}</p>
+    {% endif %}
+    {% if size == 'wide' and t.summary %}
+    <p class="text-sm text-surface-300 leading-relaxed line-clamp-3">{{ t.summary.split('\n')[0] }}</p>
+    {% endif %}
+    <div class="mt-auto pt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-surface-400">
+      {% if t.published_at %}
+      <span class="inline-flex items-center gap-1.5">{{ icons.icon('calendar', 14) }} {{ t.published_at | datefmt }}</span>
+      {% endif %}
+      {% for ref in t.primary_refs[:2] %}
+      <a href="{{ url_for('explore.scripture_book', slug=ref.book.slug) }}"
+         class="inline-flex items-center gap-1.5 text-flame-300/90 hover:text-flame-200 transition-colors">
+        {{ icons.icon('book-open', 14) }} {{ ref.display_text }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</article>
+{%- endmacro %}
+
+{#- Compact list row for shorts — present, not celebrated. -#}
+{% macro short_row(t) -%}
+<button type="button" class="card card-hover w-full flex items-center gap-4 p-3 text-left"
+        data-video-open="{{ t.youtube_id }}" data-video-title="{{ t.title }}"
+        data-video-page="{{ url_for('public.teaching_detail', slug=t.slug) }}"
+        aria-label="Play short: {{ t.title }}">
+  <span class="relative w-20 shrink-0 aspect-video rounded-lg overflow-hidden bg-surface-850">
+    <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"
+         alt="" loading="lazy" width="160" height="90" class="w-full h-full object-cover">
+  </span>
+  <span class="flex-1 min-w-0">
+    <span class="block text-sm font-medium text-surface-100 truncate">{{ t.title }}</span>
+    <span class="block text-xs text-surface-400 mt-0.5">{{ t.duration_seconds | duration }}</span>
+  </span>
+  <span class="text-flame-400 shrink-0 pr-1">{{ icons.icon('play', 16) }}</span>
+</button>
+{%- endmacro %}

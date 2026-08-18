@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% from "components/teaching_card.html" import teaching_card %}
+{% set active_nav = 'search' %}
+
+{% block title %}{{ 'Search: ' + q if q else 'Search' }} — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}Search the teaching library by title, series, Scripture passage, topic — and the words spoken inside each teaching.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 lg:px-6 pt-10">
+  <header class="mb-8">
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Search</h1>
+    <p class="mt-2 text-surface-300">
+      Titles, series, passages, topics — and every word spoken inside the teachings.
+    </p>
+  </header>
+
+  <form action="{{ url_for('explore.search') }}" method="get" role="search" class="mb-10">
+    <div class="relative max-w-2xl">
+      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-surface-400 pointer-events-none">{{ icons.icon('search', 19) }}</span>
+      <label for="q" class="sr-only">Search the library</label>
+      <input id="q" name="q" type="search" value="{{ q }}" placeholder='Try “faith”, “Haggai 2”, or “signet ring”…'
+             class="input !pl-12 !py-3.5 !text-base !rounded-2xl" autocomplete="off"
+             {% if not q %}autofocus{% endif %}>
+    </div>
+  </form>
+
+  {% if results %}
+    {% if results.total == 0 %}
+    <div class="card p-8 text-center text-surface-400">
+      Nothing found for <span class="text-surface-100 font-medium">“{{ q }}”</span>.
+      Try a broader word, a book of the Bible, or a phrase you remember hearing.
+    </div>
+    {% endif %}
+
+    {% if results.scripture %}
+    <section class="section">
+      <h2 class="section-title"><span>Scripture</span></h2>
+      <div class="flex flex-wrap gap-2">
+        {% for book, ref in results.scripture %}
+        <a href="{{ url_for('explore.scripture_book', slug=book.slug, chapter=ref.chapter_start) }}" class="chip chip-active">
+          {{ icons.icon('book-open', 15) }} {{ ref.display or book.name }} — view teachings
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if results.series or results.topics %}
+    <section class="section">
+      <h2 class="section-title"><span>Series &amp; topics</span></h2>
+      <div class="flex flex-wrap gap-2">
+        {% for s in results.series %}
+        <a href="{{ url_for('public.series_detail', slug=s.slug) }}" class="chip">{{ icons.icon('library', 15) }} {{ s.title }}</a>
+        {% endfor %}
+        {% for t in results.topics %}
+        <a href="{{ url_for('explore.topic_detail', slug=t.slug) }}" class="chip">{{ icons.icon('tag', 15) }} {{ t.name }}</a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if results.teachings %}
+    <section class="section">
+      <h2 class="section-title"><span>Teachings</span></h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 stagger-in">
+        {% for t in results.teachings %}
+        {{ teaching_card(t) }}
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if results.transcripts %}
+    <section class="section">
+      <h2 class="section-title">
+        <span>Spoken in the teachings</span>
+        <span class="normal-case tracking-normal font-medium text-surface-400 text-xs">click a line to jump to that moment</span>
+      </h2>
+      <div class="space-y-4">
+        {% for group in results.transcripts %}
+        <div class="card">
+          <a href="{{ url_for('public.teaching_detail', slug=group.teaching.slug) }}"
+             class="flex items-center gap-3 px-5 py-3.5 border-b border-white/5 hover:bg-white/5 transition-colors group">
+            <img src="{{ group.teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + group.teaching.youtube_id + '/hqdefault.jpg' }}"
+                 alt="" loading="lazy" width="96" height="54" class="w-16 aspect-video object-cover rounded-md shrink-0">
+            <span class="min-w-0">
+              <span class="block text-sm font-semibold text-surface-100 group-hover:text-flame-200 transition-colors truncate">{{ group.teaching.title }}</span>
+              {% if group.teaching.series %}
+              <span class="block text-xs text-surface-400 mt-0.5">{{ group.teaching.series.title }}</span>
+              {% endif %}
+            </span>
+          </a>
+          <div class="divide-y divide-white/5">
+            {% for hit in group.hits %}
+            <button type="button"
+                    data-video-open="{{ group.teaching.youtube_id }}"
+                    data-video-title="{{ group.teaching.title }} — from {{ hit.timestamp }}"
+                    data-video-page="{{ url_for('public.teaching_detail', slug=group.teaching.slug) }}"
+                    data-video-start="{{ hit.start_seconds }}"
+                    class="w-full flex items-start gap-4 px-5 py-3 text-left hover:bg-white/5 transition-colors group/hit">
+              <span class="inline-flex items-center gap-1.5 text-xs font-semibold tabular-nums text-flame-300 shrink-0 pt-0.5">
+                {{ icons.icon('play', 13) }} t={{ hit.timestamp }}
+              </span>
+              <span class="text-sm text-surface-300 leading-relaxed">{{ hit.snippet | highlight(q) }}</span>
+            </button>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

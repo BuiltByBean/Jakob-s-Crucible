@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% from "components/teaching_card.html" import teaching_card %}
+{% set active_nav = 'teachings' %}
+
+{% block title %}{{ teaching.title }} — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}{{ (teaching.summary.split('\n') | first) or teaching.title }}{% endblock %}
+{% block og_type %}video.other{% endblock %}
+{% block og_extra %}
+  <meta property="og:image" content="{{ teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' }}">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": {{ teaching.title | tojson }},
+    "description": {{ ((teaching.summary.split('\n') | first) or teaching.title) | tojson }},
+    "thumbnailUrl": {{ (teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg') | tojson }},
+    {% if teaching.published_at %}"uploadDate": "{{ teaching.published_at.strftime('%Y-%m-%d') }}",{% endif %}
+    "embedUrl": "https://www.youtube-nocookie.com/embed/{{ teaching.youtube_id }}",
+    "url": {{ teaching.youtube_url | tojson }}
+  }
+  </script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-8">
+
+  <nav class="text-xs text-surface-400 mb-6" aria-label="Breadcrumb">
+    <a href="{{ url_for('public.library') }}" class="hover:text-flame-200 transition-colors">Teaching Library</a>
+    {% if teaching.series %}
+    <span class="mx-1.5">/</span>
+    <a href="{{ url_for('public.series_detail', slug=teaching.series.slug) }}" class="hover:text-flame-200 transition-colors">{{ teaching.series.title }}</a>
+    {% endif %}
+    <span class="mx-1.5">/</span>
+    <span class="text-surface-200">{{ teaching.title }}</span>
+  </nav>
+
+  <header class="mb-6 max-w-4xl">
+    {% if teaching.is_statement_of_faith %}
+    <p class="badge mb-3">Statement of Faith</p>
+    {% endif %}
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50 leading-tight">{{ teaching.title }}</h1>
+    {% if teaching.subtitle %}
+    <p class="mt-2 text-lg text-surface-300">{{ teaching.subtitle }}</p>
+    {% endif %}
+    <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-surface-400">
+      {% if teaching.published_at %}
+      <span class="inline-flex items-center gap-1.5">{{ icons.icon('calendar', 15) }} {{ teaching.published_at | datefmt }}</span>
+      {% endif %}
+      {% if teaching.duration_seconds %}
+      <span class="inline-flex items-center gap-1.5">{{ icons.icon('clock', 15) }} {{ teaching.duration_seconds | duration }}</span>
+      {% endif %}
+      {% for ref in teaching.primary_refs %}
+      <a href="{{ url_for('explore.scripture_book', slug=ref.book.slug) }}"
+         class="inline-flex items-center gap-1.5 text-flame-300 hover:text-flame-200 transition-colors">
+        {{ icons.icon('book-open', 15) }} {{ ref.display_text }}
+      </a>
+      {% endfor %}
+    </div>
+  </header>
+
+  {# Inline click-to-load player. Nothing loads until the visitor chooses. #}
+  <div class="aspect-video w-full max-w-4xl rounded-2xl overflow-hidden bg-surface-850 ring-1 ring-white/10"
+       data-inline-player data-video-id="{{ teaching.youtube_id }}" data-video-title="{{ teaching.title }}">
+    <button type="button" data-player-facade class="group relative w-full h-full text-left" aria-label="Play video: {{ teaching.title }}">
+      <img src="{{ teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' }}"
+           alt="" width="1280" height="720" class="w-full h-full object-cover">
+      <span class="absolute inset-0 bg-surface-950/25 transition-colors group-hover:bg-surface-950/10"></span>
+      <span class="absolute inset-0 flex items-center justify-center">
+        <span class="flex items-center justify-center w-20 h-20 rounded-full bg-surface-950/70 border border-white/20 text-flame-300
+                     transition-all duration-300 group-hover:bg-flame-500/90 group-hover:text-white group-hover:scale-110 backdrop-blur-sm">
+          {{ icons.icon('play', 30) }}
+        </span>
+      </span>
+    </button>
+  </div>
+
+  {# Access bar: the same teaching in every medium — watch, listen, read, download. #}
+  <div class="flex flex-wrap gap-3 mt-5 max-w-4xl">
+    <a class="btn-ghost" href="{{ teaching.youtube_url }}" target="_blank" rel="noopener">
+      {{ icons.icon('youtube', 18) }} Watch on YouTube
+    </a>
+    {% if teaching.podcast_url %}
+    <a class="btn-ghost" href="{{ teaching.podcast_url }}" target="_blank" rel="noopener">
+      {{ icons.icon('podcast', 18) }} Listen (podcast)
+    </a>
+    {% endif %}
+    {% if teaching.notes_url %}
+    <a class="btn-ghost" href="{{ teaching.notes_url }}" target="_blank" rel="noopener">
+      {{ icons.icon('download', 18) }} Study notes
+    </a>
+    {% endif %}
+    {% if teaching.manuscript %}
+    <a class="btn-ghost" href="#manuscript">
+      {{ icons.icon('document', 18) }} Read the manuscript
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_20rem] gap-10 mt-10">
+    <div class="min-w-0">
+
+      {% if teaching.summary or sections.context %}
+      <section class="section">
+        <h2 class="section-title"><span>About this teaching</span></h2>
+        <div class="prose-dark max-w-3xl">
+          {% for para in teaching.summary.split('\n\n') if para.strip() %}
+          <p>{{ para | nl2br }}</p>
+          {% endfor %}
+        </div>
+        {% if sections.context %}
+        <div x-data="{ open: false }" class="max-w-3xl mt-2">
+          <button type="button" class="inline-flex items-center gap-1.5 text-sm font-semibold text-flame-300 hover:text-flame-200 transition-colors min-h-[44px]"
+                  @click="open = !open" :aria-expanded="open">
+            <span x-text="open ? 'Hide context' : 'More context'">More context</span>
+            <span :class="open ? 'rotate-180' : ''" class="transition-transform">{{ icons.icon('chevron-down', 16) }}</span>
+          </button>
+          <div x-show="open" x-collapse x-cloak class="prose-dark pt-2">
+            {% for para in sections.context.split('\n\n') if para.strip() %}
+            <p>{{ para | nl2br }}</p>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      {% if teaching.chapters %}
+      <section class="section">
+        <h2 class="section-title"><span>Chapters</span></h2>
+        <ol class="card divide-y divide-white/5 max-w-3xl">
+          {% for ch in teaching.chapters %}
+          <li>
+            <button type="button" data-seek="{{ ch.start_seconds }}"
+                    class="w-full flex items-center gap-4 px-5 py-3 text-left hover:bg-white/5 transition-colors group min-h-[44px]">
+              <span class="text-xs font-semibold tabular-nums text-flame-300 w-14 shrink-0">{{ ch.timestamp_display }}</span>
+              <span class="text-sm text-surface-200 group-hover:text-surface-50 transition-colors">{{ ch.title }}</span>
+              <span class="ml-auto text-surface-500 opacity-0 group-hover:opacity-100 transition-opacity">{{ icons.icon('play', 14) }}</span>
+            </button>
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+      {% endif %}
+
+      {% if teaching.manuscript %}
+      <section class="section" id="manuscript">
+        <h2 class="section-title"><span>Manuscript</span></h2>
+        <div class="prose-dark max-w-3xl">
+          {{ teaching.manuscript | manuscript_html }}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if transcript %}
+      <section class="section" x-data="{ open: false }">
+        <h2 class="section-title">
+          <span>Transcript</span>
+          <span class="normal-case tracking-normal font-medium text-surface-400 text-xs">auto-generated captions</span>
+        </h2>
+        <div class="card max-w-3xl">
+          <button type="button" class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-white/5 transition-colors"
+                  @click="open = !open" :aria-expanded="open">
+            <span class="inline-flex items-center gap-2.5 text-sm font-medium text-surface-200">
+              {{ icons.icon('transcript', 18) }}
+              <span x-text="open ? 'Hide transcript' : 'Show transcript'">Show transcript</span>
+            </span>
+            <span :class="open ? 'rotate-180' : ''" class="transition-transform text-surface-400">{{ icons.icon('chevron-down', 18) }}</span>
+          </button>
+          <div x-show="open" x-collapse x-cloak>
+            <p class="px-5 pt-1 pb-3 text-xs text-surface-400">
+              Auto-generated, so imperfect — click any line to jump the video to that moment.
+            </p>
+            <div class="max-h-[28rem] overflow-y-auto px-2 pb-3">
+              {% for seg in transcript %}
+              <button type="button" data-seek="{{ seg.start_seconds | int }}"
+                      class="w-full flex items-start gap-3 px-3 py-1.5 text-left rounded-lg hover:bg-white/5 transition-colors">
+                <span class="text-[11px] font-semibold tabular-nums text-flame-400/80 w-12 shrink-0 pt-0.5">{{ seg.start_seconds | int | duration }}</span>
+                <span class="text-sm text-surface-300 leading-relaxed">{{ seg.text }}</span>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+      {% if sections.closing %}
+      <section class="section max-w-3xl">
+        <blockquote class="border-l-2 border-flame-500/50 pl-5 py-1 italic text-surface-300 leading-relaxed">
+          {{ sections.closing | nl2br }}
+        </blockquote>
+      </section>
+      {% endif %}
+    </div>
+
+    <aside class="min-w-0 space-y-10">
+      {% if teaching.scripture_refs %}
+      <section>
+        <h2 class="section-title"><span>Scripture in this teaching</span></h2>
+        {% set primary = teaching.primary_refs %}
+        {% set secondary = teaching.scripture_refs | rejectattr('is_primary') | list %}
+        {% if primary %}
+        <p class="text-xs text-surface-400 font-semibold uppercase tracking-wider mb-2">Primary text</p>
+        <div class="flex flex-wrap gap-2 mb-4">
+          {% for ref in primary %}
+          <a href="{{ url_for('explore.scripture_book', slug=ref.book.slug, chapter=ref.chapter_start) }}" class="chip chip-active">{{ ref.display_text }}</a>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if secondary %}
+        <p class="text-xs text-surface-400 font-semibold uppercase tracking-wider mb-2">Referenced</p>
+        <div class="flex flex-wrap gap-2">
+          {% for ref in secondary[:14] %}
+          <a href="{{ url_for('explore.scripture_book', slug=ref.book.slug, chapter=ref.chapter_start) }}" class="chip">{{ ref.display_text }}</a>
+          {% endfor %}
+          {% if secondary | length > 14 %}
+          <span class="chip !border-transparent text-surface-400">+ {{ secondary | length - 14 }} more</span>
+          {% endif %}
+        </div>
+        {% endif %}
+      </section>
+      {% endif %}
+
+      {% if teaching.topics %}
+      <section>
+        <h2 class="section-title"><span>Topics</span></h2>
+        <div class="flex flex-wrap gap-2">
+          {% for topic in teaching.topics %}
+          <a href="{{ url_for('explore.topic_detail', slug=topic.slug) }}" class="chip">{{ topic.name }}</a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if teaching.series and teaching.series.teachings | length > 1 %}
+      <section>
+        <h2 class="section-title"><span>In this series</span></h2>
+        <ol class="card divide-y divide-white/5">
+          {% for t in teaching.series.teachings %}
+          <li>
+            {% if t.id == teaching.id %}
+            <span class="flex items-center gap-3 px-4 py-3 bg-flame-500/10 text-sm text-flame-200 font-medium">
+              <span class="text-xs tabular-nums text-flame-400 w-5 shrink-0">{{ loop.index }}</span>
+              {{ t.title }}
+            </span>
+            {% else %}
+            <a href="{{ url_for('public.teaching_detail', slug=t.slug) }}"
+               class="flex items-center gap-3 px-4 py-3 text-sm text-surface-200 hover:bg-white/5 hover:text-surface-50 transition-colors">
+              <span class="text-xs tabular-nums text-surface-500 w-5 shrink-0">{{ loop.index }}</span>
+              {{ t.title }}
+            </a>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
+      {% endif %}
+    </aside>
+  </div>
+
+  {% if related %}
+  <section class="section mt-4">
+    <h2 class="section-title"><span>Related teachings</span></h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 stagger-in">
+      {% for t in related %}
+      {{ teaching_card(t) }}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

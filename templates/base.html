@@ -1,0 +1,191 @@
+{% import "_icon_macros.html" as icons %}
+{#- Anti-flash rule: the inline style on <html> paints the dark canvas at
+    parse time, before ANY css loads. Every standalone page must carry it too.
+    The owner is photophobic — a white flash between navigations is a bug. -#}
+<!doctype html>
+<html lang="en" style="background:#0a0f1a;color-scheme:dark;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0f1a">
+  <title>{% block title %}{{ MINISTRY.name }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ MINISTRY.name }} — {{ MINISTRY.tagline }} Teachings by series, Scripture, and topic from Jakob McClain.{% endblock %}">
+  <meta property="og:site_name" content="{{ MINISTRY.name }}">
+  <meta property="og:title" content="{{ self.title() }}">
+  <meta property="og:description" content="{{ self.meta_description() }}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  {% block og_extra %}{% endblock %}
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}?v={{ ASSET_V }}">
+  {# Collapse plugin must load BEFORE Alpine core (both deferred = in order). #}
+  <script defer src="{{ url_for('static', filename='js/alpine-collapse.min.js') }}?v={{ ASSET_V }}"></script>
+  <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}?v={{ ASSET_V }}"></script>
+  <script defer src="{{ url_for('static', filename='js/site.js') }}?v={{ ASSET_V }}"></script>
+  {# Prefetch internal links on hover — prefetch, NOT prerender (prerender executes scripts). #}
+  <script type="speculationrules">
+    {"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/contact"}}]}, "eagerness": "moderate"}]}
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-surface-950"
+      x-data="{ drawer: false }" :class="drawer ? 'overflow-hidden' : ''">
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  {%- set nav_items = [
+    ('public.library', 'teachings', 'Teachings'),
+    ('explore.scripture_index', 'scripture', 'Scripture'),
+    ('explore.topics_index', 'topics', 'Topics'),
+    ('public.resources', 'resources', 'Resources'),
+    ('public.about', 'about', 'About'),
+    ('public.contact', 'contact', 'Contact'),
+  ] -%}
+
+  <header class="sticky top-0 z-40 bg-surface-950/85 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-4 lg:px-6 flex items-center gap-4 h-16">
+      <a href="{{ url_for('public.home') }}" class="flex items-center gap-2.5 shrink-0 group" aria-label="{{ MINISTRY.name }} — home">
+        <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}" alt=""
+             width="30" height="44" class="h-10 w-auto transition-transform duration-300 group-hover:scale-105">
+        <span class="font-display font-semibold text-surface-50 leading-tight text-[15px] tracking-wide">
+          The Wisdom<br class="sm:hidden"> Crucible
+        </span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-1 ml-auto" aria-label="Primary">
+        {% for endpoint, key, label in nav_items %}
+        <a href="{{ url_for(endpoint) }}"
+           class="px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                  {{ 'text-flame-300 bg-flame-500/10' if active_nav == key else 'text-surface-200 hover:text-flame-200 hover:bg-white/5' }}"
+           {% if active_nav == key %}aria-current="page"{% endif %}>{{ label }}</a>
+        {% endfor %}
+        <a href="{{ url_for('explore.search') }}" aria-label="Search" title="Search"
+           class="ml-1 p-2.5 rounded-lg transition-colors {{ 'text-flame-300 bg-flame-500/10' if active_nav == 'search' else 'text-surface-200 hover:text-flame-200 hover:bg-white/5' }}">
+          {{ icons.icon('search', 19) }}
+        </a>
+      </nav>
+
+      <button type="button" class="lg:hidden ml-auto p-2.5 rounded-lg text-surface-200 hover:text-flame-200 hover:bg-white/5 transition-colors"
+              @click="drawer = !drawer" :aria-expanded="drawer" aria-label="Menu" aria-controls="mobile-drawer">
+        <span x-show="!drawer">{{ icons.icon('menu', 22) }}</span>
+        <span x-show="drawer" x-cloak>{{ icons.icon('close', 22) }}</span>
+      </button>
+    </div>
+  </header>
+
+  {# Mobile drawer — mirrors the desktop nav exactly. An entry added to one
+     and not the other is invisible on the device most people use. #}
+  {# x-effect keeps main/footer inert while the drawer is open so keyboard
+     focus can't wander behind the scrim (header stays live — it holds the
+     close control). #}
+  <div id="mobile-drawer" class="lg:hidden fixed inset-0 z-50 top-16" x-show="drawer" x-cloak
+       x-effect="['main', 'footer'].forEach(sel => { const el = document.querySelector(sel); if (el) { drawer ? el.setAttribute('inert', '') : el.removeAttribute('inert') } })"
+       @keydown.escape.window="drawer = false" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="drawer = false"></div>
+    <nav class="absolute right-0 top-0 bottom-0 w-72 max-w-[85vw] bg-surface-900 border-l border-white/10 p-5 overflow-y-auto"
+         x-show="drawer"
+         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="translate-x-6 opacity-0" x-transition:enter-end="translate-x-0 opacity-100"
+         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="translate-x-0 opacity-100" x-transition:leave-end="translate-x-6 opacity-0"
+         aria-label="Primary">
+      <a href="{{ url_for('explore.search') }}" class="btn-ghost w-full mb-4" @click="drawer = false">
+        {{ icons.icon('search', 18) }} Search
+      </a>
+      {% for endpoint, key, label in nav_items %}
+      <a href="{{ url_for(endpoint) }}" @click="drawer = false"
+         class="flex items-center min-h-[44px] px-3 rounded-xl text-[15px] font-medium mb-1 transition-colors
+                {{ 'text-flame-300 bg-flame-500/10' if active_nav == key else 'text-surface-100 hover:bg-white/5' }}"
+         {% if active_nav == key %}aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+      <div class="border-t border-white/10 mt-4 pt-4 flex items-center gap-2">
+        <a href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"
+           class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5">{{ icons.icon('youtube', 20) }}</a>
+        <a href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener" aria-label="Podcast" title="Podcast"
+           class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5">{{ icons.icon('podcast', 20) }}</a>
+        <a href="{{ MINISTRY.twitter }}" target="_blank" rel="noopener" aria-label="X (Twitter)" title="X (Twitter)"
+           class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5">{{ icons.icon('x-social', 18) }}</a>
+      </div>
+    </nav>
+  </div>
+
+  {# Flash toasts: fixed below the header, top of the z-budget, auto-dismiss. #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="fixed top-20 right-4 z-[10000] space-y-2 max-w-sm w-full pointer-events-none" aria-live="polite" role="status">
+      {% for category, message in messages %}
+      <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+           x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0 -translate-y-2"
+           class="pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium shadow-lg border
+                  {{ 'bg-surface-800 border-red-400/40 text-red-200' if category == 'error' else 'bg-surface-800 border-flame-400/40 text-flame-100' }}">
+        <span class="flex-1">{{ message }}</span>
+        <button type="button" @click="show = false" class="opacity-60 hover:opacity-100" aria-label="Dismiss">
+          {{ icons.icon('close', 16) }}
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main id="main" tabindex="-1" class="flex-1 w-full">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="border-t border-white/5 bg-surface-900/50 mt-16">
+    <div class="max-w-6xl mx-auto px-4 lg:px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}" alt="" width="24" height="35" class="h-9 w-auto">
+          <span class="font-display font-semibold text-surface-50">The Wisdom Crucible</span>
+        </div>
+        <p class="text-sm text-surface-300 leading-relaxed max-w-xs">{{ MINISTRY.tagline }}</p>
+      </div>
+      <div>
+        <p class="section-title !mb-3 !min-h-0">Explore</p>
+        <ul class="space-y-2 text-sm">
+          <li><a class="text-surface-300 hover:text-flame-200 transition-colors" href="{{ url_for('public.library') }}">Teaching Library</a></li>
+          <li><a class="text-surface-300 hover:text-flame-200 transition-colors" href="{{ url_for('explore.scripture_index') }}">Explore Scripture</a></li>
+          <li><a class="text-surface-300 hover:text-flame-200 transition-colors" href="{{ url_for('explore.topics_index') }}">Explore Topics</a></li>
+          <li><a class="text-surface-300 hover:text-flame-200 transition-colors" href="{{ url_for('public.statement_of_faith') }}">Statement of Faith</a></li>
+          <li><a class="text-surface-300 hover:text-flame-200 transition-colors" href="{{ url_for('public.resources') }}">Study Resources</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="section-title !mb-3 !min-h-0">Connect</p>
+        <ul class="space-y-2 text-sm">
+          <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener">{{ icons.icon('youtube', 17) }} YouTube</a></li>
+          <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener">{{ icons.icon('podcast', 17) }} Podcast</a></li>
+          <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="{{ MINISTRY.twitter }}" target="_blank" rel="noopener">{{ icons.icon('x-social', 15) }} X (Twitter)</a></li>
+          <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="mailto:{{ MINISTRY.email }}">{{ icons.icon('mail', 17) }} {{ MINISTRY.email }}</a></li>
+          <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="tel:{{ MINISTRY.phone | replace('-', '') }}">{{ icons.icon('phone', 17) }} {{ MINISTRY.phone }}</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/5 py-5 text-center text-xs text-surface-400">
+      &copy; {{ now_year if now_year else '2026' }} The Wisdom Crucible with Jakob McClain
+    </div>
+  </footer>
+
+  {# Global video lightbox — one instance, driven by site.js. Any element with
+     data-video-open="<youtubeId>" opens it; iframe is injected on open and
+     removed on close (so audio always stops). Nothing autoplays before the
+     visitor chooses to watch. #}
+  <div id="video-lightbox" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true" aria-label="Video player">
+    <div class="absolute inset-0 bg-black/85 backdrop-blur-sm" data-lightbox-close></div>
+    <div class="relative w-full max-w-5xl">
+      <div class="flex items-center justify-between mb-2 gap-4">
+        <p id="video-lightbox-title" class="text-sm font-medium text-surface-200 truncate"></p>
+        <button type="button" class="p-2 rounded-lg text-surface-200 hover:text-white hover:bg-white/10 transition-colors shrink-0" data-lightbox-close aria-label="Close video">
+          {{ icons.icon('close', 22) }}
+        </button>
+      </div>
+      <div id="video-lightbox-frame" class="aspect-video w-full rounded-xl overflow-hidden bg-black ring-1 ring-white/10"></div>
+      <p class="mt-3 text-center">
+        <a id="video-lightbox-page" href="#" class="text-sm text-flame-300 hover:text-flame-200 transition-colors">View full teaching page &rarr;</a>
+      </p>
+    </div>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

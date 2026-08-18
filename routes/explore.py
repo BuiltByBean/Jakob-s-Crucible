@@ -1,0 +1,121 @@
+"""Explore routes: Scripture navigation, Topics, and Search."""
+from __future__ import annotations
+
+from flask import Blueprint, render_template, request
+
+import bible
+from models import ScriptureBook, ScriptureRef, Series, Teaching, Topic, db
+from services import search as search_svc
+
+bp = Blueprint("explore", __name__)
+
+
+@bp.route("/scripture")
+def scripture_index():
+    """Bible -> testament -> book. Books the library touches are lit; the rest
+    stay visible but dimmed (honest counts, no 'coming soon')."""
+    counts = dict(
+        db.session.query(ScriptureRef.book_id, db.func.count(db.func.distinct(ScriptureRef.teaching_id)))
+        .group_by(ScriptureRef.book_id)
+        .all()
+    )
+    books = ScriptureBook.query.order_by(ScriptureBook.id).all()
+    ot = [b for b in books if b.testament == "OT"]
+    nt = [b for b in books if b.testament == "NT"]
+    return render_template("scripture_index.html", ot=ot, nt=nt, counts=counts)
+
+
+@bp.route("/scripture/<slug>")
+def scripture_book(slug):
+    book = ScriptureBook.query.filter_by(slug=slug).first_or_404()
+    refs = (
+        ScriptureRef.query.filter_by(book_id=book.id)
+        .join(Teaching)
+        .order_by(Teaching.published_at.desc())
+        .all()
+    )
+    # Chapter grid: which chapters have coverage (primary vs reference-only).
+    chapter_hits: dict[int, str] = {}
+    for ref in refs:
+        start = ref.chapter_start or 1
+        end = ref.chapter_end or ref.chapter_start or book.chapters
+        for ch in range(start, min(end, book.chapters) + 1):
+            level = "primary" if ref.is_primary else "reference"
+            if chapter_hits.get(ch) != "primary":
+                chapter_hits[ch] = level
+
+    selected_chapter = request.args.get("chapter", type=int)
+    if selected_chapter is not None and not (1 <= selected_chapter <= book.chapters):
+        selected_chapter = None
+
+    # Teachings grouped: primary passages first, then cross-references.
+    def _teachings_for(refs_subset):
+        seen: set[int] = set()
+        out = []
+        for r in refs_subset:
+            if r.teaching_id not in seen:
+                seen.add(r.teaching_id)
+                out.append((r.teaching, r))
+        return out
+
+    if selected_chapter:
+        visible = [r for r in refs if r.covers_chapter(selected_chapter)]
+    else:
+        visible = refs
+    primary = _teachings_for([r for r in visible if r.is_primary])
+    secondary = _teachings_for([r for r in visible if not r.is_primary and r.teaching_id not in {t.id for t, _ in primary}])
+
+    return render_template(
+        "scripture_book.html",
+        book=book,
+        chapter_hits=chapter_hits,
+        selected_chapter=selected_chapter,
+        primary=primary,
+        secondary=secondary,
+    )
+
+
+@bp.route("/topics")
+def topics_index():
+    topics = Topic.query.order_by(Topic.sort_order, Topic.name).all()
+    return render_template("topics.html", topics=topics)
+
+
+@bp.route("/topics/<slug>")
+def topic_detail(slug):
+    topic = Topic.query.filter_by(slug=slug).first_or_404()
+    teachings = sorted(
+        (t for t in topic.teachings),
+        key=lambda t: (t.kind == "short", -(t.published_at.timestamp() if t.published_at else 0)),
+    )
+    return render_template("topic.html", topic=topic, teachings=teachings)
+
+
+@bp.route("/search")
+def search():
+    q = request.args.get("q", "").strip()[:200]
+    results = None
+    if q:
+        scripture_refs = search_svc.parse_scripture_query(q)
+        scripture_books = []
+        for ref in scripture_refs:
+            book = db.session.get(ScriptureBook, ref.book_number)
+            if book:
+                scripture_books.append((book, ref))
+        series_matches = Series.query.filter(Series.title.ilike(f"%{q}%")).all()
+        topic_matches = Topic.query.filter(Topic.name.ilike(f"%{q}%")).all()
+        results = {
+            "teachings": search_svc.search_teachings(q),
+            "transcripts": search_svc.search_transcripts(q),
+            "scripture": scripture_books,
+            "series": series_matches,
+            "topics": topic_matches,
+        }
+        results["total"] = (
+            len(results["teachings"])
+            + sum(len(g["hits"]) for g in results["transcripts"])
+            + len(results["scripture"])
+            + len(results["series"])
+            + len(results["topics"])
+        )
+    return render_template("search.html", q=q, results=results)

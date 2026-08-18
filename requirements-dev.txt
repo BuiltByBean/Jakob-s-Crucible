@@ -1,0 +1,5 @@
+# Dev-only: content sync from the YouTube channel (scripts/sync_youtube.py).
+# Kept out of requirements.txt so production builds stay lean — the site
+# itself never scrapes at runtime.
+yt-dlp>=2026.3
+youtube-transcript-api>=1.0

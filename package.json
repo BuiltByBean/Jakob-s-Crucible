@@ -1,0 +1,11 @@
+{
+  "name": "wisdom-crucible-site",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i static/css/tailwind_input.css -o static/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i static/css/tailwind_input.css -o static/css/tailwind.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

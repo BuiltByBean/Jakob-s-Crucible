@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% from "components/teaching_card.html" import teaching_card, short_row %}
+{% set active_nav = 'teachings' %}
+
+{% block title %}Teaching Library — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}Every teaching from {{ MINISTRY.name }}, organised by series — verse-by-verse studies, reflections, and responses to skeptics.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
+  <header class="mb-8">
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Teaching Library</h1>
+    <p class="mt-2 text-surface-300 max-w-2xl">Every episode in one place — watch, listen, read, or download from each teaching's page.</p>
+  </header>
+
+  {# Filter chips: plain links (server-side filtering), state lives in the URL. #}
+  <div class="flex flex-wrap items-center gap-2 mb-8">
+    <a href="{{ url_for('public.library') }}"
+       class="chip {{ 'chip-active' if not active_series and show == 'teachings' }}">All teachings</a>
+    {% for s in series_list if s.kind != 'shorts' %}
+    <a href="{{ url_for('public.library', series=s.slug) }}"
+       class="chip {{ 'chip-active' if active_series and active_series.id == s.id }}">{{ s.title }}</a>
+    {% endfor %}
+    <span class="w-px h-5 bg-white/10 mx-1" aria-hidden="true"></span>
+    <a href="{{ url_for('public.library', show='shorts') }}"
+       class="chip {{ 'chip-active' if show == 'shorts' and not active_series }}">Shorts</a>
+  </div>
+
+  {% if active_series %}
+  <div class="card p-5 mb-8 flex flex-wrap items-center gap-4">
+    <div class="flex-1 min-w-[16rem]">
+      <p class="font-display text-xl font-semibold text-surface-50">{{ active_series.title }}</p>
+      <p class="mt-1 text-sm text-surface-300 leading-relaxed">{{ active_series.description }}</p>
+    </div>
+    <a class="btn-ghost" href="{{ url_for('public.series_detail', slug=active_series.slug) }}">
+      Series page {{ icons.icon('arrow-right', 16) }}
+    </a>
+  </div>
+  {% endif %}
+
+  <p class="text-xs text-surface-400 font-semibold uppercase tracking-wider mb-5">
+    {{ teachings | length }} result{{ 's' if teachings | length != 1 }}
+  </p>
+
+  {% set shorts = teachings | selectattr('kind', 'equalto', 'short') | list %}
+  {% set full = teachings | rejectattr('kind', 'equalto', 'short') | list %}
+
+  {% if full %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in mb-10">
+    {% for t in full %}
+    {{ teaching_card(t) }}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if shorts %}
+  <section class="section">
+    {% if full %}<h2 class="section-title"><span>Shorts</span></h2>{% endif %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {% for t in shorts %}
+      {{ short_row(t) }}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if not teachings %}
+  <div class="card p-8 text-center text-surface-400">
+    Nothing here yet for this view.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

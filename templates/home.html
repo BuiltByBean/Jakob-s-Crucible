@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% from "components/teaching_card.html" import teaching_card %}
+{% set active_nav = 'home' %}
+
+{% block title %}{{ MINISTRY.name }} — {{ MINISTRY.tagline }}{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+    {# Restrained blue-flame glow behind the mark — the one deliberate flourish. #}
+    <div class="absolute left-1/2 top-24 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full animate-flame-glow"
+         style="background: radial-gradient(closest-side, rgba(34,154,232,0.18), rgba(34,154,232,0.05) 55%, transparent 75%);"></div>
+  </div>
+
+  <div class="relative max-w-4xl mx-auto px-4 lg:px-6 pt-16 sm:pt-24 pb-14 text-center">
+    <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}"
+         alt="A crucible holding a blue-white flame — the mark of The Wisdom Crucible"
+         width="132" height="195" class="mx-auto h-36 sm:h-44 w-auto animate-fade-in drop-shadow-[0_0_35px_rgba(74,181,246,0.25)]">
+    <h1 class="mt-8 font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-surface-50 tracking-wide animate-rise-in">
+      The Wisdom Crucible
+    </h1>
+    <p class="mt-5 text-lg sm:text-xl text-surface-200 leading-relaxed max-w-2xl mx-auto animate-rise-in" style="animation-delay: .1s">
+      {{ MINISTRY.tagline }}
+    </p>
+    <p class="mt-3 text-sm text-surface-400 animate-rise-in" style="animation-delay: .18s">
+      Verse-by-verse study and thoughtful reflection with Jakob McClain
+    </p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3 animate-rise-in" style="animation-delay: .26s">
+      <a href="{{ url_for('public.library') }}" class="btn-primary">
+        {{ icons.icon('library', 18) }} Browse the Teaching Library
+      </a>
+      {% if statement %}
+      <a href="{{ url_for('public.teaching_detail', slug=statement.slug) }}" class="btn-ghost">
+        {{ icons.icon('document', 18) }} Statement of Faith
+      </a>
+      {% endif %}
+    </div>
+    <div class="mt-7 flex items-center justify-center gap-2 animate-fade-in" style="animation-delay: .4s">
+      <a href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube channel"
+         class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5 transition-colors">{{ icons.icon('youtube', 22) }}</a>
+      <a href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener" title="Podcast" aria-label="Podcast feed"
+         class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5 transition-colors">{{ icons.icon('podcast', 22) }}</a>
+      <a href="{{ MINISTRY.twitter }}" target="_blank" rel="noopener" title="X (Twitter)" aria-label="X (Twitter)"
+         class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5 transition-colors">{{ icons.icon('x-social', 19) }}</a>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-6xl mx-auto px-4 lg:px-6">
+
+  {% if featured %}
+  <section class="section">
+    <h2 class="section-title">
+      <span>{{ 'Latest teaching' if latest_is_featured else 'Featured teaching' }}</span>
+      <a href="{{ url_for('public.library') }}" class="text-surface-300 hover:text-flame-200 normal-case tracking-normal font-medium text-sm transition-colors">All teachings &rarr;</a>
+    </h2>
+    {{ teaching_card(featured, size='wide') }}
+  </section>
+  {% endif %}
+
+  {% if series_list %}
+  <section class="section">
+    <h2 class="section-title"><span>Teaching series</span></h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-in">
+      {% for s in series_list %}
+      {% set cover = s.published_teachings | first %}
+      <a href="{{ url_for('public.series_detail', slug=s.slug) }}" class="card card-hover group flex flex-col">
+        <span class="relative block aspect-video overflow-hidden bg-surface-850">
+          {% if s.art_path %}
+          <img src="{{ url_for('static', filename=s.art_path) }}?v={{ ASSET_V }}" alt="" loading="lazy"
+               class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]">
+          {% elif cover %}
+          <img src="{{ cover.thumbnail_url or 'https://i.ytimg.com/vi/' + cover.youtube_id + '/hqdefault.jpg' }}" alt="" loading="lazy"
+               width="480" height="270" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]">
+          {% endif %}
+          <span class="absolute inset-0 bg-gradient-to-t from-surface-950/80 via-surface-950/20 to-transparent"></span>
+          <span class="absolute bottom-3 left-4 right-4 font-display text-lg font-semibold text-surface-50 leading-snug">{{ s.title }}</span>
+        </span>
+        <span class="p-5 flex flex-col gap-2 flex-1">
+          <span class="text-sm text-surface-300 leading-relaxed">{{ s.description }}</span>
+          <span class="mt-auto pt-2 text-xs font-semibold uppercase tracking-wider text-flame-400/90">
+            {{ s.published_teachings | length }} teaching{{ 's' if s.published_teachings | length != 1 }}
+          </span>
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if recent | length > 1 %}
+  <section class="section">
+    <h2 class="section-title">
+      <span>Recent teachings</span>
+      <a href="{{ url_for('public.library') }}" class="text-surface-300 hover:text-flame-200 normal-case tracking-normal font-medium text-sm transition-colors">View library &rarr;</a>
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
+      {% for t in recent if not latest_is_featured or t.id != featured.id %}
+      {{ teaching_card(t) }}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if starting_points %}
+  <section class="section">
+    <h2 class="section-title"><span>New here? Start with these</span></h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {% for t, why in starting_points %}
+      <a href="{{ url_for('public.teaching_detail', slug=t.slug) }}" class="card card-hover p-5 flex items-start gap-4 group">
+        <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"
+             alt="" loading="lazy" width="120" height="68"
+             class="w-24 aspect-video object-cover rounded-lg shrink-0 mt-0.5">
+        <span class="min-w-0">
+          <span class="block font-semibold text-surface-50 leading-snug group-hover:text-flame-200 transition-colors">{{ t.title }}</span>
+          <span class="block mt-1 text-xs text-surface-400 leading-relaxed">{{ why }}</span>
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section">
+    <h2 class="section-title"><span>Find your way in</span></h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <a href="{{ url_for('explore.scripture_index') }}" class="card card-hover p-6 flex items-start gap-4">
+        <span class="text-flame-400 mt-0.5">{{ icons.icon('book-open', 26) }}</span>
+        <span>
+          <span class="block font-display text-lg font-semibold text-surface-50">Explore Scripture</span>
+          <span class="block mt-1 text-sm text-surface-300 leading-relaxed">Navigate the library the way the Bible is arranged — testament, book, and chapter.</span>
+        </span>
+      </a>
+      <a href="{{ url_for('explore.topics_index') }}" class="card card-hover p-6 flex items-start gap-4">
+        <span class="text-flame-400 mt-0.5">{{ icons.icon('tag', 26) }}</span>
+        <span>
+          <span class="block font-display text-lg font-semibold text-surface-50">Explore Topics</span>
+          <span class="block mt-1 text-sm text-surface-300 leading-relaxed">A restrained set of themes — faith, doctrine, Christology, apologetics, and more.</span>
+        </span>
+      </a>
+      <a href="{{ url_for('explore.search') }}" class="card card-hover p-6 flex items-start gap-4">
+        <span class="text-flame-400 mt-0.5">{{ icons.icon('search', 26) }}</span>
+        <span>
+          <span class="block font-display text-lg font-semibold text-surface-50">Search</span>
+          <span class="block mt-1 text-sm text-surface-300 leading-relaxed">Search titles, passages, topics — even the words spoken inside each teaching.</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

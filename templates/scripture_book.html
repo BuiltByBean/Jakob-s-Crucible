@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% from "components/teaching_card.html" import teaching_card %}
+{% set active_nav = 'scripture' %}
+
+{% block title %}{{ book.name }} — Explore Scripture — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}Teachings from {{ MINISTRY.name }} that expound or reference {{ book.name }}.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
+  <nav class="text-xs text-surface-400 mb-6" aria-label="Breadcrumb">
+    <a href="{{ url_for('explore.scripture_index') }}" class="hover:text-flame-200 transition-colors">Explore Scripture</a>
+    <span class="mx-1.5">/</span>
+    <span class="text-surface-200">{{ book.name }}</span>
+  </nav>
+
+  <header class="mb-8">
+    <p class="text-xs font-semibold uppercase tracking-wider text-flame-400 mb-2">
+      {{ 'Old Testament' if book.testament == 'OT' else 'New Testament' }}
+    </p>
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">{{ book.name }}</h1>
+  </header>
+
+  {% if book.chapters > 1 %}
+  <section class="section">
+    <h2 class="section-title">
+      <span>Chapters</span>
+      {% if selected_chapter %}
+      <a href="{{ url_for('explore.scripture_book', slug=book.slug) }}"
+         class="text-surface-300 hover:text-flame-200 normal-case tracking-normal font-medium text-sm transition-colors">Clear chapter filter</a>
+      {% endif %}
+    </h2>
+    <p class="text-xs text-surface-400 mb-4">
+      Bright chapters are a teaching's primary passage; dimmer highlights are referenced in passing.
+    </p>
+    <div class="flex flex-wrap gap-1.5">
+      {% for ch in range(1, book.chapters + 1) %}
+      {% set hit = chapter_hits.get(ch) %}
+      {% if hit %}
+      <a href="{{ url_for('explore.scripture_book', slug=book.slug, chapter=ch) }}"
+         aria-label="Chapter {{ ch }}"
+         class="w-11 h-11 flex items-center justify-center rounded-lg text-sm font-semibold tabular-nums transition-all
+                {{ 'bg-flame-500 text-white shadow-lg shadow-flame-500/30' if selected_chapter == ch
+                   else ('bg-flame-500/25 text-flame-200 hover:bg-flame-500/40' if hit == 'primary'
+                   else 'bg-flame-500/10 text-flame-300/80 hover:bg-flame-500/25') }}">{{ ch }}</a>
+      {% else %}
+      <span class="w-11 h-11 flex items-center justify-center rounded-lg text-sm tabular-nums text-surface-600 border border-white/5" aria-label="Chapter {{ ch }} — no teachings yet">{{ ch }}</span>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if primary %}
+  <section class="section">
+    <h2 class="section-title">
+      <span>{{ 'Teachings on ' + book.name + ' ' + selected_chapter | string if selected_chapter else 'Teachings expounding ' + book.name }}</span>
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
+      {% for t, ref in primary %}
+      {{ teaching_card(t) }}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if secondary %}
+  <section class="section">
+    <h2 class="section-title"><span>Teachings that reference {{ book.name }}{{ ' ' + selected_chapter | string if selected_chapter }}</span></h2>
+    <div class="card divide-y divide-white/5 max-w-3xl">
+      {% for t, ref in secondary %}
+      <a href="{{ url_for('public.teaching_detail', slug=t.slug) }}"
+         class="flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition-colors group">
+        <span class="text-flame-400 shrink-0">{{ icons.icon('book-open', 17) }}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-sm font-medium text-surface-100 group-hover:text-surface-50 truncate">{{ t.title }}</span>
+          <span class="block text-xs text-surface-400 mt-0.5">cites {{ ref.display_text }}</span>
+        </span>
+        <span class="text-surface-500 group-hover:text-flame-300 transition-colors shrink-0">{{ icons.icon('chevron-right', 16) }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if not primary and not secondary %}
+  <div class="card p-8 text-center text-surface-400 max-w-2xl">
+    No teachings touch {{ book.name }}{{ ' ' + selected_chapter | string if selected_chapter }} yet.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

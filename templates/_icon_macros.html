@@ -1,0 +1,62 @@
+{# Inline line-style SVG icon library. House rules: 24x24 viewBox,
+   stroke=currentColor, stroke-width 1.6, round caps/joins, aria-hidden —
+   themable via currentColor. No icon fonts, no emoji-as-icons, ever.
+   Unknown names render a visible ? so a typo can't fail silently. #}
+{% macro icon(name, size=20, class='') -%}
+<svg class="{{ class }}" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none"
+     stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+     aria-hidden="true">
+  {%- if name == 'play' -%}
+    <polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none"/>
+  {%- elif name == 'search' -%}
+    <circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>
+  {%- elif name == 'menu' -%}
+    <path d="M4 7h16M4 12h16M4 17h16"/>
+  {%- elif name == 'close' -%}
+    <path d="M6 6l12 12M18 6L6 18"/>
+  {%- elif name == 'youtube' -%}
+    <path d="M2.5 12c0-2.4.2-3.9.5-4.8.3-.8.9-1.4 1.7-1.6C6.2 5.2 9 5 12 5s5.8.2 7.3.6c.8.2 1.4.8 1.7 1.6.3.9.5 2.4.5 4.8s-.2 3.9-.5 4.8c-.3.8-.9 1.4-1.7 1.6-1.5.4-4.3.6-7.3.6s-5.8-.2-7.3-.6c-.8-.2-1.4-.8-1.7-1.6-.3-.9-.5-2.4-.5-4.8Z"/>
+    <polygon points="10 9 15 12 10 15 10 9" fill="currentColor" stroke="none"/>
+  {%- elif name == 'podcast' -%}
+    <circle cx="12" cy="11" r="3"/><path d="M7.5 15.5a6 6 0 1 1 9 0"/><path d="M4.6 18.4a10 10 0 1 1 14.8 0"/><path d="M12 14v7"/>
+  {%- elif name == 'x-social' -%}
+    <path d="M4 4l16 16M20 4L4 20" stroke-width="1.8"/>
+  {%- elif name == 'mail' -%}
+    <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>
+  {%- elif name == 'phone' -%}
+    <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>
+  {%- elif name == 'book' -%}
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+  {%- elif name == 'book-open' -%}
+    <path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/>
+  {%- elif name == 'tag' -%}
+    <path d="M12 2H2v10l9.3 9.3a1.7 1.7 0 0 0 2.4 0l7.6-7.6a1.7 1.7 0 0 0 0-2.4Z"/><circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none"/>
+  {%- elif name == 'library' -%}
+    <path d="M4 4v16M9 4v16M14 5l4.5 15"/>
+  {%- elif name == 'arrow-right' -%}
+    <path d="M4 12h16m-6-6 6 6-6 6"/>
+  {%- elif name == 'external' -%}
+    <path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M20 14v5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19V6a1.5 1.5 0 0 1 1.5-1.5H10"/>
+  {%- elif name == 'download' -%}
+    <path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5"/><path d="M4 17v2.5A1.5 1.5 0 0 0 5.5 21h13a1.5 1.5 0 0 0 1.5-1.5V17"/>
+  {%- elif name == 'clock' -%}
+    <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+  {%- elif name == 'calendar' -%}
+    <rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M8 3v4m8-4v4M3.5 10h17"/>
+  {%- elif name == 'chevron-down' -%}
+    <path d="m6 9 6 6 6-6"/>
+  {%- elif name == 'chevron-right' -%}
+    <path d="m9 6 6 6-6 6"/>
+  {%- elif name == 'document' -%}
+    <path d="M6 2.5h8L20 8.5V20a1.5 1.5 0 0 1-1.5 1.5h-12A1.5 1.5 0 0 1 5 20V4a1.5 1.5 0 0 1 1-1.5Z"/><path d="M14 2.5v6h6M9 13h6M9 17h6"/>
+  {%- elif name == 'list' -%}
+    <path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="0.9" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="0.9" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="0.9" fill="currentColor" stroke="none"/>
+  {%- elif name == 'transcript' -%}
+    <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/>
+  {%- elif name == 'quote' -%}
+    <path d="M8 11c0-2.5 1.5-4.5 4-5.5M8 11H5.5A1.5 1.5 0 0 0 4 12.5v3A1.5 1.5 0 0 0 5.5 17h2A1.5 1.5 0 0 0 9 15.5V11Zm11 0c0-2.5 1.5-4.5 4-5.5M19 11h-2.5A1.5 1.5 0 0 0 15 12.5v3a1.5 1.5 0 0 0 1.5 1.5h2a1.5 1.5 0 0 0 1.5-1.5V11Z" transform="scale(0.87) translate(1.8 1.8)"/>
+  {%- else -%}
+    <circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.7m0 3h.01"/>
+  {%- endif -%}
+</svg>
+{%- endmacro %}

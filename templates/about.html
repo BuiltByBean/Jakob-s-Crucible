@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_nav = 'about' %}
+
+{% block title %}About — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}Why the crucible, why the blue-white flame, and who Jakob McClain is — the purpose behind The Wisdom Crucible.{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 lg:px-6 pt-10">
+  <header class="mb-10">
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">About The Wisdom Crucible</h1>
+  </header>
+
+  <section class="section">
+    <div class="grid grid-cols-1 md:grid-cols-[8rem_1fr] gap-6 items-start">
+      <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}"
+           alt="The crucible and blue-white flame" width="96" height="142"
+           class="h-32 w-auto mx-auto md:mx-0 drop-shadow-[0_0_25px_rgba(74,181,246,0.2)]">
+      <div class="prose-dark">
+        <p>
+          The Wisdom Crucible exists to refine understanding through Scripture — where study leads to
+          transformation. The crucible symbolizes this mortal life in which we are continually refined
+          by trials — the heat that purifies and burns away what does not belong.
+        </p>
+        <p>
+          I chose the blue-white flame not merely for aesthetic preference, but because a blue flame
+          burns hotter than orange or yellow. It reflects my desire for a passion that burns with
+          greater intensity — for understanding and applying the truth revealed in the Holy Scriptures
+          of the Bible.
+        </p>
+        <p>
+          My mission is to help others grow in curiosity, understanding, and — God willing — a deepening
+          passion for both the Word of God and for God himself. I pursue that through two complementary
+          forms of teaching — methodical, verse-by-verse study that draws truth directly from Scripture,
+          and reflective messages that connect biblical principles to everyday life through vivid
+          illustration and thoughtful meditation.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title"><span>About Jakob</span></h2>
+    <div class="card p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-[9rem_1fr] gap-6 items-start">
+      <img src="{{ url_for('static', filename='img/jakob.jpg') }}?v={{ ASSET_V }}"
+           alt="Portrait of Jakob McClain" width="144" height="144"
+           class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl object-cover border border-white/10 mx-auto sm:mx-0">
+      <div class="prose-dark">
+        <p>
+          The Wisdom Crucible is the passion project of <strong>Jakob McClain</strong> — refining Bible
+          study lessons and reflections on biblical principles into thorough teaching, helpful
+          reflection, and grounded application.
+        </p>
+        <p>
+          In his own words: <em>&ldquo;I am a disciple of Jesus Christ, seeking to produce disciples of
+          Jesus Christ.&rdquo;</em>
+        </p>
+        <blockquote>
+          Ministry isn&rsquo;t a hobby. It&rsquo;s a mission. Serious results tend to require serious
+          dedication. Tend to the garden, or else forfeit the fruit.
+          <span class="block not-italic text-xs text-surface-400 mt-2">— Jakob McClain</span>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title"><span>Where to begin</span></h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {% if statement %}
+      <a href="{{ url_for('public.teaching_detail', slug=statement.slug) }}" class="card card-hover p-6 flex items-start gap-4">
+        <span class="text-flame-400 mt-0.5">{{ icons.icon('document', 24) }}</span>
+        <span>
+          <span class="block font-display text-lg font-semibold text-surface-50">Statement of Faith</span>
+          <span class="block mt-1 text-sm text-surface-300 leading-relaxed">
+            The doctrinal foundation, examined at length — the right place to weigh this ministry's teaching.
+          </span>
+        </span>
+      </a>
+      {% endif %}
+      <a href="{{ url_for('public.library') }}" class="card card-hover p-6 flex items-start gap-4">
+        <span class="text-flame-400 mt-0.5">{{ icons.icon('library', 24) }}</span>
+        <span>
+          <span class="block font-display text-lg font-semibold text-surface-50">The Teaching Library</span>
+          <span class="block mt-1 text-sm text-surface-300 leading-relaxed">
+            Every study and reflection, organised by series — watch, listen, or read from one page.
+          </span>
+        </span>
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

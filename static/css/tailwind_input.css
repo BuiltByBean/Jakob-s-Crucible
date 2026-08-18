@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scrollbar-gutter: stable;
+    /* Fragment targets (#manuscript, skip-link's #main) must land below the
+       64px sticky header, not underneath it. */
+    scroll-padding-top: 5rem;
+  }
+
+  /* Alpine: hide x-cloak'd elements until Alpine initialises. */
+  [x-cloak] {
+    display: none !important;
+  }
+
+  body {
+    @apply bg-surface-950 text-surface-100 font-body antialiased;
+  }
+
+  /* transition-all + focus:outline-none animates a gray outline into view on
+     every click; zero the base outline color and restore a deliberate
+     :focus-visible ring instead. */
+  * {
+    outline-color: transparent;
+  }
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [tabindex]:focus-visible {
+    @apply outline outline-2 outline-flame-400 outline-offset-2 rounded-sm;
+  }
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+  }
+
+  ::selection {
+    @apply bg-flame-500/30 text-white;
+  }
+
+  /* Thin dark scrollbars (WebKit + Firefox) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme(colors.surface.700) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-700 rounded;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* iOS zooms any focused input under 16px — force it below sm. */
+  @media (max-width: 640px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  mark {
+    @apply bg-flame-500/30 text-flame-100 rounded px-0.5;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---- page vocabulary: every content block is a .section ---- */
+  .section {
+    @apply mb-12;
+  }
+  .section-title {
+    @apply flex items-end justify-between gap-4 mb-5 pb-2 border-b border-white/10
+      text-xs font-semibold uppercase tracking-[0.18em] text-flame-300 min-h-[2.25rem];
+  }
+
+  .card {
+    @apply bg-surface-900 border border-white/10 rounded-2xl overflow-hidden;
+  }
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 40px -8px rgba(34, 154, 232, 0.14),
+      0 4px 16px -4px rgba(0, 0, 0, 0.4);
+    @apply border-flame-500/30;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+      text-sm font-semibold transition-all min-h-[44px];
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-flame-600 to-flame-500 text-white
+      shadow-lg shadow-flame-500/20 hover:from-flame-500 hover:to-flame-400
+      hover:shadow-flame-500/35;
+  }
+  .btn-ghost {
+    @apply btn border border-white/15 text-surface-100 hover:border-flame-400/50
+      hover:text-flame-200 hover:bg-white/5;
+  }
+
+  .input {
+    @apply w-full bg-surface-900 border border-white/10 rounded-xl px-3.5 py-2.5
+      text-sm text-surface-50 placeholder-surface-400 transition-all;
+  }
+  .input:focus {
+    @apply border-flame-500;
+    box-shadow: 0 0 0 3px rgba(34, 154, 232, 0.18);
+  }
+  .field-label {
+    @apply block text-xs font-semibold uppercase tracking-wider text-surface-300 mb-2;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs
+      font-semibold border border-white/10 text-surface-200 transition-all
+      hover:border-flame-400/50 hover:text-flame-200 min-h-[32px];
+  }
+  .chip-active {
+    @apply border-flame-500/60 bg-flame-500/15 text-flame-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px]
+      font-semibold tracking-wide ring-1 ring-inset bg-flame-500/15 text-flame-300
+      ring-flame-500/25;
+  }
+
+  .prose-dark {
+    @apply text-surface-200 leading-relaxed;
+  }
+  .prose-dark p {
+    @apply mb-4;
+  }
+  .prose-dark h2,
+  .prose-dark h3 {
+    @apply font-display text-surface-50 mt-8 mb-3;
+  }
+  .prose-dark h2 {
+    @apply text-2xl;
+  }
+  .prose-dark h3 {
+    @apply text-xl;
+  }
+  .prose-dark a {
+    @apply text-flame-300 underline decoration-flame-500/40 hover:decoration-flame-300;
+  }
+  .prose-dark blockquote {
+    @apply border-l-2 border-flame-500/50 pl-4 italic text-surface-300 my-4;
+  }
+  .prose-dark ul,
+  .prose-dark ol {
+    @apply mb-4 pl-6;
+  }
+  .prose-dark ul {
+    @apply list-disc;
+  }
+  .prose-dark ol {
+    @apply list-decimal;
+  }
+
+  /* Staggered card entrances — children 1..9 rise in 60ms apart. */
+  .stagger-in > * {
+    animation: riseIn 0.5s ease-out both;
+  }
+  .stagger-in > *:nth-child(1) { animation-delay: 0s; }
+  .stagger-in > *:nth-child(2) { animation-delay: 0.06s; }
+  .stagger-in > *:nth-child(3) { animation-delay: 0.12s; }
+  .stagger-in > *:nth-child(4) { animation-delay: 0.18s; }
+  .stagger-in > *:nth-child(5) { animation-delay: 0.24s; }
+  .stagger-in > *:nth-child(6) { animation-delay: 0.3s; }
+  .stagger-in > *:nth-child(7) { animation-delay: 0.36s; }
+  .stagger-in > *:nth-child(8) { animation-delay: 0.42s; }
+  .stagger-in > *:nth-child(9) { animation-delay: 0.48s; }
+
+  .skip-link {
+    @apply absolute -top-96 left-4 z-[10001] bg-surface-900 text-flame-200 px-4
+      py-2 rounded-lg border border-flame-500/40;
+  }
+  .skip-link:focus {
+    @apply top-4;
+  }
+}

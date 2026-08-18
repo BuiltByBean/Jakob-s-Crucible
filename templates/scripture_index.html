@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_nav = 'scripture' %}
+
+{% block title %}Explore Scripture — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}Navigate the teaching library the way the Bible is arranged — testament, book, and chapter.{% endblock %}
+
+{% macro book_grid(books, counts) -%}
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+  {% for b in books %}
+  {% set n = counts.get(b.id, 0) %}
+  {% if n > 0 %}
+  <a href="{{ url_for('explore.scripture_book', slug=b.slug) }}"
+     class="card card-hover px-4 py-3 flex items-center justify-between gap-2 !rounded-xl border-flame-500/25">
+    <span class="text-sm font-medium text-surface-50">{{ b.name }}</span>
+    <span class="badge">{{ n }}</span>
+  </a>
+  {% else %}
+  <span class="px-4 py-3 flex items-center rounded-xl border border-white/5 text-sm text-surface-500 min-h-[44px]">
+    {{ b.name }}
+  </span>
+  {% endif %}
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
+  <header class="mb-10 max-w-3xl">
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Explore Scripture</h1>
+    <p class="mt-3 text-surface-300 leading-relaxed">
+      Find teachings by the passage they open — the way the Bible itself is arranged.
+      Books the library has reached are lit; the badge counts the teachings that
+      expound or reference each book. The rest of the canon is waiting its turn.
+    </p>
+  </header>
+
+  <section class="section">
+    <h2 class="section-title"><span>Old Testament</span></h2>
+    {{ book_grid(ot, counts) }}
+  </section>
+
+  <section class="section">
+    <h2 class="section-title"><span>New Testament</span></h2>
+    {{ book_grid(nt, counts) }}
+  </section>
+</div>
+{% endblock %}

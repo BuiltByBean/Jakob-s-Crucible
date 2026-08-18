@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% from "components/teaching_card.html" import teaching_card, short_row %}
+{% set active_nav = 'teachings' %}
+
+{% block title %}{{ series.title }} — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}{{ series.description }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
+  <nav class="text-xs text-surface-400 mb-6" aria-label="Breadcrumb">
+    <a href="{{ url_for('public.library') }}" class="hover:text-flame-200 transition-colors">Teaching Library</a>
+    <span class="mx-1.5">/</span>
+    <span class="text-surface-200">{{ series.title }}</span>
+  </nav>
+
+  <header class="mb-10 max-w-3xl">
+    <p class="text-xs font-semibold uppercase tracking-wider text-flame-400 mb-2">Teaching series</p>
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">{{ series.title }}</h1>
+    <p class="mt-3 text-surface-300 leading-relaxed">{{ series.description }}</p>
+    <div class="mt-5 flex flex-wrap gap-3">
+      {% if series.youtube_playlist_id %}
+      <a class="btn-ghost" target="_blank" rel="noopener"
+         href="https://www.youtube.com/playlist?list={{ series.youtube_playlist_id }}">
+        {{ icons.icon('youtube', 18) }} Watch on YouTube
+      </a>
+      {% endif %}
+      {% if series.podcast_playlist_id %}
+      <a class="btn-ghost" target="_blank" rel="noopener"
+         href="https://www.youtube.com/playlist?list={{ series.podcast_playlist_id }}">
+        {{ icons.icon('podcast', 18) }} Listen as podcast
+      </a>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if series.kind == 'shorts' %}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    {% for t in teachings %}
+    {{ short_row(t) }}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
+    {% for t in teachings %}
+    {{ teaching_card(t) }}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if not teachings %}
+  <div class="card p-8 text-center text-surface-400">No episodes in this series yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% from "components/teaching_card.html" import teaching_card, short_row %}
+{% set active_nav = 'topics' %}
+
+{% block title %}{{ topic.name }} — Topics — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}{{ topic.description }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
+  <nav class="text-xs text-surface-400 mb-6" aria-label="Breadcrumb">
+    <a href="{{ url_for('explore.topics_index') }}" class="hover:text-flame-200 transition-colors">Explore Topics</a>
+    <span class="mx-1.5">/</span>
+    <span class="text-surface-200">{{ topic.name }}</span>
+  </nav>
+
+  <header class="mb-10 max-w-3xl">
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">{{ topic.name }}</h1>
+    <p class="mt-3 text-surface-300 leading-relaxed">{{ topic.description }}</p>
+  </header>
+
+  {% set full = teachings | rejectattr('kind', 'equalto', 'short') | list %}
+  {% set shorts = teachings | selectattr('kind', 'equalto', 'short') | list %}
+
+  {% if full %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in mb-10">
+    {% for t in full %}
+    {{ teaching_card(t) }}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if shorts %}
+  <section class="section">
+    <h2 class="section-title"><span>Shorts on {{ topic.name | lower }}</span></h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {% for t in shorts %}
+      {{ short_row(t) }}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if not teachings %}
+  <div class="card p-8 text-center text-surface-400 max-w-2xl">No teachings under this topic yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

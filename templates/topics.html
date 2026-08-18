@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_nav = 'topics' %}
+
+{% block title %}Explore Topics — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}A restrained set of themes across the teachings — faith, doctrine, Christology, apologetics, discipleship, and Christian living.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
+  <header class="mb-10 max-w-3xl">
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Explore Topics</h1>
+    <p class="mt-3 text-surface-300 leading-relaxed">
+      A deliberately small set of themes — enough to find your way, never a hundred tags for their own sake.
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
+    {% for topic in topics %}
+    <a href="{{ url_for('explore.topic_detail', slug=topic.slug) }}" class="card card-hover p-6 flex flex-col gap-2">
+      <span class="flex items-center justify-between gap-3">
+        <span class="font-display text-xl font-semibold text-surface-50">{{ topic.name }}</span>
+        <span class="badge">{{ topic.teachings | length }}</span>
+      </span>
+      <span class="text-sm text-surface-300 leading-relaxed">{{ topic.description }}</span>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if not topics %}
+  <div class="card p-8 text-center text-surface-400 max-w-2xl">No topics defined yet.</div>
+  {% endif %}
+</div>
+{% endblock %}
