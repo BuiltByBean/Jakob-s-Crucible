@@ -1,6 +1,0 @@
-# Force the Python provider. package.json exists only for the LOCAL Tailwind
-# build (static/css/tailwind.css is committed), but its presence makes
-# Nixpacks auto-detect Node: the 2026-08-18 deploy ran `npm ci`, never
-# installed requirements.txt, and gunicorn didn't exist at start — healthcheck
-# failed. Python is the only runtime production needs.
-providers = ["python"]

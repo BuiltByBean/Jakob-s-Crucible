@@ -1,6 +1,6 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
-  "build": { "builder": "NIXPACKS" },
+  "build": { "builder": "DOCKERFILE" },
   "deploy": {
     "startCommand": "gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --worker-class gthread --threads 8 --timeout 60 --graceful-timeout 10 --keep-alive 2",
     "healthcheckPath": "/healthz",

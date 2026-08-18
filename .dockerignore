@@ -1,0 +1,15 @@
+# Keep the image lean and the local DB out of it (the real DB lives on the
+# /data volume). data/seed/*.json IS shipped — scripts/seed_db.py needs it.
+.git
+node_modules
+__pycache__
+*.pyc
+.venv
+venv
+.claude
+data/*.db
+data/*.db-shm
+data/*.db-wal
+.env
+.env.*
+*.log
