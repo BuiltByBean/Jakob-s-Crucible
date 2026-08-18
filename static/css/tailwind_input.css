@@ -312,7 +312,9 @@
     top: 0.45rem;
   }
   .spine-lit::after {
-    bottom: 1.85rem;
+    /* Must clear the medallion: badge spans 0.5–2.0rem from the bottom
+       (mb-2 + 1.5rem circle), so the tail band sits above it. */
+    bottom: 2.4rem;
   }
   .spine-lit:hover,
   .spine-lit:focus-visible {
