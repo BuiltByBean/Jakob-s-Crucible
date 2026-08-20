@@ -79,19 +79,20 @@
     </button>
   </div>
 
-  {# Access bar: the same teaching in every medium — watch, listen, read, download. #}
+  {# Access bar: the same teaching in every medium — watch, listen, read, download.
+     Podcast buttons always point at Spotify (the podcast's source of truth). #}
   <div class="flex flex-wrap gap-3 mt-5 max-w-4xl">
     <a class="btn-ghost" href="{{ teaching.youtube_url }}" target="_blank" rel="noopener">
       {{ icons.icon('youtube', 18) }} Watch on YouTube
     </a>
-    {% if teaching.podcast_url %}
-    <a class="btn-ghost" href="{{ teaching.podcast_url }}" target="_blank" rel="noopener">
-      {{ icons.icon('podcast', 18) }} Listen (podcast)
+    {% if teaching.kind == 'teaching' %}
+    <a class="btn-ghost" href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener">
+      {{ icons.icon('podcast', 18) }} Listen on Spotify
     </a>
     {% endif %}
-    {% if teaching.notes_url %}
-    <a class="btn-ghost" href="{{ teaching.notes_url }}" target="_blank" rel="noopener">
-      {{ icons.icon('download', 18) }} Study notes
+    {% if teaching.has_notes %}
+    <a class="btn-ghost" href="{{ url_for('public.notes_download', slug=teaching.slug) }}">
+      {{ icons.icon('download', 18) }} Download Notes
     </a>
     {% endif %}
     {% if teaching.manuscript %}
@@ -156,38 +157,10 @@
       </section>
       {% endif %}
 
-      {% if transcript %}
-      <section class="section" x-data="{ open: false }">
-        <h2 class="section-title">
-          <span>Transcript</span>
-          <span class="normal-case tracking-normal font-medium text-surface-400 text-xs">auto-generated captions</span>
-        </h2>
-        <div class="card max-w-3xl">
-          <button type="button" class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-white/5 transition-colors"
-                  @click="open = !open" :aria-expanded="open">
-            <span class="inline-flex items-center gap-2.5 text-sm font-medium text-surface-200">
-              {{ icons.icon('transcript', 18) }}
-              <span x-text="open ? 'Hide transcript' : 'Show transcript'">Show transcript</span>
-            </span>
-            <span :class="open ? 'rotate-180' : ''" class="transition-transform text-surface-400">{{ icons.icon('chevron-down', 18) }}</span>
-          </button>
-          <div x-show="open" x-collapse x-cloak>
-            <p class="px-5 pt-1 pb-3 text-xs text-surface-400">
-              Auto-generated, so imperfect — click any line to jump the video to that moment.
-            </p>
-            <div class="max-h-[28rem] overflow-y-auto px-2 pb-3">
-              {% for seg in transcript %}
-              <button type="button" data-seek="{{ seg.start_seconds | int }}"
-                      class="w-full flex items-start gap-3 px-3 py-1.5 text-left rounded-lg hover:bg-white/5 transition-colors">
-                <span class="text-[11px] font-semibold tabular-nums text-flame-400/80 w-12 shrink-0 pt-0.5">{{ seg.start_seconds | int | duration }}</span>
-                <span class="text-sm text-surface-300 leading-relaxed">{{ seg.text }}</span>
-              </button>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-      </section>
-      {% endif %}
+      {#- The auto-generated transcript is deliberately NOT displayed: it
+          stays indexed for search (timestamped hits still deep-link into the
+          video), but the readable form is the Manuscript section above —
+          Jakob's own script, which he reads nearly word-for-word. -#}
 
       {% if sections.closing %}
       <section class="section max-w-3xl">
@@ -237,11 +210,12 @@
       </section>
       {% endif %}
 
-      {% if teaching.series and teaching.series.teachings | length > 1 %}
+      {% if series_episodes | length > 1 %}
       <section>
         <h2 class="section-title"><span>In this series</span></h2>
+        {# Numbered chronologically — part 1 first, latest last. #}
         <ol class="card divide-y divide-white/5">
-          {% for t in teaching.series.teachings %}
+          {% for t in series_episodes %}
           <li>
             {% if t.id == teaching.id %}
             <span class="flex items-center gap-3 px-4 py-3 bg-flame-500/10 text-sm text-flame-200 font-medium">

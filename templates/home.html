@@ -17,7 +17,7 @@
   <div class="relative max-w-4xl mx-auto px-4 lg:px-6 pt-16 sm:pt-24 pb-14 text-center">
     <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}"
          alt="A crucible holding a blue-white flame — the mark of The Wisdom Crucible"
-         width="132" height="195" class="mx-auto h-36 sm:h-44 w-auto animate-fade-in drop-shadow-[0_0_35px_rgba(74,181,246,0.25)]">
+         width="132" height="186" class="mx-auto h-36 sm:h-44 w-auto animate-fade-in drop-shadow-[0_0_35px_rgba(74,181,246,0.25)]">
     <h1 class="mt-8 font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-surface-50 tracking-wide animate-rise-in">
       The Wisdom Crucible
     </h1>
@@ -40,7 +40,7 @@
     <div class="mt-7 flex items-center justify-center gap-2 animate-fade-in" style="animation-delay: .4s">
       <a href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube channel"
          class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5 transition-colors">{{ icons.icon('youtube', 22) }}</a>
-      <a href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener" title="Podcast" aria-label="Podcast feed"
+      <a href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener" title="Podcast on Spotify" aria-label="Podcast on Spotify"
          class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5 transition-colors">{{ icons.icon('podcast', 22) }}</a>
       <a href="{{ MINISTRY.twitter }}" target="_blank" rel="noopener" title="X (Twitter)" aria-label="X (Twitter)"
          class="p-2.5 rounded-lg text-surface-300 hover:text-flame-200 hover:bg-white/5 transition-colors">{{ icons.icon('x-social', 19) }}</a>
@@ -90,20 +90,6 @@
   </section>
   {% endif %}
 
-  {% if recent | length > 1 %}
-  <section class="section">
-    <h2 class="section-title">
-      <span>Recent teachings</span>
-      <a href="{{ url_for('public.library') }}" class="text-surface-300 hover:text-flame-200 normal-case tracking-normal font-medium text-sm transition-colors">View library &rarr;</a>
-    </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
-      {% for t in recent if not latest_is_featured or t.id != featured.id %}
-      {{ teaching_card(t) }}
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-
   {% if starting_points %}
   <section class="section">
     <h2 class="section-title"><span>New here? Start with these</span></h2>
@@ -123,8 +109,22 @@
   </section>
   {% endif %}
 
+  {% if recent | length > 1 %}
   <section class="section">
-    <h2 class="section-title"><span>Find your way in</span></h2>
+    <h2 class="section-title">
+      <span>Recent teachings</span>
+      <a href="{{ url_for('public.library') }}" class="text-surface-300 hover:text-flame-200 normal-case tracking-normal font-medium text-sm transition-colors">View library &rarr;</a>
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
+      {% for t in recent if not latest_is_featured or t.id != featured.id %}
+      {{ teaching_card(t) }}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section">
+    <h2 class="section-title"><span>Navigate the Crucible</span></h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       <a href="{{ url_for('explore.scripture_index') }}" class="card card-hover p-6 flex items-start gap-4">
         <span class="text-flame-400 mt-0.5">{{ icons.icon('book-open', 26) }}</span>
@@ -148,6 +148,46 @@
         </span>
       </a>
     </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title"><span>Find TWC elsewhere</span></h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <a href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener" class="card card-hover p-6 flex items-center gap-5 group">
+        <img src="{{ url_for('static', filename='img/yt-avatar.jpg') }}?v={{ ASSET_V }}"
+             alt="The Wisdom Crucible YouTube channel avatar" width="88" height="88"
+             class="w-20 h-20 sm:w-22 sm:h-22 rounded-full object-cover border border-white/10 shrink-0">
+        <span class="min-w-0">
+          <span class="flex items-center gap-2 font-display text-lg font-semibold text-surface-50 group-hover:text-flame-200 transition-colors">
+            {{ icons.icon('youtube', 20) }} YouTube
+          </span>
+          <span class="block mt-1.5 text-sm text-flame-300 break-all">youtube.com/@TheWisdomCrucible</span>
+          <span class="block mt-1 text-xs text-surface-400 leading-relaxed">Full teachings, shorts, and community posts.</span>
+        </span>
+      </a>
+      <div class="card p-6 flex items-center gap-5">
+        <img src="{{ url_for('static', filename='img/podcast-art.jpg') }}?v={{ ASSET_V }}"
+             alt="The Wisdom Crucible podcast artwork" width="88" height="88"
+             class="w-20 h-20 sm:w-22 sm:h-22 rounded-xl object-cover border border-white/10 shrink-0">
+        <span class="min-w-0">
+          <span class="flex items-center gap-2 font-display text-lg font-semibold text-surface-50">
+            {{ icons.icon('podcast', 20) }} Podcast
+          </span>
+          <span class="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+            {% for name, url in MINISTRY.podcast_platforms %}
+            <a href="{{ url }}" target="_blank" rel="noopener"
+               class="text-flame-300 hover:text-flame-200 underline decoration-flame-500/30 hover:decoration-flame-300 transition-colors">{{ name }}</a>
+            {% endfor %}
+          </span>
+        </span>
+      </div>
+    </div>
+    <p class="mt-4">
+      <a href="{{ MINISTRY.twitter }}" target="_blank" rel="noopener"
+         class="inline-flex items-center gap-2 text-sm text-surface-300 hover:text-flame-200 transition-colors">
+        {{ icons.icon('x-social', 16) }} @WisdomCrucible on X
+      </a>
+    </p>
   </section>
 
 </div>

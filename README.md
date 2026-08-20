@@ -24,6 +24,7 @@ python app.py                         # http://127.0.0.1:5000
 |---|---|
 | New video/short/podcast uploaded | `pip install -r requirements-dev.txt`, then `python scripts/sync_youtube.py` — re-scrapes the channel and re-seeds. Everything (title, description, chapters, scripture refs, notes link, transcript) flows from the upload. |
 | Publish a manuscript | Drop `content/manuscripts/<teaching-slug>.md`, run `python scripts/import_manuscripts.py`. Survives re-syncs. |
+| Self-host study notes | Drop `static/notes/<teaching-slug>.pdf`. The stable URL `/notes/<teaching-slug>` serves it (and is safe to paste into YouTube descriptions — it falls back to the description's external link until the PDF exists). |
 | Add a study resource | Add a row to `RESOURCES` in `scripts/seed_db.py` (or insert a `Resource` row) |
 | Curate topics | Edit `TOPICS` / `TOPIC_MAP` in `scripts/seed_db.py` |
 

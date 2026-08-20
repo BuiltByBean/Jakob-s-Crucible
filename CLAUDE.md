@@ -46,6 +46,15 @@ manuscript, transcript, chapters, scripture refs, and topics all hang off one
   hand-maintain what his uploads already say. Manuscripts are the exception:
   drop markdown into `content/manuscripts/<slug>.md` and run
   `scripts/import_manuscripts.py`.
+- Podcast buttons ALWAYS link Spotify (`PODCAST_URL`) — Spotify is the podcast
+  source of truth, never the YouTube podcast playlists (owner's rule).
+- Study notes self-host at `static/notes/<slug>.pdf`; `/notes/<slug>` is the
+  stable URL (falls back to the description's external link) — safe to paste
+  into YouTube descriptions.
+- The auto transcript is INDEXED for search but never displayed — the
+  Manuscript (Jakob's own script) is the readable form.
+- Explore-Scripture lights a book only when it is the PRIMARY passage of a
+  full teaching; passing citations don't count as "opened".
 
 ## UI rules (hard)
 

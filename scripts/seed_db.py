@@ -67,17 +67,20 @@ TOPIC_MAP = {
 }
 
 # Study Resources page seed — only recommendations the owner has actually named.
+# (The Gospel Coalition was removed 2026-08 at the owner's request.)
 RESOURCES = [
     ("Bible Software & Digital Tools", 1, [
-        ("Logos Bible Software", "https://www.logos.com/",
-         "Deep-study platform for original languages, cross-references, and a serious digital library."),
+        ("Logos Bible Software", "https://www.logos.com/get-started",
+         "Deep-study platform offering a free version, multiple translations, original language, "
+         "cross-references, and a substantial digital library with a subscription or one-time purchases."),
         ("STEP Bible", "https://www.stepbible.org/",
          "Free web-based study tool from Tyndale House, Cambridge — excellent for comparing "
-         "translations and digging into Greek and Hebrew."),
-    ]),
-    ("Trusted Teaching & Articles", 2, [
-        ("The Gospel Coalition", "https://www.thegospelcoalition.org/",
-         "Articles, essays, and resources from a broad group of confessional evangelical writers."),
+         "translations and digging into the original Greek and Hebrew."),
+        ("Blue Letter Bible (BLB)", "https://www.blueletterbible.org/",
+         "A free, Scripture-centered study platform offering multiple Bible translations alongside "
+         "Hebrew and Greek interlinears, lexicons, concordances, cross-references, dictionaries, "
+         "commentaries, and advanced search tools. Particularly useful for quickly examining "
+         "original-language terms and tracing their usage throughout Scripture."),
     ]),
 ]
 

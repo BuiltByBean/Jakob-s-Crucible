@@ -162,7 +162,9 @@ def create_app(config_cls=Config) -> Flask:
                 "email": app.config["MINISTRY_EMAIL"],
                 "phone": app.config["MINISTRY_PHONE"],
                 "youtube": app.config["YOUTUBE_URL"],
+                "youtube_community": app.config["YOUTUBE_COMMUNITY_URL"],
                 "podcast": app.config["PODCAST_URL"],
+                "podcast_platforms": app.config["PODCAST_PLATFORMS"],
                 "twitter": app.config["TWITTER_URL"],
             },
         }

@@ -97,7 +97,7 @@
                     data-video-open="{{ group.teaching.youtube_id }}"
                     data-video-title="{{ group.teaching.title }} — from {{ hit.timestamp }}"
                     data-video-page="{{ url_for('public.teaching_detail', slug=group.teaching.slug) }}"
-                    data-video-start="{{ hit.start_seconds }}"
+                    data-video-start="{{ [hit.start_seconds - 4, 0] | max }}"{# start a beat early so the phrase isn't clipped #}
                     class="w-full flex items-start gap-4 px-5 py-3 text-left hover:bg-white/5 transition-colors group/hit">
               <span class="inline-flex items-center gap-1.5 text-xs font-semibold tabular-nums text-flame-300 shrink-0 pt-0.5">
                 {{ icons.icon('play', 13) }} t={{ hit.timestamp }}

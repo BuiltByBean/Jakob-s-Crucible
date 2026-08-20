@@ -104,6 +104,16 @@ def run() -> int:
     # non-vacuous marker that timestamped spoken-word results rendered.
     check("transcript search shows timestamped hits", b"data-video-start" in r.data and b"<mark>" in r.data)
 
+    print("\n-- notes download route")
+    with app.app_context():
+        with_notes = Teaching.query.filter(Teaching.notes_url != "").first()
+        notes_slug = with_notes.slug if with_notes else None
+    if notes_slug:
+        r = client.get(f"/notes/{notes_slug}")
+        check("notes route redirects to external notes", r.status_code == 302, f"-> {r.status_code}")
+    r = client.get("/notes/not-a-real-slug")
+    check("notes route 404s on unknown slug", r.status_code == 404, f"-> {r.status_code}")
+
     print("\n-- 404s")
     for path in ("/teachings/not-a-real-slug", "/series/nope", "/topics/nope", "/scripture/nope"):
         r = client.get(path)

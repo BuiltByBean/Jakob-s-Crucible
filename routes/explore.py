@@ -13,10 +13,14 @@ bp = Blueprint("explore", __name__)
 @bp.route("/scripture")
 def scripture_index():
     """Bible -> testament -> canon division -> book, rendered as a library of
-    shelves. Books the library touches are lit; the rest stay visible but
+    shelves. A book is lit only when it is the PRIMARY passage of at least one
+    full teaching (owner's rule: passing citations don't count as 'opened'),
+    and the badge counts only those teachings. The rest stay visible but
     dimmed (honest counts, no 'coming soon')."""
     counts = dict(
         db.session.query(ScriptureRef.book_id, db.func.count(db.func.distinct(ScriptureRef.teaching_id)))
+        .join(Teaching, Teaching.id == ScriptureRef.teaching_id)
+        .filter(ScriptureRef.is_primary.is_(True), Teaching.kind != "short")
         .group_by(ScriptureRef.book_id)
         .all()
     )

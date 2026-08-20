@@ -133,12 +133,12 @@
 
   <footer class="border-t border-white/5 bg-surface-900/50 mt-16">
     <div class="max-w-6xl mx-auto px-4 lg:px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10">
-      <div>
-        <div class="flex items-center gap-3 mb-3">
-          <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}" alt="" width="24" height="35" class="h-9 w-auto">
-          <span class="font-display font-semibold text-surface-50">The Wisdom Crucible</span>
-        </div>
-        <p class="text-sm text-surface-300 leading-relaxed max-w-xs">{{ MINISTRY.tagline }}</p>
+      {# The ministry seal sits here like an impressed wax seal closing the
+         page — Jakob uses it to open every major episode. #}
+      <div class="flex items-center justify-center md:justify-start">
+        <img src="{{ url_for('static', filename='img/twc-seal.png') }}?v={{ ASSET_V }}"
+             alt="The seal of The Wisdom Crucible — a crucible aflame on an open book, ringed by thorns"
+             width="230" height="209" class="w-52 sm:w-56 h-auto drop-shadow-[0_0_24px_rgba(212,175,55,0.12)]">
       </div>
       <div>
         <p class="section-title !mb-3 !min-h-0">Explore</p>
@@ -154,7 +154,7 @@
         <p class="section-title !mb-3 !min-h-0">Connect</p>
         <ul class="space-y-2 text-sm">
           <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener">{{ icons.icon('youtube', 17) }} YouTube</a></li>
-          <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener">{{ icons.icon('podcast', 17) }} Podcast</a></li>
+          <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="{{ MINISTRY.podcast }}" target="_blank" rel="noopener">{{ icons.icon('podcast', 17) }} Podcast on Spotify</a></li>
           <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="{{ MINISTRY.twitter }}" target="_blank" rel="noopener">{{ icons.icon('x-social', 15) }} X (Twitter)</a></li>
           <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="mailto:{{ MINISTRY.email }}">{{ icons.icon('mail', 17) }} {{ MINISTRY.email }}</a></li>
           <li><a class="inline-flex items-center gap-2 text-surface-300 hover:text-flame-200 transition-colors" href="tel:{{ MINISTRY.phone | replace('-', '') }}">{{ icons.icon('phone', 17) }} {{ MINISTRY.phone }}</a></li>

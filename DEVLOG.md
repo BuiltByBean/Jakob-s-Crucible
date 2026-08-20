@@ -2,6 +2,24 @@
 
 User-facing change history, newest first.
 
+## 2026-08-18 — Jakob's launch-review revisions
+
+Official brand assets land: the real crucible mark in the header and hero,
+the gold ministry seal closing the footer like an impressed wax seal, and
+Jakob's genuine portrait on About with his own new bio and the revised
+ministry description. Every podcast button now points at Spotify (the
+podcast's home), and Home gains a "Find TWC elsewhere" section — YouTube
+card with the channel avatar and spelled-out address, podcast card with
+artwork and all four platforms, and the X handle. Explore Scripture now
+lights a book only when it's the primary passage of a full teaching (with
+counts to match), book pages say "expounding" / "referencing" with the
+reference list collapsible, and the series rail on episode pages numbers
+chronologically. Episode buttons read Watch on YouTube / Listen on Spotify /
+Download Notes, with notes now hostable on the site at stable /notes/<slug>
+URLs. The auto transcript is hidden (still searchable) in favor of
+manuscripts. Resources drop TGC, revise Logos/STEP, and add Blue Letter
+Bible. Assorted copy revisions across Library, Resources, and Contact.
+
 ## 2026-08-18 — Scripture library redesign + self-hosted thumbnails
 
 Explore Scripture is now a library: canon divisions (The Law, History, Poetry

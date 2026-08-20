@@ -134,6 +134,14 @@ class Teaching(db.Model):
     def has_transcript(self) -> bool:
         return self.transcript_segments.limit(1).count() > 0
 
+    @property
+    def has_notes(self) -> bool:
+        """Notes exist self-hosted (static/notes/<slug>.pdf) or as an external
+        link scraped from the video description."""
+        from config import BASE_DIR
+
+        return bool(self.notes_url) or (BASE_DIR / "static" / "notes" / f"{self.slug}.pdf").is_file()
+
 
 class Chapter(db.Model):
     """Video chapter (timestamp) from the YouTube description."""

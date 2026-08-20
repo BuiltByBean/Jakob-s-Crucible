@@ -25,10 +25,9 @@
         {{ icons.icon('youtube', 18) }} Watch on YouTube
       </a>
       {% endif %}
-      {% if series.podcast_playlist_id %}
-      <a class="btn-ghost" target="_blank" rel="noopener"
-         href="https://www.youtube.com/playlist?list={{ series.podcast_playlist_id }}">
-        {{ icons.icon('podcast', 18) }} Listen as podcast
+      {% if series.kind != 'shorts' %}
+      <a class="btn-ghost" target="_blank" rel="noopener" href="{{ MINISTRY.podcast }}">
+        {{ icons.icon('podcast', 18) }} Listen on Spotify
       </a>
       {% endif %}
     </div>

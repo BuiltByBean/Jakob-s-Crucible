@@ -31,7 +31,7 @@
       {% endif %}
     </h2>
     <p class="text-xs text-surface-400 mb-4">
-      Bright chapters are a teaching's primary passage; dimmer highlights are referenced in passing.
+      Bright chapters hold a teaching's primary passage; dimmer chapters appear as supporting passages.
     </p>
     <div class="flex flex-wrap gap-1.5">
       {% for ch in range(1, book.chapters + 1) %}
@@ -54,7 +54,7 @@
   {% if primary %}
   <section class="section">
     <h2 class="section-title">
-      <span>{{ 'Teachings on ' + book.name + ' ' + selected_chapter | string if selected_chapter else 'Teachings expounding ' + book.name }}</span>
+      <span>Teachings expounding {{ book.name }}{{ ' ' + selected_chapter | string if selected_chapter }}</span>
     </h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
       {% for t, ref in primary %}
@@ -65,9 +65,18 @@
   {% endif %}
 
   {% if secondary %}
-  <section class="section">
-    <h2 class="section-title"><span>Teachings that reference {{ book.name }}{{ ' ' + selected_chapter | string if selected_chapter }}</span></h2>
-    <div class="card divide-y divide-white/5 max-w-3xl">
+  {# Collapsible: heavily-cited books (Romans, the Gospels) will accumulate
+     large reference lists — auto-collapse past six rows. #}
+  <section class="section" x-data="{ open: {{ 'true' if secondary | length <= 6 else 'false' }} }">
+    <h2 class="section-title">
+      <span>Teachings referencing {{ book.name }}{{ ' ' + selected_chapter | string if selected_chapter }}</span>
+      <button type="button" class="inline-flex items-center gap-1.5 text-surface-400 hover:text-flame-200 normal-case tracking-normal font-medium text-sm transition-colors"
+              @click="open = !open" :aria-expanded="open">
+        <span x-text="open ? 'Collapse' : 'Show {{ secondary | length }}'">{{ 'Collapse' if secondary | length <= 6 else 'Show ' + secondary | length | string }}</span>
+        <span :class="open ? 'rotate-180' : ''" class="transition-transform">{{ icons.icon('chevron-down', 16) }}</span>
+      </button>
+    </h2>
+    <div x-show="open" x-collapse class="card divide-y divide-white/5 max-w-3xl">
       {% for t, ref in secondary %}
       <a href="{{ url_for('public.teaching_detail', slug=t.slug) }}"
          class="flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition-colors group">

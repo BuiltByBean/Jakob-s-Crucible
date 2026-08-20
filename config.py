@@ -85,5 +85,15 @@ class Config:
     MINISTRY_EMAIL = "thewisdomcrucible@gmail.com"
     MINISTRY_PHONE = "254-242-1486"
     YOUTUBE_URL = "https://www.youtube.com/@TheWisdomCrucible"
-    PODCAST_URL = "https://www.youtube.com/playlist?list=PLBAJ0RIFzc-9-xeVEBgu8yFGoIik2Ehgw"
+    YOUTUBE_COMMUNITY_URL = "https://www.youtube.com/@TheWisdomCrucible/community"
+    # Spotify is the podcast's source of truth — every podcast button on the
+    # site points here (owner's rule: someone clicking a podcast button is
+    # deliberately looking for something other than YouTube).
+    PODCAST_URL = "https://open.spotify.com/show/5FKIF6sWeLLaXOhHG6k9BL"
+    PODCAST_PLATFORMS = [
+        ("Spotify", "https://open.spotify.com/show/5FKIF6sWeLLaXOhHG6k9BL"),
+        ("iHeart Radio", "https://www.iheart.com/podcast/269-the-wisdom-crucible-with-j-302846080"),
+        ("Amazon Music", "https://music.amazon.com/podcasts/04784b2a-2059-4aaa-9a12-5c4ddbb0482c/the-wisdom-crucible-with-jakob-mcclain"),
+        ("Apple Podcasts", "https://podcasts.apple.com/us/podcast/the-wisdom-crucible-with-jakob-mcclain/id1848749337"),
+    ]
     TWITTER_URL = "https://x.com/WisdomCrucible"

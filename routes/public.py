@@ -129,25 +129,63 @@ def library():
 @bp.route("/series/<slug>")
 def series_detail(slug):
     series = Series.query.filter_by(slug=slug).first_or_404()
+    # Chronological: part 1 before part 2 (playlist order lists newest first).
     teachings = (
-        Teaching.query.filter_by(series_id=series.id).order_by(Teaching.sort_order).all()
+        Teaching.query.filter_by(series_id=series.id)
+        .order_by(Teaching.published_at.asc())
+        .all()
     )
     return render_template("series.html", series=series, teachings=teachings)
 
 
+@bp.route("/notes/<slug>")
+def notes_download(slug):
+    """Stable notes URL for episode pages AND YouTube descriptions.
+
+    Serves the self-hosted PDF (drop it at static/notes/<slug>.pdf) when it
+    exists; falls back to the external link scraped from the description, so
+    the URL can go in a YouTube description today and silently upgrade to
+    self-hosting later."""
+    from flask import send_from_directory
+
+    from config import BASE_DIR
+
+    teaching = Teaching.query.filter_by(slug=slug).first_or_404()
+    notes_dir = BASE_DIR / "static" / "notes"
+    filename = f"{slug}.pdf"
+    if (notes_dir / filename).is_file():
+        return send_from_directory(
+            notes_dir, filename, as_attachment=True,
+            download_name=f"{teaching.title} - Study Notes.pdf", conditional=True,
+        )
+    if teaching.notes_url:
+        return redirect(teaching.notes_url)
+    abort(404)
+
+
 @bp.route("/teachings/<slug>")
 def teaching_detail(slug):
+    from datetime import datetime
+
     teaching = Teaching.query.filter_by(slug=slug).first_or_404()
     sections = split_description(teaching.description or "")
 
     related = _related_teachings(teaching)
-    transcript = teaching.transcript_segments.all()
+    # The series rail numbers episodes chronologically (playlist order lists
+    # newest first, which read as reversed numbering).
+    series_episodes = []
+    if teaching.series:
+        series_episodes = sorted(
+            teaching.series.teachings, key=lambda t: t.published_at or datetime.min
+        )
+    # The auto-generated transcript stays INDEXED for search but is no longer
+    # displayed — the manuscript (Jakob's own script) is the readable form.
     return render_template(
         "teaching.html",
         teaching=teaching,
         sections=sections,
         related=related,
-        transcript=transcript,
+        series_episodes=series_episodes,
     )
 
 
