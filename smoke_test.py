@@ -105,12 +105,20 @@ def run() -> int:
     check("transcript search shows timestamped hits", b"data-video-start" in r.data and b"<mark>" in r.data)
 
     print("\n-- notes download route")
+    from config import BASE_DIR as _base
+
     with app.app_context():
         with_notes = Teaching.query.filter(Teaching.notes_url != "").first()
         notes_slug = with_notes.slug if with_notes else None
     if notes_slug:
+        local = any((_base / "static" / "notes" / f"{notes_slug}{e}").is_file() for e in (".pdf", ".docx"))
         r = client.get(f"/notes/{notes_slug}")
-        check("notes route redirects to external notes", r.status_code == 302, f"-> {r.status_code}")
+        if local:
+            check("notes route serves self-hosted file",
+                  r.status_code == 200 and "attachment" in r.headers.get("Content-Disposition", ""),
+                  f"-> {r.status_code}")
+        else:
+            check("notes route redirects to external notes", r.status_code == 302, f"-> {r.status_code}")
     r = client.get("/notes/not-a-real-slug")
     check("notes route 404s on unknown slug", r.status_code == 404, f"-> {r.status_code}")
 

@@ -7,6 +7,7 @@ import time
 
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 
+from config import BASE_DIR
 from models import ContactMessage, Resource, Series, Teaching, db
 from services.content import split_description
 from services.mail import send_email_safe
@@ -148,16 +149,14 @@ def notes_download(slug):
     self-hosting later."""
     from flask import send_from_directory
 
-    from config import BASE_DIR
-
     teaching = Teaching.query.filter_by(slug=slug).first_or_404()
     notes_dir = BASE_DIR / "static" / "notes"
-    filename = f"{slug}.pdf"
-    if (notes_dir / filename).is_file():
-        return send_from_directory(
-            notes_dir, filename, as_attachment=True,
-            download_name=f"{teaching.title} - Study Notes.pdf", conditional=True,
-        )
+    for ext in (".pdf", ".docx"):
+        if (notes_dir / f"{slug}{ext}").is_file():
+            return send_from_directory(
+                notes_dir, f"{slug}{ext}", as_attachment=True,
+                download_name=f"{teaching.title} - Study Notes{ext}", conditional=True,
+            )
     if teaching.notes_url:
         return redirect(teaching.notes_url)
     abort(404)
@@ -191,11 +190,14 @@ def teaching_detail(slug):
 
 @bp.route("/statement-of-faith")
 def statement_of_faith():
-    """Stable URL for the doctrinal-foundation episode (linked from home)."""
+    """The easy-to-read Statement of Faith (content/statement_of_faith.md),
+    with a pointer to the full confession-of-faith episode for the long form."""
+    sof_path = BASE_DIR / "content" / "statement_of_faith.md"
+    content = sof_path.read_text(encoding="utf-8") if sof_path.is_file() else ""
+    # The document's own title line would duplicate the page heading.
+    content = re.sub(r"^### Personal Statement of Faith\s*\n", "", content)
     teaching = Teaching.query.filter_by(is_statement_of_faith=True).first()
-    if teaching is None:
-        abort(404)
-    return redirect(url_for("public.teaching_detail", slug=teaching.slug))
+    return render_template("statement_of_faith.html", content=content, teaching=teaching)
 
 
 @bp.route("/resources")

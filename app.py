@@ -130,15 +130,22 @@ def create_app(config_cls=Config) -> Flask:
             block = block.strip()
             if not block:
                 continue
+            lines = block.splitlines()
             if block.startswith("###"):
                 out.append(f"<h3>{_inline_md(block.lstrip('#').strip())}</h3>")
-            elif block.startswith("##"):
-                out.append(f"<h2>{_inline_md(block.lstrip('#').strip())}</h2>")
             elif block.startswith("#"):
                 out.append(f"<h2>{_inline_md(block.lstrip('#').strip())}</h2>")
             elif block.startswith(">"):
-                inner = " ".join(line.lstrip("> ").strip() for line in block.splitlines())
+                inner = " ".join(line.lstrip("> ").strip() for line in lines)
                 out.append(f"<blockquote>{_inline_md(inner)}</blockquote>")
+            elif all(line.startswith("- ") for line in lines):
+                items = "".join(f"<li>{_inline_md(line[2:].strip())}</li>" for line in lines)
+                out.append(f"<ul>{items}</ul>")
+            elif all(re.match(r"\d{1,3}[.)] ", line) for line in lines):
+                items = "".join(
+                    f"<li>{_inline_md(re.sub(r'^\\d{1,3}[.)] ', '', line).strip())}</li>" for line in lines
+                )
+                out.append(f"<ol>{items}</ol>")
             else:
                 out.append(f"<p>{_inline_md(block)}</p>")
         return Markup("\n".join(out))

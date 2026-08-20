@@ -2,6 +2,18 @@
 
 User-facing change history, newest first.
 
+## 2026-08-20 — Statement of Faith page, manuscripts everywhere, gold books
+
+A new Statement of Faith section joins the navigation: the easy-to-read
+confession with the Scriptures behind each conviction, and a pointer to the
+full episode for the long form. All 13 teachings now carry Jakob's own
+manuscript in blog form (converted from his NOTES documents with his spoken
+line-cadence preserved), and 12 of them offer the notes as a self-hosted
+download — the INTRODUCING episode deliberately reads-only. On the Scripture
+shelves, a book whose every chapter has been expounded verse-by-verse now
+wears its title in gold (currently Haggai) — computed from coverage, so
+finishing a book golds it automatically.
+
 ## 2026-08-18 — Jakob's launch-review revisions
 
 Official brand assets land: the real crucible mark in the header and hero,

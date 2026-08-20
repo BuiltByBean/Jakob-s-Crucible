@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_nav = 'statement' %}
+
+{% block title %}Statement of Faith — {{ MINISTRY.name }}{% endblock %}
+{% block meta_description %}The doctrinal foundation of The Wisdom Crucible — what Jakob McClain believes, stated plainly with the Scriptures behind each conviction.{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 lg:px-6 pt-10">
+  <header class="mb-10">
+    <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Statement of Faith</h1>
+    <p class="mt-3 text-surface-300 leading-relaxed">
+      What this ministry believes, stated plainly — each conviction with the
+      Scriptures that carry it. Weigh everything taught here against these texts.
+    </p>
+  </header>
+
+  {% if teaching %}
+  <a href="{{ url_for('public.teaching_detail', slug=teaching.slug) }}"
+     class="card card-hover p-5 mb-10 flex items-center gap-4 group">
+    <img src="{{ teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' }}"
+         alt="" loading="lazy" width="120" height="68" class="w-28 aspect-video object-cover rounded-lg shrink-0">
+    <span class="min-w-0">
+      <span class="block text-xs font-semibold uppercase tracking-wider text-flame-400 mb-1">Want the full treatment?</span>
+      <span class="block font-display text-lg font-semibold text-surface-50 group-hover:text-flame-200 transition-colors leading-snug">
+        {{ teaching.title }}
+      </span>
+      <span class="block mt-1 text-xs text-surface-400">Every article examined at length, with the reasoning behind it — {{ teaching.duration_seconds | duration }}.</span>
+    </span>
+    <span class="ml-auto text-surface-500 group-hover:text-flame-300 transition-colors shrink-0">{{ icons.icon('chevron-right', 18) }}</span>
+  </a>
+  {% endif %}
+
+  <div class="prose-dark sof-prose">
+    {{ content | manuscript_html }}
+  </div>
+</div>
+{% endblock %}

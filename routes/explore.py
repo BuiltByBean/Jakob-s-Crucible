@@ -25,6 +25,28 @@ def scripture_index():
         .all()
     )
     books = {b.id: b for b in ScriptureBook.query.order_by(ScriptureBook.id).all()}
+
+    # Gold books: fully expounded — the primary passages of full teachings
+    # cover EVERY chapter of the book (computed, so completing a book later
+    # golds it with no hand-maintenance). Currently: Haggai.
+    coverage: dict[int, set[int]] = {}
+    primary_refs = (
+        ScriptureRef.query.join(Teaching, Teaching.id == ScriptureRef.teaching_id)
+        .filter(ScriptureRef.is_primary.is_(True), Teaching.kind != "short")
+        .all()
+    )
+    for ref in primary_refs:
+        book = books.get(ref.book_id)
+        if book is None:
+            continue
+        start = ref.chapter_start or 1
+        end = ref.chapter_end or ref.chapter_start or book.chapters
+        coverage.setdefault(ref.book_id, set()).update(range(start, min(end, book.chapters) + 1))
+    fully_expounded = {
+        book_id for book_id, chapters in coverage.items()
+        if len(chapters) >= books[book_id].chapters
+    }
+
     shelves = [
         {"name": name, "testament": testament,
          "books": [books[n] for n in range(start, end + 1) if n in books]}
@@ -42,6 +64,7 @@ def scripture_index():
         "scripture_index.html",
         ot_shelves=ot_shelves, nt_shelves=nt_shelves, counts=counts,
         ot_stats=_stats("OT"), nt_stats=_stats("NT"),
+        fully_expounded=fully_expounded,
     )
 
 

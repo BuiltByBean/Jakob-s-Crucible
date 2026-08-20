@@ -136,11 +136,14 @@ class Teaching(db.Model):
 
     @property
     def has_notes(self) -> bool:
-        """Notes exist self-hosted (static/notes/<slug>.pdf) or as an external
-        link scraped from the video description."""
+        """Notes exist self-hosted (static/notes/<slug>.pdf or .docx) or as an
+        external link scraped from the video description."""
         from config import BASE_DIR
 
-        return bool(self.notes_url) or (BASE_DIR / "static" / "notes" / f"{self.slug}.pdf").is_file()
+        notes_dir = BASE_DIR / "static" / "notes"
+        return bool(self.notes_url) or any(
+            (notes_dir / f"{self.slug}{ext}").is_file() for ext in (".pdf", ".docx")
+        )
 
 
 class Chapter(db.Model):

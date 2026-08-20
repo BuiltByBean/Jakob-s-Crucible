@@ -10,7 +10,7 @@
     reached; dimmed spines wait their turn. Spine height tracks chapter
     count (and never clips a long title); stagger delay --i drives the
     rise-into-place entrance. -#}
-{% macro shelf(division, counts) -%}
+{% macro shelf(division, counts, fully_expounded) -%}
 <div class="shelf">
   <p class="shelf-plaque"><span>{{ division.name }}</span></p>
   <div class="shelf-row">
@@ -22,9 +22,9 @@
     {% set w = 2.7 + ([b.chapters, 150] | min) / 150 * 0.95 %}
     {% if n > 0 %}
     <a href="{{ url_for('explore.scripture_book', slug=b.slug) }}"
-       class="spine spine-lit"
+       class="spine spine-lit{{ ' spine-gold' if b.id in fully_expounded }}"
        style="--spine-h: {{ '%.2f' | format(h) }}rem; --spine-w: {{ '%.2f' | format(w) }}rem; --i: {{ loop.index0 }};"
-       aria-label="{{ b.name }} — {{ n }} teaching{{ 's' if n != 1 }}">
+       aria-label="{{ b.name }} — {{ n }} teaching{{ 's' if n != 1 }}{{ ', fully expounded verse-by-verse' if b.id in fully_expounded }}">
       <span class="spine-label">{{ b.name }}</span>
       <span class="spine-count">{{ n }}</span>
     </a>
@@ -56,6 +56,10 @@
         expounded in a teaching — click to explore
       </span>
       <span class="inline-flex items-center gap-2">
+        <span class="inline-block w-3 h-4 rounded-[2px] border border-amber-300/70 bg-flame-500/25 shadow-[0_0_6px_rgba(212,175,55,0.55)]"></span>
+        <span class="text-amber-200/90">gold title — fully expounded verse-by-verse</span>
+      </span>
+      <span class="inline-flex items-center gap-2">
         <span class="inline-block w-3 h-4 rounded-[2px] border border-white/10 bg-surface-850"></span>
         not yet opened
       </span>
@@ -72,7 +76,7 @@
       <span class="testament-rule testament-rule-end" aria-hidden="true"></span>
     </header>
     {% for division in ot_shelves %}
-    {{ shelf(division, counts) }}
+    {{ shelf(division, counts, fully_expounded) }}
     {% endfor %}
   </section>
 
@@ -86,7 +90,7 @@
       <span class="testament-rule testament-rule-end" aria-hidden="true"></span>
     </header>
     {% for division in nt_shelves %}
-    {{ shelf(division, counts) }}
+    {{ shelf(division, counts, fully_expounded) }}
     {% endfor %}
   </section>
 </div>
