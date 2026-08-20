@@ -10,14 +10,20 @@
   <header class="mb-10">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Statement of Faith</h1>
     <p class="mt-3 text-surface-300 leading-relaxed">
-      What this ministry believes, stated plainly — each conviction with the
-      Scriptures that carry it. Weigh everything taught here against these texts.
+      The primary doctrinal truths this ministry holds firmly, stated plainly —
+      each conviction with the Scriptures that carry it. Weigh everything
+      explained here against not only the proof texts, but also the cohesive
+      narrative of all Scripture.
     </p>
   </header>
 
+  <div class="prose-dark sof-prose">
+    {{ content | manuscript_html }}
+  </div>
+
   {% if teaching %}
   <a href="{{ url_for('public.teaching_detail', slug=teaching.slug) }}"
-     class="card card-hover p-5 mb-10 flex items-center gap-4 group">
+     class="card card-hover p-5 mt-12 flex items-center gap-4 group">
     <img src="{{ teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' }}"
          alt="" loading="lazy" width="120" height="68" class="w-28 aspect-video object-cover rounded-lg shrink-0">
     <span class="min-w-0">
@@ -30,9 +36,5 @@
     <span class="ml-auto text-surface-500 group-hover:text-flame-300 transition-colors shrink-0">{{ icons.icon('chevron-right', 18) }}</span>
   </a>
   {% endif %}
-
-  <div class="prose-dark sof-prose">
-    {{ content | manuscript_html }}
-  </div>
 </div>
 {% endblock %}

@@ -96,7 +96,9 @@
     </a>
     {% endif %}
     {% if teaching.manuscript %}
-    <a class="btn-ghost" href="#manuscript">
+    {# Jumps to the manuscript AND expands it (it collapses by default —
+       some scripts are very long). #}
+    <a class="btn-ghost" href="#manuscript" @click="$dispatch('open-manuscript')">
       {{ icons.icon('document', 18) }} Read the manuscript
     </a>
     {% endif %}
@@ -149,10 +151,24 @@
       {% endif %}
 
       {% if teaching.manuscript %}
-      <section class="section" id="manuscript">
+      <section class="section" id="manuscript" x-data="{ open: false }"
+               @open-manuscript.window="open = true"
+               x-init="if (window.location.hash === '#manuscript') open = true">
         <h2 class="section-title"><span>Manuscript</span></h2>
-        <div class="prose-dark max-w-3xl">
-          {{ teaching.manuscript | manuscript_html }}
+        <div class="card max-w-3xl">
+          <button type="button" class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-white/5 transition-colors"
+                  @click="open = !open" :aria-expanded="open">
+            <span class="inline-flex items-center gap-2.5 text-sm font-medium text-surface-200">
+              {{ icons.icon('document', 18) }}
+              <span x-text="open ? 'Hide the manuscript' : 'Read the manuscript'">Read the manuscript</span>
+            </span>
+            <span :class="open ? 'rotate-180' : ''" class="transition-transform text-surface-400">{{ icons.icon('chevron-down', 18) }}</span>
+          </button>
+          <div x-show="open" x-collapse x-cloak>
+            <div class="prose-dark px-5 sm:px-7 pb-7 pt-2">
+              {{ teaching.manuscript | manuscript_html }}
+            </div>
+          </div>
         </div>
       </section>
       {% endif %}
