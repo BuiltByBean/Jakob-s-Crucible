@@ -2,6 +2,13 @@
 
 User-facing change history, newest first.
 
+## 2026-08-21 — Gradient nav underline
+
+The active nav item now wears a thin blue-to-white flame gradient underline
+hugging its label (style borrowed from BuiltByBean), with full-white text —
+replacing the old pill highlight. Applied to the desktop nav, the search
+icon, and the mobile drawer alike.
+
 ## 2026-08-21 — Series split, shorts cleanup, manuscript search, X card
 
 The Teaching Series now mirror the reorganized channel: Detailed &

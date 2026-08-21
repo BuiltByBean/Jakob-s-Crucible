@@ -58,12 +58,14 @@
         {% for endpoint, key, label in nav_items %}
         <a href="{{ url_for(endpoint) }}"
            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                  {{ 'text-flame-300 bg-flame-500/10' if active_nav == key else 'text-surface-200 hover:text-flame-200 hover:bg-white/5' }}"
-           {% if active_nav == key %}aria-current="page"{% endif %}>{{ label }}</a>
+                  {{ 'text-surface-50' if active_nav == key else 'text-surface-200 hover:text-flame-200 hover:bg-white/5' }}"
+           {% if active_nav == key %}aria-current="page"{% endif %}>
+          {%- if active_nav == key %}<span class="nav-underline">{{ label }}</span>{% else %}{{ label }}{% endif -%}
+        </a>
         {% endfor %}
         <a href="{{ url_for('explore.search') }}" aria-label="Search" title="Search"
-           class="ml-1 p-2.5 rounded-lg transition-colors {{ 'text-flame-300 bg-flame-500/10' if active_nav == 'search' else 'text-surface-200 hover:text-flame-200 hover:bg-white/5' }}">
-          {{ icons.icon('search', 19) }}
+           class="ml-1 p-2.5 rounded-lg transition-colors {{ 'text-surface-50' if active_nav == 'search' else 'text-surface-200 hover:text-flame-200 hover:bg-white/5' }}">
+          {%- if active_nav == 'search' %}<span class="nav-underline">{{ icons.icon('search', 19) }}</span>{% else %}{{ icons.icon('search', 19) }}{% endif -%}
         </a>
       </nav>
 
@@ -95,8 +97,10 @@
       {% for endpoint, key, label in nav_items %}
       <a href="{{ url_for(endpoint) }}" @click="drawer = false"
          class="flex items-center min-h-[44px] px-3 rounded-xl text-[15px] font-medium mb-1 transition-colors
-                {{ 'text-flame-300 bg-flame-500/10' if active_nav == key else 'text-surface-100 hover:bg-white/5' }}"
-         {% if active_nav == key %}aria-current="page"{% endif %}>{{ label }}</a>
+                {{ 'text-surface-50' if active_nav == key else 'text-surface-100 hover:bg-white/5' }}"
+         {% if active_nav == key %}aria-current="page"{% endif %}>
+        {%- if active_nav == key %}<span class="nav-underline">{{ label }}</span>{% else %}{{ label }}{% endif -%}
+      </a>
       {% endfor %}
       <div class="border-t border-white/10 mt-4 pt-4 flex items-center gap-2">
         <a href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube"
