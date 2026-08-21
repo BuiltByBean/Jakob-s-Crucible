@@ -2,6 +2,15 @@
 
 User-facing change history, newest first.
 
+## 2026-08-21 — Home atmosphere: rising blue-white sparks
+
+The home page (only) gains the Vault-of-Ash atmosphere recolored to the
+crucible's blue-white flame: faint sparks rise and wobble across the whole
+viewport, a film-grain texture settles over the canvas, and a soft blue
+glow breathes up from beneath the fold. Sparks pause when the tab is
+hidden and switch off entirely for reduced-motion visitors (the static
+texture stays). Every other page keeps its plain dark canvas.
+
 ## 2026-08-21 — Gradient nav underline
 
 The active nav item now wears a thin blue-to-white flame gradient underline

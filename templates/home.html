@@ -6,6 +6,16 @@
 {% block title %}{{ MINISTRY.name }} — {{ MINISTRY.tagline }}{% endblock %}
 
 {% block content %}
+{# Atmosphere (ported from Vault-of-Ash, recolored blue/white): rising
+   blue-white sparks on a canvas, film grain, and a soft flame vignette.
+   Fixed + z-index -1, so it sits behind everything and — living only in
+   this template — appears on the home page alone. #}
+<div id="crucible-atmosphere" aria-hidden="true">
+  <canvas id="crucible-embers"></canvas>
+  <div class="atmo-grain"></div>
+  <div class="atmo-vignette"></div>
+</div>
+
 <!-- Hero -->
 <section class="relative overflow-hidden">
   <div class="absolute inset-0 pointer-events-none" aria-hidden="true">

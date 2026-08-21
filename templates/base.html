@@ -30,7 +30,11 @@
     {"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/contact"}}]}, "eagerness": "moderate"}]}
   </script>
 </head>
-<body class="min-h-screen flex flex-col bg-surface-950"
+{# Body stays background-transparent ON PURPOSE: the canvas color is painted
+   by the inline style on <html> (anti-flash rule), and an opaque body bg
+   would paint OVER the home page's fixed z-index:-1 atmosphere layers
+   (negative-z children render beneath the body's own background). #}
+<body class="min-h-screen flex flex-col"
       x-data="{ drawer: false }" :class="drawer ? 'overflow-hidden' : ''">
   <a class="skip-link" href="#main">Skip to main content</a>
 

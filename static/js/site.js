@@ -82,6 +82,99 @@
   else init();
 })();
 
+/* ---- Home atmosphere: rising blue-white sparks --------------------------
+ * Ported from Vault-of-Ash site.js (the owner's reference project), physics
+ * intact, recolored from ember orange to the crucible's blue-white flame.
+ * Runs only where the #crucible-embers canvas exists (the home page), sits
+ * behind all content, pauses with the tab, and stays OFF entirely under
+ * prefers-reduced-motion (the static grain + vignette still paint). */
+(function () {
+  var canvas = document.getElementById('crucible-embers');
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!canvas || reducedMotion) return;
+
+  var ctx = canvas.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var particles = [];
+  var running = true;
+  var W = 0, H = 0;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var target = Math.round(Math.min(90, Math.max(34, (W * H) / 26000)));
+    while (particles.length < target) particles.push(spawn(true));
+    particles.length = target;
+  }
+
+  function spawn(anywhere) {
+    var bright = Math.random() < 0.16;
+    return {
+      x: Math.random() * W,
+      y: anywhere ? Math.random() * H : H + 8,
+      r: bright ? 1.6 + Math.random() * 1.3 : 0.6 + Math.random() * 1.1,
+      vy: 0.18 + Math.random() * 0.55,
+      drift: (Math.random() - 0.5) * 0.25,
+      phase: Math.random() * Math.PI * 2,
+      wobble: 0.4 + Math.random() * 0.9,
+      alpha: 0.25 + Math.random() * 0.55,
+      bright: bright,
+      life: 0
+    };
+  }
+
+  var frame = 0;
+
+  function tick() {
+    if (!running) return;
+    frame++;
+    if (frame % 90 === 0 && (window.innerWidth !== W || window.innerHeight !== H)) {
+      resize();
+    }
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.life += 0.016;
+      p.y -= p.vy;
+      p.x += p.drift + Math.sin(p.life * p.wobble + p.phase) * 0.22;
+      var fade = Math.min(1, (H - p.y) / (H * 0.12) + 0.15);
+      var heightFade = Math.max(0, Math.min(1, p.y / (H * 0.55)));
+      var a = p.alpha * fade * (0.25 + heightFade * 0.75);
+      var flicker = 0.75 + 0.25 * Math.sin(p.life * 6 + p.phase);
+      if (p.y < -10 || p.x < -20 || p.x > W + 20) {
+        particles[i] = spawn(false);
+        continue;
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      if (p.bright) {
+        ctx.fillStyle = 'rgba(191, 219, 254, ' + (a * flicker) + ')';
+        ctx.shadowColor = 'rgba(74, 181, 246, 0.9)';
+        ctx.shadowBlur = 9;
+      } else {
+        ctx.fillStyle = 'rgba(122, 176, 230, ' + (a * flicker * 0.8) + ')';
+        ctx.shadowBlur = 0;
+      }
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    var wasRunning = running;
+    running = !document.hidden;
+    if (running && !wasRunning) requestAnimationFrame(tick);
+  });
+
+  window.addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(tick);
+})();
+
 /* ---- Inline episode player ----------------------------------------------
  * The episode page renders a thumbnail facade ([data-inline-player]) that
  * swaps to the iframe on click. Chapter / transcript rows with
