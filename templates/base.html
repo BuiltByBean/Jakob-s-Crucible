@@ -68,7 +68,7 @@
            {% if active_nav == key %}aria-current="page"{% endif %}>{{ label }}</a>
         {% endfor %}
         <a href="{{ url_for('explore.search') }}" aria-label="Search" title="Search"
-           class="nav-link p-2 {{ 'text-surface-50' if active_nav == 'search' else 'text-surface-300 hover:text-surface-50' }}"
+           class="nav-link nav-link-bare p-2 {{ 'text-surface-50' if active_nav == 'search' else 'text-surface-300 hover:text-surface-50' }}"
            {% if active_nav == 'search' %}aria-current="page"{% endif %}>
           {{ icons.icon('search', 19) }}
         </a>

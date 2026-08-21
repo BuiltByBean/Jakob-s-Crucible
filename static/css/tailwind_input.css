@@ -190,6 +190,13 @@
     }
   }
 
+  /* Icon variant (the search glass): keeps the hover lift + brighten of
+     .nav-link but never draws the gradient bar — a bar under a lone icon
+     reads as clutter (owner's call). */
+  .nav-link-bare::after {
+    display: none;
+  }
+
   /* Static variant for the mobile drawer's current page (touch has no hover;
      the source site hides the animated bar on mobile, but the drawer still
      needs a current-page mark). */
