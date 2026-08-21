@@ -7,8 +7,10 @@
 {% block meta_description %}Search the teaching library by title, series, Scripture passage, topic — and the words spoken inside each teaching.{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 lg:px-6 pt-10">
-  <header class="mb-8">
+{# Standard page container (matches Topics/Library/Scripture) so every page
+   starts at the same left edge; results stay 4xl wide as before. #}
+<div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
+  <header class="mb-8 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Search</h1>
     <p class="mt-2 text-surface-300">
       Titles, series, passages, topics — and every word spoken inside the teachings.
@@ -26,6 +28,7 @@
   </form>
 
   {% if results %}
+  <div class="max-w-4xl">
     {% if results.total == 0 %}
     <div class="card p-8 text-center text-surface-400">
       Nothing found for <span class="text-surface-100 font-medium">“{{ q }}”</span>.
@@ -134,6 +137,7 @@
       </div>
     </section>
     {% endif %}
+  </div>
   {% endif %}
 </div>
 {% endblock %}
