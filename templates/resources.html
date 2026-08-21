@@ -6,8 +6,8 @@
 {% block meta_description %}Tools and sources Jakob recommends for serious Bible study.{% endblock %}
 
 {% block content %}
-{# Standard page container (matches Topics/Library/Scripture) so every page
-   starts at the same left edge; sections stay 4xl for their old proportions. #}
+{# Standard page container (matches Topics/Library/Scripture): header blurb
+   capped like Topics', body content spans the full container. #}
 <div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
   <header class="mb-10 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Study Resources</h1>
@@ -19,7 +19,7 @@
   </header>
 
   {% for category, items in categories %}
-  <section class="section max-w-4xl" x-data="{ open: true }">
+  <section class="section" x-data="{ open: true }">
     <h2 class="section-title">
       <span>{{ category }}</span>
       <button type="button" class="text-surface-400 hover:text-flame-200 transition-colors p-1 -m-1"

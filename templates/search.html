@@ -7,8 +7,8 @@
 {% block meta_description %}Search the teaching library by title, series, Scripture passage, topic — and the words spoken inside each teaching.{% endblock %}
 
 {% block content %}
-{# Standard page container (matches Topics/Library/Scripture) so every page
-   starts at the same left edge; results stay 4xl wide as before. #}
+{# Standard page container (matches Topics/Library/Scripture): results span
+   the full container. #}
 <div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
   <header class="mb-8 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Search</h1>
@@ -28,7 +28,7 @@
   </form>
 
   {% if results %}
-  <div class="max-w-4xl">
+  <div>
     {% if results.total == 0 %}
     <div class="card p-8 text-center text-surface-400">
       Nothing found for <span class="text-surface-100 font-medium">“{{ q }}”</span>.
@@ -66,7 +66,8 @@
     {% if results.teachings %}
     <section class="section">
       <h2 class="section-title"><span>Teachings</span></h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 stagger-in">
+      {# Full-width container now — 3-up at lg matches the library's card size. #}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-in">
         {% for t in results.teachings %}
         {{ teaching_card(t) }}
         {% endfor %}

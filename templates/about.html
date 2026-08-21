@@ -6,14 +6,14 @@
 {% block meta_description %}Why the crucible, why the blue-white flame, and who Jakob McClain is — the purpose behind The Wisdom Crucible.{% endblock %}
 
 {% block content %}
-{# Standard page container (matches Topics/Library/Scripture) so every page
-   starts at the same left edge; sections stay 4xl for their old proportions. #}
+{# Standard page container (matches Topics/Library/Scripture): body content
+   spans the full container like every other page. #}
 <div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
   <header class="mb-10">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">About The Wisdom Crucible</h1>
   </header>
 
-  <section class="section max-w-4xl">
+  <section class="section">
     <div class="grid grid-cols-1 md:grid-cols-[8rem_1fr] gap-6 items-start">
       <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}"
            alt="The crucible and blue-white flame" width="96" height="136"
@@ -41,7 +41,7 @@
     </div>
   </section>
 
-  <section class="section max-w-4xl">
+  <section class="section">
     <h2 class="section-title"><span>About Jakob</span></h2>
     <div class="card p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-6 items-start">
       <img src="{{ url_for('static', filename='img/jakob.jpg') }}?v={{ ASSET_V }}"
@@ -72,7 +72,7 @@
     </div>
   </section>
 
-  <section class="section max-w-4xl">
+  <section class="section">
     <h2 class="section-title"><span>Where to begin</span></h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
       <a href="{{ url_for('public.statement_of_faith') }}" class="card card-hover p-6 flex items-start gap-4">
