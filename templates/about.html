@@ -14,11 +14,13 @@
   </header>
 
   <section class="section">
-    <div class="grid grid-cols-1 md:grid-cols-[8rem_1fr] gap-6 items-start">
+    {# Prose sits left, the mark right (owner's call); on mobile the image
+       still stacks on top via order utilities. #}
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_8rem] gap-6 items-start">
       <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}"
            alt="The crucible and blue-white flame" width="96" height="136"
-           class="h-32 w-auto mx-auto md:mx-0 logo-glow-lg">
-      <div class="prose-dark">
+           class="h-32 w-auto mx-auto md:mx-0 md:order-2 logo-glow-lg">
+      <div class="prose-dark md:order-1">
         <p>
           The Wisdom Crucible exists to refine understanding through Scripture — where study leads to
           transformation.
@@ -43,11 +45,11 @@
 
   <section class="section">
     <h2 class="section-title"><span>About Jakob</span></h2>
-    <div class="card p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-[10rem_1fr] gap-6 items-start">
+    <div class="card p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-[1fr_10rem] gap-6 items-start">
       <img src="{{ url_for('static', filename='img/jakob.jpg') }}?v={{ ASSET_V }}"
            alt="Portrait of Jakob McClain" width="160" height="171"
-           class="w-36 sm:w-40 rounded-2xl object-cover border border-white/10 mx-auto sm:mx-0">
-      <div class="prose-dark">
+           class="w-36 sm:w-40 rounded-2xl object-cover border border-white/10 mx-auto sm:mx-0 sm:order-2">
+      <div class="prose-dark sm:order-1">
         <p>
           My name is Jakob McClain, and my primary roles are those of husband, father, physical
           therapist, and Bible study teacher — yet, more than those things, my identity is in Christ! I
