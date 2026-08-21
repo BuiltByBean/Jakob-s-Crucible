@@ -62,7 +62,6 @@
   <section class="section">
     <h2 class="section-title">
       <span>{{ 'Latest teaching' if latest_is_featured else 'Featured teaching' }}</span>
-      <a href="{{ url_for('public.library') }}" class="text-surface-300 hover:text-flame-200 normal-case tracking-normal font-medium text-sm transition-colors">All teachings &rarr;</a>
     </h2>
     {{ teaching_card(featured, size='wide') }}
   </section>
