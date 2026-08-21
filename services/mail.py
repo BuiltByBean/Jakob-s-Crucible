@@ -14,13 +14,18 @@ from flask_mail import Mail, Message
 mail = Mail()
 
 
-def send_email_safe(app, *, subject: str, recipients: list[str], body: str) -> bool:
-    """Queue an email on a daemon thread. Returns whether a send was attempted."""
+def send_email_safe(app, *, subject: str, recipients: list[str], body: str,
+                    reply_to: str | None = None) -> bool:
+    """Queue an email on a daemon thread. Returns whether a send was attempted.
+
+    reply_to: the visitor's address, so a plain Reply in the owner's mail
+    client reaches the visitor (without it, Reply targets the ministry's own
+    authenticated From address). Callers must pass it newline-flattened."""
     if not app.config.get("MAIL_USERNAME"):
         logging.info("Email skipped (MAIL_USERNAME unset): subject=%r to=%s", subject, recipients)
         return False
 
-    msg = Message(subject=subject, recipients=recipients, body=body)
+    msg = Message(subject=subject, recipients=recipients, body=body, reply_to=reply_to or None)
 
     def _send():
         try:

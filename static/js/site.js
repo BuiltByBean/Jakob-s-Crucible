@@ -7,11 +7,12 @@
  * watch — no autoplay policy violation: playback is user-initiated) and
  * removed on close so audio always stops. */
 (function () {
-  var box, frame, titleEl, pageLink, lastFocus = null;
+  var box, shell, frame, titleEl, pageLink, lastFocus = null;
 
   function init() {
     box = document.getElementById('video-lightbox');
     if (!box) return;
+    shell = document.getElementById('video-lightbox-shell');
     frame = document.getElementById('video-lightbox-frame');
     titleEl = document.getElementById('video-lightbox-title');
     pageLink = document.getElementById('video-lightbox-page');
@@ -23,7 +24,8 @@
         open(opener.getAttribute('data-video-open'),
              opener.getAttribute('data-video-title') || '',
              opener.getAttribute('data-video-page') || '',
-             opener.getAttribute('data-video-start') || 0);
+             opener.getAttribute('data-video-start') || 0,
+             opener.getAttribute('data-video-kind') || 'teaching');
         return;
       }
       if (e.target.closest('[data-lightbox-close]')) close();
@@ -42,10 +44,17 @@
     });
   }
 
-  function open(videoId, title, pageUrl, start) {
+  function open(videoId, title, pageUrl, start, kind) {
     lastFocus = document.activeElement;
+    /* Vertical Shorts reshape the overlay to 9:16 (see .lightbox-shell-portrait). */
+    if (shell) shell.classList.toggle('lightbox-shell-portrait', kind === 'short');
     titleEl.textContent = title;
-    if (pageUrl) { pageLink.href = pageUrl; pageLink.hidden = false; }
+    if (pageUrl) {
+      pageLink.href = pageUrl;
+      pageLink.hidden = false;
+      /* Shorts get their own wording — 'Short' capitalised, matching YouTube. */
+      pageLink.textContent = 'View full ' + (kind === 'short' ? 'Short' : 'teaching') + ' page →';
+    }
     else { pageLink.hidden = true; }
     var src = 'https://www.youtube-nocookie.com/embed/' + videoId +
       '?autoplay=1&rel=0' + (start > 0 ? '&start=' + parseInt(start, 10) : '');

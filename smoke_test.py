@@ -55,7 +55,9 @@ def run() -> int:
     print("\n-- seed sanity")
     check("has full teachings", n_teachings >= 10, f"got {n_teachings}")
     check("has shorts", n_shorts >= 10, f"got {n_shorts}")
-    check("has 4 series", len(series) == 4, f"got {len(series)}")
+    # 5 = Verse-by-Verse, Topical, Reflection & Application, QITC, Shorts
+    # (owner split 'Detailed & Verse-by-Verse' into two playlists 2026-08).
+    check("has 5 series", len(series) == 5, f"got {len(series)}")
     check("statement of faith flagged once", sof == 1, f"got {sof}")
 
     print("\n-- static pages")

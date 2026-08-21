@@ -2,6 +2,25 @@
 
 User-facing change history, newest first.
 
+## 2026-08-21 — Series split, shorts cleanup, manuscript search, X card
+
+The Teaching Series now mirror the reorganized channel: Detailed &
+Verse-by-Verse is split into "Verse-by-Verse Bible Studies" (Haggai, Psalm
+110) and "Topical Bible Studies" (What Is Faith?), with Jakob's new
+descriptions here and on Reflection & Application. Search now reports
+phrase hits from inside the manuscripts ("Written in the manuscripts", each
+hit opening that manuscript directly) alongside the spoken-word hits, so a
+phrase is found whether it lives in the captions or Jakob's script. Shorts
+are tidied per Jakob's rules: no topic labels, no YouTube hashtags anywhere
+on the site, related teachings only where a Short's own description links a
+full teaching, and the video overlay under a Short now says "View full
+Short page". Home's Find-TWC-elsewhere X entry is a proper compact card
+with the official X logo; the Navigate the Crucible descriptions are
+Jakob's new wording; the crucible logo carries a slightly stronger
+blue-white edge glow everywhere; the Scripture legend sits on one line on
+desktop. All 19 shorts now have transcripts indexed (YouTube finally
+permitted the last 10).
+
 ## 2026-08-21 — Clickable cards, topic reorganization, fuller Psalm 110 scripts
 
 Episode cards are now fully clickable: anywhere on the text half opens the

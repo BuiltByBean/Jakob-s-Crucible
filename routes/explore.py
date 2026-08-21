@@ -149,6 +149,7 @@ def search():
         topic_matches = Topic.query.filter(Topic.name.ilike(f"%{q}%")).all()
         results = {
             "teachings": search_svc.search_teachings(q),
+            "manuscripts": search_svc.search_manuscripts(q),
             "transcripts": search_svc.search_transcripts(q),
             "scripture": scripture_books,
             "series": series_matches,
@@ -156,6 +157,7 @@ def search():
         }
         results["total"] = (
             len(results["teachings"])
+            + len(results["manuscripts"])
             + sum(len(g["hits"]) for g in results["transcripts"])
             + len(results["scripture"])
             + len(results["series"])

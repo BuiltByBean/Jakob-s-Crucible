@@ -1,5 +1,29 @@
 [
  {
+  "id": "PLB8vfLmB78TQ",
+  "title": "Podcast — Topical Bible Studies",
+  "description": "This playlist features detailed teachings focused on developing a biblical understanding of specific topics.\n\nFor verse-by-verse Bible studies, refer to the \"Verse-by-Verse Bible Studies\" playlist.\n\nFor the more reflective proclamation style, refer to the \"Reflection & Application\" playlist.",
+  "url": "https://www.youtube.com/playlist?list=PLB8vfLmB78TQ",
+  "video_ids": [
+   "k4pHEaDYDOI"
+  ],
+  "video_titles": [
+   "What Is Faith? | The Gift We Are Commanded to Receive"
+  ]
+ },
+ {
+  "id": "PLDgefNRccGMw",
+  "title": "Topical Bible Studies",
+  "description": "This playlist features detailed teachings focused on developing a biblical understanding of specific topics.\n\nFor verse-by-verse Bible studies, refer to the \"Verse-by-Verse Bible Studies\" playlist.\n\nFor the more reflective proclamation style, refer to the \"Reflection & Application\" playlist.",
+  "url": "https://www.youtube.com/playlist?list=PLDgefNRccGMw",
+  "video_ids": [
+   "OD6Jb7sUz8g"
+  ],
+  "video_titles": [
+   "What Is Faith? | The Gift We Are Commanded to Receive"
+  ]
+ },
+ {
   "id": "PLBAJ0RIFzc--TH5YY8zfssBtF1eCT9yfv",
   "title": "Podcast — Questions in the Crucible: Responding to Skeptics",
   "description": "In the crucible, a question from a skeptic earns an answer from a friend. Bring your best questions — those that you haven't yet found answer to — and see if the crucible can refine your skepticism into understanding.",
@@ -47,11 +71,10 @@
  },
  {
   "id": "PLBAJ0RIFzc-8H_Yew6e4b868jfg9roynF",
-  "title": "Podcast — Detailed & Verse-By-Verse",
-  "description": "This playlist features the more analytical and detailed teachings — focused on verse-by-verse exposition and careful reasoning from Scripture.\n\nFor the more reflective proclamation style, refer to the \"Reflection & Application\" playlist.\n\nAll podcast episodes are also gathered in \"The Wisdom Crucible with Jakob McClain\" playlist, listed in chronological order.",
+  "title": "Podcast — Verse-By-Verse Bible Studies",
+  "description": "This playlist features the more detailed teachings focused on verse-by-verse exposition with contextual cross-referencing of related texts.\n\nFor topical Bible studies, refer to the \"Topical Bible Studies\" playlist.\n\nFor the more reflective proclamation style, refer to the \"Reflection & Application\" playlist.",
   "url": "https://www.youtube.com/playlist?list=PLBAJ0RIFzc-8H_Yew6e4b868jfg9roynF",
   "video_ids": [
-   "k4pHEaDYDOI",
    "qZvwWE0XGpE",
    "k4G6llxkmjw",
    "RcxWZ4xc_jc",
@@ -61,7 +84,6 @@
    "JkHLTohTOwQ"
   ],
   "video_titles": [
-   "What Is Faith? | The Gift We Are Commanded to Receive",
    "Reverse of the Curse: The Signet Ring Returns | HAGGAI 2:10–23",
    "The House of God and the Heart of Man | HAGGAI 1:1–2:9",
    "The Order of Melchizedek | PSALM 110 Part 3",
@@ -133,7 +155,18 @@
    "WsM6KTSY8Wk",
    "sv_VaxKYaZU",
    "Vbl0jwQENJc",
-   "mEscaKup-Ks"
+   "mEscaKup-Ks",
+   "moa_k_tVOzs",
+   "TmZ8d28P9-c",
+   "o4h7NTBVSlU",
+   "sKNldyjwizY",
+   "bhoMklPM_OM",
+   "aSiYBMU2EX8",
+   "dpDz8LsgycQ",
+   "OOXhS7H3nY0",
+   "rnCxt_v7cPw",
+   "U0eD_W4ZqsY",
+   "Uhn7zcYZfPk"
   ],
   "video_titles": [
    "Is the Bible a Person of The Trinity?",
@@ -156,16 +189,26 @@
    "What about the superscript?",
    "5 Years Ago, I Didn’t Want to Teach",
    null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
    null
   ]
  },
  {
   "id": "PLBAJ0RIFzc-8-9g1XICAqc3YBLFkgbOOq",
-  "title": "Detailed & Verse-by-Verse",
-  "description": "This playlist features the more analytical and detailed teachings — focused on verse-by-verse exposition and careful reasoning from Scripture.\n\nFor the more reflective proclamation style, refer to the \"Reflection & Application\" playlist.",
+  "title": "Verse-by-Verse Bible Studies",
+  "description": "This playlist features the more detailed teachings focused on verse-by-verse exposition with contextual cross-referencing of related texts.\n\nFor topical Bible studies, refer to the \"Topical Bible Studies\" playlist.\n\nFor the more reflective proclamation style, refer to the \"Reflection & Application\" playlist.",
   "url": "https://www.youtube.com/playlist?list=PLBAJ0RIFzc-8-9g1XICAqc3YBLFkgbOOq",
   "video_ids": [
-   "OD6Jb7sUz8g",
    "mGEcs8slGaI",
    "3ZroXsSgUoY",
    "M4bquqXsiyY",
@@ -173,7 +216,6 @@
    "JkHLTohTOwQ"
   ],
   "video_titles": [
-   "What Is Faith? | The Gift We Are Commanded to Receive",
    "Reverse of the Curse: The Signet Ring Returns | HAGGAI 2:10–23",
    "The House of God and the Heart of Man | HAGGAI 1:1–2:9",
    "The Order of Melchizedek | PSALM 110 Part 3",

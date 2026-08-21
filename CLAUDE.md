@@ -31,9 +31,12 @@ shipped bugs elsewhere; keep them.
 manuscript, transcript, chapters, scripture refs, and topics all hang off one
 `Teaching` row — one page per episode, never parallel per-medium libraries.
 
-- `Series` mirrors the YouTube playlists exactly (the three teaching playlists
-  + Shorts). `Teaching.kind` separates `teaching` from `short`; shorts are
-  available but de-emphasised everywhere.
+- `Series` mirrors the YouTube playlists exactly (the four teaching playlists
+  + Shorts — count lives in `SERIES_ORDER` in scripts/seed_db.py, which is the
+  single place to touch when Jakob reorganises playlists). `Teaching.kind`
+  separates `teaching` from `short`; shorts are available but de-emphasised
+  everywhere. Shorts never take topics, never show hashtags, and get related
+  teachings only from links Jakob writes into the Short's own description.
 - `TranscriptSegment` keeps **timestamped** auto-caption segments per teaching,
   indexed by SQLite FTS5 (`services/search.py`). This is what makes the
   long-term goals — clip search, natural-language search, timestamp deep links —

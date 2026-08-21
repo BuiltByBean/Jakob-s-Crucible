@@ -69512,34 +69512,779 @@
   ]
  },
  "SpSbOn1CBsc": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=SpSbOn1CBsc! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.08,
+    "duration": 4.24,
+    "text": "I remember when Mike Winger talked about"
+   },
+   {
+    "start": 2.08,
+    "duration": 5.36,
+    "text": "dealing with postcoid brain fog, making"
+   },
+   {
+    "start": 4.32,
+    "duration": 5.2,
+    "text": "it difficult to study for his ministry,"
+   },
+   {
+    "start": 7.44,
+    "duration": 4.24,
+    "text": "but he still did excellent work through"
+   },
+   {
+    "start": 9.52,
+    "duration": 4.16,
+    "text": "that season."
+   },
+   {
+    "start": 11.68,
+    "duration": 4.96,
+    "text": "A couple of sick and sleepless nights"
+   },
+   {
+    "start": 13.68,
+    "duration": 5.2,
+    "text": "turned very long writing sessions"
+   },
+   {
+    "start": 16.64,
+    "duration": 4.48,
+    "text": "recently helped me understand feeling"
+   },
+   {
+    "start": 18.88,
+    "duration": 4.64,
+    "text": "like a zombie, but still having"
+   },
+   {
+    "start": 21.12,
+    "duration": 5.2,
+    "text": "spiritual fire sustaining me enough to"
+   },
+   {
+    "start": 23.52,
+    "duration": 7.28,
+    "text": "keep up the work. I've never experienced"
+   },
+   {
+    "start": 26.32,
+    "duration": 7.36,
+    "text": "anything like that except for when"
+   },
+   {
+    "start": 30.8,
+    "duration": 6.28,
+    "text": "obediently studying the word of God to"
+   },
+   {
+    "start": 33.68,
+    "duration": 3.4,
+    "text": "share with others."
+   }
+  ]
  },
  "HmDuPr7HxUE": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=HmDuPr7HxUE! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.16,
+    "duration": 5.6,
+    "text": "I'm back with me Jack in the Crucible"
+   },
+   {
+    "start": 3.28,
+    "duration": 5.28,
+    "text": "and it's hot in here. The Bible does not"
+   },
+   {
+    "start": 5.76,
+    "duration": 5.36,
+    "text": "shy away from hot topics, but it also"
+   },
+   {
+    "start": 8.56,
+    "duration": 5.36,
+    "text": "pours living water out of John 7 into"
+   },
+   {
+    "start": 11.12,
+    "duration": 5.52,
+    "text": "the valley of dry bones in Ezekiel 37"
+   },
+   {
+    "start": 13.92,
+    "duration": 4.56,
+    "text": "through the Holy Spirit. You can handle"
+   },
+   {
+    "start": 16.64,
+    "duration": 3.36,
+    "text": "the heat with the spiritual water now,"
+   },
+   {
+    "start": 18.48,
+    "duration": 4.88,
+    "text": "or you can deal with the heat in a"
+   },
+   {
+    "start": 20.0,
+    "duration": 6.48,
+    "text": "self-imposed drought later. I know what"
+   },
+   {
+    "start": 23.36,
+    "duration": 3.12,
+    "text": "I'm choosing."
+   }
+  ]
  },
  "zQdwujoro0Q": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=zQdwujoro0Q! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.56,
+    "duration": 5.36,
+    "text": "Disney has said repeatedly that you fall"
+   },
+   {
+    "start": 3.12,
+    "duration": 5.44,
+    "text": "in love as though it's a passive and"
+   },
+   {
+    "start": 5.92,
+    "duration": 5.2,
+    "text": "uncontrollable event, which makes it"
+   },
+   {
+    "start": 8.56,
+    "duration": 5.92,
+    "text": "easy to justify divorce when you fall"
+   },
+   {
+    "start": 11.12,
+    "duration": 6.16,
+    "text": "out of love. The Bible teaches that you"
+   },
+   {
+    "start": 14.48,
+    "duration": 5.36,
+    "text": "must choose to love, defining it as an"
+   },
+   {
+    "start": 17.28,
+    "duration": 5.12,
+    "text": "active process, which demands"
+   },
+   {
+    "start": 19.84,
+    "duration": 4.8,
+    "text": "responsibility but offers genuine"
+   },
+   {
+    "start": 22.4,
+    "duration": 4.72,
+    "text": "security. Because if we are trying to"
+   },
+   {
+    "start": 24.64,
+    "duration": 4.56,
+    "text": "love each other like Jesus loves us,"
+   },
+   {
+    "start": 27.12,
+    "duration": 5.12,
+    "text": "then we can recognize that sacrificing"
+   },
+   {
+    "start": 29.2,
+    "duration": 5.6,
+    "text": "our selfishness to choose love for each"
+   },
+   {
+    "start": 32.24,
+    "duration": 5.6,
+    "text": "other is the answer to all of the"
+   },
+   {
+    "start": 34.8,
+    "duration": 9.08,
+    "text": "irreconcilable differences that destroy"
+   },
+   {
+    "start": 37.84,
+    "duration": 6.04,
+    "text": "families every day. Choose love."
+   }
+  ]
  },
  "YkpogwCLMlI": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=YkpogwCLMlI! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.56,
+    "duration": 3.28,
+    "text": "If you have to clarify that something is"
+   },
+   {
+    "start": 2.16,
+    "duration": 4.32,
+    "text": "politically correct, perhaps that's"
+   },
+   {
+    "start": 3.84,
+    "duration": 4.56,
+    "text": "because it's logically incorrect. The"
+   },
+   {
+    "start": 6.48,
+    "duration": 4.8,
+    "text": "purpose of politics is not to dictate"
+   },
+   {
+    "start": 8.4,
+    "duration": 5.04,
+    "text": "truth. It's to use truth to inform laws"
+   },
+   {
+    "start": 11.28,
+    "duration": 5.2,
+    "text": "and governing structures that protect"
+   },
+   {
+    "start": 13.44,
+    "duration": 5.2,
+    "text": "and serve the common good. God is the"
+   },
+   {
+    "start": 16.48,
+    "duration": 5.04,
+    "text": "source of truth. There's no version of"
+   },
+   {
+    "start": 18.64,
+    "duration": 5.2,
+    "text": "truth, moral, logical, or political,"
+   },
+   {
+    "start": 21.52,
+    "duration": 4.88,
+    "text": "that can contradict the word of God."
+   },
+   {
+    "start": 23.84,
+    "duration": 5.12,
+    "text": "Don't speak truth apologetically. Speak"
+   },
+   {
+    "start": 26.4,
+    "duration": 5.36,
+    "text": "it boldly with gentleness and respect."
+   },
+   {
+    "start": 28.96,
+    "duration": 5.04,
+    "text": "according to 1st Peter 3:15 and for love"
+   },
+   {
+    "start": 31.76,
+    "duration": 5.6,
+    "text": "of God and neighbor according to 1"
+   },
+   {
+    "start": 34.0,
+    "duration": 3.36,
+    "text": "Thessalonians chapter"
+   }
+  ]
  },
  "lq-mY9sZ5K4": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=lq-mY9sZ5K4! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.4,
+    "duration": 4.0,
+    "text": "If comfort in my beliefs depends on"
+   },
+   {
+    "start": 2.8,
+    "duration": 3.2,
+    "text": "blindness,"
+   },
+   {
+    "start": 4.4,
+    "duration": 4.24,
+    "text": "will I be willing to face the one who"
+   },
+   {
+    "start": 6.0,
+    "duration": 4.24,
+    "text": "brings the light? Or will I be like"
+   },
+   {
+    "start": 8.64,
+    "duration": 4.0,
+    "text": "those who couldn't give an answer to"
+   },
+   {
+    "start": 10.24,
+    "duration": 6.4,
+    "text": "Jesus when he challenged them and their"
+   },
+   {
+    "start": 12.64,
+    "duration": 6.72,
+    "text": "established beliefs and traditions?"
+   },
+   {
+    "start": 16.64,
+    "duration": 4.72,
+    "text": "If you're not sure about that,"
+   },
+   {
+    "start": 19.36,
+    "duration": 4.32,
+    "text": "you might want to sort that out before"
+   },
+   {
+    "start": 21.36,
+    "duration": 5.12,
+    "text": "you're called to give testimony for the"
+   },
+   {
+    "start": 23.68,
+    "duration": 5.68,
+    "text": "choices you made in this life."
+   },
+   {
+    "start": 26.48,
+    "duration": 2.88,
+    "text": "Just a thought."
+   }
+  ]
  },
  "ojI5U_s7RqY": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=ojI5U_s7RqY! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.88,
+    "duration": 4.08,
+    "text": "Did you remember to dawn the full armor"
+   },
+   {
+    "start": 2.64,
+    "duration": 4.48,
+    "text": "of God today?"
+   },
+   {
+    "start": 4.96,
+    "duration": 4.8,
+    "text": "Did you put on your boots of readiness"
+   },
+   {
+    "start": 7.12,
+    "duration": 4.48,
+    "text": "for the gospel of peace?"
+   },
+   {
+    "start": 9.76,
+    "duration": 3.92,
+    "text": "Did you get your belt of truth, your"
+   },
+   {
+    "start": 11.6,
+    "duration": 4.8,
+    "text": "breastplate of righteousness, your"
+   },
+   {
+    "start": 13.68,
+    "duration": 4.16,
+    "text": "helmet of salvation?"
+   },
+   {
+    "start": 16.4,
+    "duration": 2.96,
+    "text": "Did you equip yourself with the shield"
+   },
+   {
+    "start": 17.84,
+    "duration": 5.2,
+    "text": "of faith and the sword of the spirit"
+   },
+   {
+    "start": 19.36,
+    "duration": 5.92,
+    "text": "that is God's word? If not, if you left"
+   },
+   {
+    "start": 23.04,
+    "duration": 5.2,
+    "text": "all those at home or if you forgot even"
+   },
+   {
+    "start": 25.28,
+    "duration": 7.12,
+    "text": "just one piece, I would highly encourage"
+   },
+   {
+    "start": 28.24,
+    "duration": 6.08,
+    "text": "you to stop and go rectify that right"
+   },
+   {
+    "start": 32.4,
+    "duration": 5.68,
+    "text": "now."
+   },
+   {
+    "start": 34.32,
+    "duration": 6.08,
+    "text": "Don't go out into spiritual warfare that"
+   },
+   {
+    "start": 38.08,
+    "duration": 5.76,
+    "text": "is our everyday life without the whole"
+   },
+   {
+    "start": 40.4,
+    "duration": 7.84,
+    "text": "armor of God, lest the enemy find you"
+   },
+   {
+    "start": 43.84,
+    "duration": 4.4,
+    "text": "unprepared and exposed."
+   }
+  ]
  },
  "5vn7Ip6Z60w": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=5vn7Ip6Z60w! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.72,
+    "duration": 4.8,
+    "text": "So, I'm back with MJ Jack, my skeleton"
+   },
+   {
+    "start": 3.12,
+    "duration": 5.04,
+    "text": "over there. We're just pondering how do"
+   },
+   {
+    "start": 5.52,
+    "duration": 6.8,
+    "text": "we think about responsibilities?"
+   },
+   {
+    "start": 8.16,
+    "duration": 5.68,
+    "text": "Do we use tiered lists?"
+   },
+   {
+    "start": 12.32,
+    "duration": 5.36,
+    "text": "Mom,"
+   },
+   {
+    "start": 13.84,
+    "duration": 5.68,
+    "text": "siblings, friends, co-workers, or do we"
+   },
+   {
+    "start": 17.68,
+    "duration": 4.72,
+    "text": "put God first and let everything else"
+   },
+   {
+    "start": 19.52,
+    "duration": 4.8,
+    "text": "fall into place after that?"
+   },
+   {
+    "start": 22.4,
+    "duration": 5.36,
+    "text": "I think the clearest picture of truth is"
+   },
+   {
+    "start": 24.32,
+    "duration": 6.48,
+    "text": "in marrying the two ideas and"
+   },
+   {
+    "start": 27.76,
+    "duration": 5.84,
+    "text": "understanding that there's a certain"
+   },
+   {
+    "start": 30.8,
+    "duration": 7.12,
+    "text": "order of priorities that can be helpful"
+   },
+   {
+    "start": 33.6,
+    "duration": 7.84,
+    "text": "to remember in in daily living."
+   },
+   {
+    "start": 37.92,
+    "duration": 6.64,
+    "text": "But man is there powerful truth and just"
+   },
+   {
+    "start": 41.44,
+    "duration": 4.56,
+    "text": "knowing that if you put God first, the"
+   },
+   {
+    "start": 44.56,
+    "duration": 4.24,
+    "text": "effects of your relationship with him"
+   },
+   {
+    "start": 46.0,
+    "duration": 5.52,
+    "text": "will ripple out into your relationships"
+   },
+   {
+    "start": 48.8,
+    "duration": 5.2,
+    "text": "with everyone else. And it sure is"
+   },
+   {
+    "start": 51.52,
+    "duration": 5.36,
+    "text": "awesome to watch everything else fall"
+   },
+   {
+    "start": 54.0,
+    "duration": 2.88,
+    "text": "into place."
+   }
+  ]
  },
  "bb65k6s86oE": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=bb65k6s86oE! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.88,
+    "duration": 5.12,
+    "text": "Clever apologetics, careful verse by"
+   },
+   {
+    "start": 3.36,
+    "duration": 5.04,
+    "text": "verse, motivational preaching. What do"
+   },
+   {
+    "start": 6.0,
+    "duration": 3.92,
+    "text": "you look for online in a church, in a"
+   },
+   {
+    "start": 8.4,
+    "duration": 3.2,
+    "text": "pastor,"
+   },
+   {
+    "start": 9.92,
+    "duration": 2.96,
+    "text": "I think all those things are great. I"
+   },
+   {
+    "start": 11.6,
+    "duration": 2.96,
+    "text": "think a lot of people start with the"
+   },
+   {
+    "start": 12.88,
+    "duration": 3.84,
+    "text": "motivational stuff, that's what gets"
+   },
+   {
+    "start": 14.56,
+    "duration": 5.04,
+    "text": "them excited. Then they want to know how"
+   },
+   {
+    "start": 16.72,
+    "duration": 5.68,
+    "text": "to do verse byvere studies. But let me"
+   },
+   {
+    "start": 19.6,
+    "duration": 4.8,
+    "text": "also say, if we stop there and we don't"
+   },
+   {
+    "start": 22.4,
+    "duration": 4.96,
+    "text": "ever move on to ask ourselves and others"
+   },
+   {
+    "start": 24.4,
+    "duration": 4.72,
+    "text": "hard questions and practice learning how"
+   },
+   {
+    "start": 27.36,
+    "duration": 4.72,
+    "text": "to answer those questions, think"
+   },
+   {
+    "start": 29.12,
+    "duration": 4.88,
+    "text": "biblically about everything all the"
+   },
+   {
+    "start": 32.08,
+    "duration": 3.92,
+    "text": "time, then I don't think we're being"
+   },
+   {
+    "start": 34.0,
+    "duration": 4.64,
+    "text": "obedient to First Peter 3:15, which"
+   },
+   {
+    "start": 36.0,
+    "duration": 6.24,
+    "text": "tells us that we need to be prepared to"
+   },
+   {
+    "start": 38.64,
+    "duration": 3.6,
+    "text": "give a defense for the hope that is in"
+   }
+  ]
  },
  "WsM6KTSY8Wk": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=WsM6KTSY8Wk! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.24,
+    "duration": 6.4,
+    "text": "of David, a psalm, a psalm of David, a"
+   },
+   {
+    "start": 3.92,
+    "duration": 4.96,
+    "text": "psalm about David. Your inter"
+   },
+   {
+    "start": 6.64,
+    "duration": 5.36,
+    "text": "interpretation of that superscript"
+   },
+   {
+    "start": 8.88,
+    "duration": 6.16,
+    "text": "before Psalm 110 will either lead you to"
+   },
+   {
+    "start": 12.0,
+    "duration": 6.24,
+    "text": "Jesus in the verses that follow or to"
+   },
+   {
+    "start": 15.04,
+    "duration": 7.84,
+    "text": "blindness to the judge and savior right"
+   },
+   {
+    "start": 18.24,
+    "duration": 4.64,
+    "text": "in front of you. Which will you choose?"
+   }
+  ]
  },
  "sv_VaxKYaZU": {
-  "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=sv_VaxKYaZU! This is most likely caused by:\n\nYouTube is blocking requests from your IP. This usually is due to one of the following reasons:\n- You have done too many requests and your IP has been blocked by YouTube\n- You are doing requests from an IP belonging to a cloud provider (like AWS, Google Cloud Platform, Azure, etc.). Unfortunately, most IPs from cloud providers are blocked by YouTube.\n\nWays to work around this are explained in the \"Working around IP bans\" section of the README (https://github.com/jdepoix/youtube-transcript-api?tab=readme-ov-file#working-around-ip-bans-requestblocked-or-ipblocked-exception).\n\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"
+  "language": "en",
+  "is_generated": true,
+  "segments": [
+   {
+    "start": 0.8,
+    "duration": 3.52,
+    "text": "Are you interested in public speaking or"
+   },
+   {
+    "start": 2.72,
+    "duration": 3.52,
+    "text": "teaching?"
+   },
+   {
+    "start": 4.32,
+    "duration": 4.4,
+    "text": "If you'd asked me five years ago, I"
+   },
+   {
+    "start": 6.24,
+    "duration": 5.28,
+    "text": "would have said no. Uh, not even a"
+   },
+   {
+    "start": 8.72,
+    "duration": 4.72,
+    "text": "little bit. There's probably no one out"
+   },
+   {
+    "start": 11.52,
+    "duration": 4.64,
+    "text": "there who's less interested in the sound"
+   },
+   {
+    "start": 13.44,
+    "duration": 4.16,
+    "text": "of my voice than me."
+   },
+   {
+    "start": 16.16,
+    "duration": 2.72,
+    "text": "But one day, I stopped listening to the"
+   },
+   {
+    "start": 17.6,
+    "duration": 4.0,
+    "text": "sound of my voice and started listening"
+   },
+   {
+    "start": 18.88,
+    "duration": 6.48,
+    "text": "to the Holy Spirit. And now, I just keep"
+   },
+   {
+    "start": 21.6,
+    "duration": 6.56,
+    "text": "finding myself speaking and teaching"
+   },
+   {
+    "start": 25.36,
+    "duration": 5.92,
+    "text": "about the word of God and the good news"
+   },
+   {
+    "start": 28.16,
+    "duration": 6.48,
+    "text": "of the gospel."
+   },
+   {
+    "start": 31.28,
+    "duration": 3.36,
+    "text": "What's the Holy Spirit telling you to"
+   }
+  ]
  },
  "PLBAJ0RIFzc-9-xeVEBgu8yFGoIik2Ehgw": {
   "error": "\nCould not retrieve a transcript for the video https://www.youtube.com/watch?v=PLBAJ0RIFzc-9-xeVEBgu8yFGoIik2Ehgw! This is most likely caused by:\n\nThe video is no longer available\n\nIf you are sure that the described cause is not responsible for this error and that a transcript should be retrievable, please create an issue at https://github.com/jdepoix/youtube-transcript-api/issues. Please add which version of youtube_transcript_api you are using and provide the information needed to replicate the error. Also make sure that there are no open issues which already describe your problem!"

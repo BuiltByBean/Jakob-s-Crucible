@@ -21,6 +21,22 @@ from models import Teaching, db
 
 _MAX_TERMS = 12
 
+# Markdown line prefixes: headings, blockquote markers, list markers.
+_MD_PREFIX_RE = re.compile(r"^(?:#{1,6}\s+|>\s?|[-*+]\s+|\d{1,3}[.)]\s+)", re.MULTILINE)
+
+
+def _manuscript_plain(text: str) -> str:
+    """Manuscript markdown -> plain prose for the FTS index. snippet() quotes
+    the indexed text verbatim, so raw '###'/'*' tokens would show in search
+    results (the episode page renders through |manuscript_html instead).
+    Only markup is removed — every word survives, so matching is unchanged."""
+    if not text:
+        return ""
+    out = _MD_PREFIX_RE.sub("", text)
+    out = re.sub(r"\*{1,3}([^*\n]+?)\*{1,3}", r"\1", out)  # *emphasis* / **bold**
+    out = re.sub(r"_{2,3}([^_\n]+?)_{2,3}", r"\1", out)
+    return re.sub(r"[ \t]{2,}", " ", out)
+
 
 def _is_sqlite() -> bool:
     return db.engine.dialect.name == "sqlite"
@@ -64,7 +80,7 @@ def rebuild_index() -> bool:
                     "VALUES (:id, :ti, :su, :sm, :de, :ma)"
                 ),
                 {"id": t.id, "ti": t.title, "su": t.subtitle or "", "sm": t.summary or "",
-                 "de": t.description or "", "ma": t.manuscript or ""},
+                 "de": t.description or "", "ma": _manuscript_plain(t.manuscript or "")},
             )
         # Caption segments are only a few words each, so a multi-word query
         # would almost never match inside one. Index WINDOWS of consecutive
@@ -146,6 +162,34 @@ def search_teachings(q: str, limit: int = 25) -> list[Teaching]:
         .limit(limit)
         .all()
     )
+
+
+def search_manuscripts(q: str, limit: int = 10) -> list[dict]:
+    """Phrase-level hits inside the manuscripts: [{teaching, snippet}].
+
+    The manuscript (Jakob's own script) can differ slightly from the auto
+    captions — indexing both means a phrase is found no matter which form it
+    appears in; this surfaces WHERE it appears in the written form. Snippet is
+    plain text with char(1)/char(2) sentinels for the |highlight filter (same
+    contract as transcript snippets). Under the ILIKE fallback there is no
+    snippet machinery — manuscript matches still surface via search_teachings."""
+    if not fts_available():
+        return []
+    match = _fts_query(q)
+    if not match:
+        return []
+    rows = db.session.execute(
+        sql_text(
+            # Column filter: only rows whose MANUSCRIPT holds the match, and
+            # snippet() column 4 quotes from the manuscript text itself.
+            "SELECT rowid, snippet(teaching_fts, 4, char(1), char(2), '…', 16) "
+            "FROM teaching_fts WHERE teaching_fts MATCH :m ORDER BY rank LIMIT :n"
+        ),
+        {"m": f"manuscript : ({match})", "n": limit},
+    ).fetchall()
+    ids = [r[0] for r in rows]
+    by_id = {t.id: t for t in Teaching.query.filter(Teaching.id.in_(ids)).all()} if ids else {}
+    return [{"teaching": by_id[rid], "snippet": snip} for rid, snip in rows if rid in by_id]
 
 
 def search_transcripts(q: str, limit: int = 40, per_teaching: int = 3) -> list[dict]:

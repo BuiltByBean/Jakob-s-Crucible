@@ -63,8 +63,9 @@
     </div>
   </header>
 
-  {# Inline click-to-load player. Nothing loads until the visitor chooses. #}
-  <div class="aspect-video w-full max-w-4xl rounded-2xl overflow-hidden bg-surface-850 ring-1 ring-white/10"
+  {# Inline click-to-load player. Nothing loads until the visitor chooses.
+     Shorts are vertical 9:16 — a 16:9 frame would pillar-box them tiny. #}
+  <div class="{{ 'aspect-[9/16] max-w-sm' if teaching.kind == 'short' else 'aspect-video max-w-4xl' }} w-full rounded-2xl overflow-hidden bg-surface-850 ring-1 ring-white/10"
        data-inline-player data-video-id="{{ teaching.youtube_id }}" data-video-title="{{ teaching.title }}">
     <button type="button" data-player-facade class="group relative w-full h-full text-left" aria-label="Play video: {{ teaching.title }}">
       <img src="{{ teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' }}"

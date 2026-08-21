@@ -71,6 +71,28 @@
     </section>
     {% endif %}
 
+    {% if results.manuscripts %}
+    <section class="section">
+      <h2 class="section-title">
+        <span>Written in the manuscripts</span>
+        <span class="normal-case tracking-normal font-medium text-surface-400 text-xs">click a line to open that manuscript</span>
+      </h2>
+      <div class="card divide-y divide-white/5">
+        {% for hit in results.manuscripts %}
+        {# The #manuscript hash auto-expands the collapsible section on the episode page. #}
+        <a href="{{ url_for('public.teaching_detail', slug=hit.teaching.slug) }}#manuscript"
+           class="flex items-start gap-4 px-5 py-3.5 hover:bg-white/5 transition-colors group">
+          <span class="text-flame-300 shrink-0 pt-0.5">{{ icons.icon('document', 16) }}</span>
+          <span class="min-w-0">
+            <span class="block text-sm font-semibold text-surface-100 group-hover:text-flame-200 transition-colors">{{ hit.teaching.title }}</span>
+            <span class="block mt-1 text-sm text-surface-300 leading-relaxed">{{ hit.snippet | highlight(q) }}</span>
+          </span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
     {% if results.transcripts %}
     <section class="section">
       <h2 class="section-title">
@@ -97,6 +119,7 @@
                     data-video-open="{{ group.teaching.youtube_id }}"
                     data-video-title="{{ group.teaching.title }} — from {{ hit.timestamp }}"
                     data-video-page="{{ url_for('public.teaching_detail', slug=group.teaching.slug) }}"
+                    data-video-kind="{{ group.teaching.kind }}"
                     data-video-start="{{ [hit.start_seconds - 4, 0] | max }}"{# start a beat early so the phrase isn't clipped #}
                     class="w-full flex items-start gap-4 px-5 py-3 text-left hover:bg-white/5 transition-colors group/hit">
               <span class="inline-flex items-center gap-1.5 text-xs font-semibold tabular-nums text-flame-300 shrink-0 pt-0.5">

@@ -10,6 +10,9 @@ from __future__ import annotations
 import re
 
 DIVIDER_RE = re.compile(r"^_{5,}\s*$", re.MULTILINE)
+# A hashtag token must contain a letter — '#1'-style number references in
+# prose are not hashtags and must survive.
+HASHTAG_RE = re.compile(r"(?:^|(?<=\s))#\w*[A-Za-z]\w*")
 NOTES_RE = re.compile(r"Download study notes:\s*(\S+)", re.IGNORECASE)
 PRIMARY_RE = re.compile(r"Primary text:\s*(.+)", re.IGNORECASE)
 REFERENCE_RE = re.compile(r"Reference Text:\s*(.+)", re.IGNORECASE)
@@ -28,6 +31,22 @@ _KNOWN_HEADINGS = {
 }
 
 
+def strip_hashtags(text: str) -> str:
+    """Remove YouTube hashtag tokens (#FaithReflection etc.) — YouTube-specific
+    metadata that shouldn't be reproduced on the site (owner's rule). Lines
+    that were nothing but hashtags disappear entirely; blank paragraph
+    separators are preserved."""
+    if not text or "#" not in text:
+        return text
+    kept: list[str] = []
+    for line in text.splitlines():
+        stripped = HASHTAG_RE.sub("", line)
+        if line.strip() and not stripped.strip():
+            continue  # the line held only hashtags
+        kept.append(re.sub(r"[ \t]{2,}", " ", stripped).rstrip())
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(kept)).strip()
+
+
 def split_description(description: str) -> dict:
     """Split a description into
     {summary, context, timestamps_raw, notes_raw, closing, notes_url}.
@@ -40,7 +59,9 @@ def split_description(description: str) -> dict:
         return out
 
     blocks = DIVIDER_RE.split(description)
-    out["summary"] = blocks[0].strip()
+    # Displayed sections (summary/context/closing) shed YouTube hashtags;
+    # timestamps/notes are machine-parsed and never carry them.
+    out["summary"] = strip_hashtags(blocks[0].strip())
 
     for block in blocks[1:]:
         block = block.strip()
@@ -49,13 +70,13 @@ def split_description(description: str) -> dict:
         first_line, _, rest = block.partition("\n")
         key = _KNOWN_HEADINGS.get(first_line.strip().rstrip(":").lower())
         if key == "context":
-            out["context"] = rest.strip()
+            out["context"] = strip_hashtags(rest.strip())
         elif key == "timestamps":
             out["timestamps_raw"] = rest.strip()
         elif key == "notes":
             out["notes_raw"] = rest.strip()
         elif key == "closing":
-            out["closing"] = rest.strip()
+            out["closing"] = strip_hashtags(rest.strip())
 
     m = NOTES_RE.search(description)
     if m:

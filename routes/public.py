@@ -26,6 +26,12 @@ _contact_lock = threading.Lock()
 def _contact_throttled(ip: str) -> bool:
     now = time.time()
     with _contact_lock:
+        # Opportunistic global prune: a client rotating spoofed identities
+        # must not grow the dict for the life of the process.
+        if len(_contact_hits) > 500:
+            cutoff = now - _CONTACT_WINDOW_SECONDS
+            for stale in [k for k, ts in _contact_hits.items() if all(t < cutoff for t in ts)]:
+                del _contact_hits[stale]
         hits = [t for t in _contact_hits.get(ip, []) if now - t < _CONTACT_WINDOW_SECONDS]
         if len(hits) >= _CONTACT_MAX_PER_WINDOW:
             _contact_hits[ip] = hits
@@ -236,7 +242,11 @@ def contact():
         subject = _line("subject", 300)
         message = request.form.get("message", "").strip()[:8000]
 
-        ip = (request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        # RIGHTMOST X-Forwarded-For entry: appended by Railway's edge proxy,
+        # so it's the real peer address. The leftmost entry is client-supplied
+        # and trivially spoofed — keying the throttle on it would let a
+        # rotating header bypass the cap entirely.
+        ip = (request.headers.get("X-Forwarded-For", "").split(",")[-1].strip()
               or request.remote_addr or "?")
         if _contact_throttled(ip):
             flash("You've sent several messages recently — please wait a while before sending more.", "error")
@@ -264,6 +274,9 @@ def contact():
             subject=f"[The Wisdom Crucible] {subject or 'New contact message'}",
             recipients=[current_app.config["CONTACT_RECIPIENT"]],
             body=body,
+            # Reply in the owner's mail client goes straight to the visitor.
+            # email is newline-flattened by _line() above (header-safe).
+            reply_to=email,
         )
         db.session.commit()
 
@@ -273,9 +286,34 @@ def contact():
     return render_template("contact.html", form={})
 
 
+# Video links Jakob writes into a Short's YouTube description — the ONLY
+# source of a Short's related teachings.
+_YT_LINK_RE = re.compile(r"(?:youtube\.com/(?:watch\?v=|live/)|youtu\.be/)([\w-]{11})")
+
+
 def _related_teachings(teaching: Teaching, limit: int = 4) -> list[Teaching]:
     """Same series neighbours first, then teachings sharing a scripture book
-    or topic. Never includes shorts or the teaching itself."""
+    or topic. Never includes shorts or the teaching itself.
+
+    Shorts are the exception (owner's rule): a Short shows a related teaching
+    ONLY when Jakob explicitly links a full teaching in the Short's YouTube
+    description — never generated from shared topics, books, or series."""
+    if teaching.kind == "short":
+        linked_ids = _YT_LINK_RE.findall(teaching.description or "")
+        if not linked_ids:
+            return []
+        rows = Teaching.query.filter(
+            Teaching.youtube_id.in_(linked_ids), Teaching.kind == "teaching"
+        ).all()
+        by_yt = {t.youtube_id: t for t in rows}
+        picked, seen = [], set()
+        for vid in linked_ids:  # preserve the description's own order
+            t = by_yt.get(vid)
+            if t and t.id not in seen:
+                seen.add(t.id)
+                picked.append(t)
+        return picked[:limit]
+
     picked: list[Teaching] = []
     seen = {teaching.id}
 

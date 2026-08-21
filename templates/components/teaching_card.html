@@ -9,6 +9,7 @@
           class="group relative block w-full {{ 'md:w-3/5 md:self-stretch' if size == 'wide' }} aspect-video overflow-hidden bg-surface-850 text-left"
           data-video-open="{{ t.youtube_id }}" data-video-title="{{ t.title }}"
           data-video-page="{{ url_for('public.teaching_detail', slug=t.slug) }}"
+          data-video-kind="{{ t.kind }}"
           aria-label="Play: {{ t.title }}">
     <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"
          alt="" loading="lazy" width="480" height="270"
@@ -68,6 +69,7 @@
 <button type="button" class="card card-hover w-full flex items-center gap-4 p-3 text-left"
         data-video-open="{{ t.youtube_id }}" data-video-title="{{ t.title }}"
         data-video-page="{{ url_for('public.teaching_detail', slug=t.slug) }}"
+        data-video-kind="{{ t.kind }}"
         aria-label="Play short: {{ t.title }}">
   <span class="relative w-20 shrink-0 aspect-video rounded-lg overflow-hidden bg-surface-850">
     <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"

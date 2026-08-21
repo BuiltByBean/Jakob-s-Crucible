@@ -30,12 +30,16 @@ SEED_DIR = REPO / "data" / "seed"
 # Video playlists that ARE the series, in display order. Kind 'shorts' is
 # de-emphasised across the site.
 SERIES_ORDER = [
-    ("Detailed & Verse-by-Verse", "teaching",
-     "Methodical, verse-by-verse study that draws truth directly from Scripture — "
-     "walking through whole passages and books so the text speaks on its own terms."),
+    # 2026-08: the owner split 'Detailed & Verse-by-Verse' into two playlists
+    # on YouTube; descriptions below are his wording, verbatim.
+    ("Verse-by-Verse Bible Studies", "teaching",
+     "Detailed teachings focused on verse-by-verse exposition with contextual "
+     "cross-referencing of related texts."),
+    ("Topical Bible Studies", "teaching",
+     "Detailed teachings focused on developing a biblical understanding of specific topics."),
     ("Reflection & Application", "teaching",
-     "Reflective messages that connect biblical principles to everyday life through "
-     "vivid illustration and thoughtful meditation."),
+     "Reflective messages focused on thoughtful application of biblical principles "
+     "for Christian living."),
     ("Questions in the Crucible: Responding to Skeptics", "teaching",
      "Honest engagement with hard questions and objections to Scripture — letting "
      "Scripture speak, and philosophy sit at its feet."),
@@ -67,14 +71,14 @@ TOPICS = [
     ("special-episodes", "Special Episodes",
      "Content outside of the ordinary teaching formats — ministry news, creative productions, and other special episodes."),
 ]
+# Shorts NEVER take topics (owner's rule 2026-08) — the map lists full
+# teachings only, and the seeding loop enforces the rule besides.
 TOPIC_MAP = {
-    "apologetics": ["QzWQCp8T-QQ", "Cl2TfIEjYmA", "OD6Jb7sUz8g", "bb65k6s86oE", "YkpogwCLMlI", "lq-mY9sZ5K4"],
-    "christian-living-discipleship": ["1RClTjjUOeM", "ojI5U_s7RqY", "5e_bFOQDnG0", "XVzQhjP1P3w", "sv_VaxKYaZU",
-                                      "K-uHxvayq6k", "Qha46IBJoLo", "5vn7Ip6Z60w", "SpSbOn1CBsc", "HmDuPr7HxUE",
-                                      "KFI38ZdOSWY", "zQdwujoro0Q", "9kltXjyKiUI", "pVJ8yoixVhQ"],
+    "apologetics": ["QzWQCp8T-QQ", "Cl2TfIEjYmA", "OD6Jb7sUz8g"],
+    "christian-living-discipleship": ["1RClTjjUOeM", "K-uHxvayq6k", "Qha46IBJoLo"],
     # Haggai P2 deliberately carries NO topic (broad passage exposition).
-    "christology": ["M4bquqXsiyY", "kw2nAbhjAqw", "JkHLTohTOwQ", "QzWQCp8T-QQ", "Y3ySXC-HjwY"],
-    "doctrine": ["_qVItgpBYvg", "QzWQCp8T-QQ", "OD6Jb7sUz8g", "Y3ySXC-HjwY", "7dqYRBCVeZE"],
+    "christology": ["M4bquqXsiyY", "kw2nAbhjAqw", "JkHLTohTOwQ", "QzWQCp8T-QQ"],
+    "doctrine": ["_qVItgpBYvg", "QzWQCp8T-QQ", "OD6Jb7sUz8g"],
     "special-episodes": ["YQMt5gHGzS8"],
 }
 
@@ -245,11 +249,11 @@ def run() -> None:
         # ---- topics ---------------------------------------------------------
         for order, (slug, name, description) in enumerate(TOPICS, start=1):
             topic = Topic(slug=slug, name=name, description=description, sort_order=order)
+            db.session.add(topic)  # in-session BEFORE appends (autoflush order)
             for vid in TOPIC_MAP.get(slug, []):
                 t = teachings_by_yt.get(vid)
-                if t:
+                if t and t.kind != "short":  # Shorts never take topics
                     topic.teachings.append(t)
-            db.session.add(topic)
 
         # ---- resources ------------------------------------------------------
         for category, cat_order, items in RESOURCES:

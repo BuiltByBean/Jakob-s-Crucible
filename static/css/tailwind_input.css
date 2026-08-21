@@ -82,6 +82,33 @@
 }
 
 @layer components {
+  /* ---- crucible logo glow ----
+     The mark's crucible body is nearly as dark as the canvas; the tight
+     blue-white halo traces its full silhouette so it stays distinct, and the
+     soft outer glow keeps the flame ambience — deliberately shy of neon. */
+  .logo-glow {
+    filter: drop-shadow(0 0 1.5px rgba(191, 219, 254, 0.55))
+      drop-shadow(0 0 10px rgba(74, 181, 246, 0.3));
+  }
+  .logo-glow-lg {
+    filter: drop-shadow(0 0 2px rgba(191, 219, 254, 0.6))
+      drop-shadow(0 0 18px rgba(74, 181, 246, 0.35))
+      drop-shadow(0 0 42px rgba(34, 154, 232, 0.22));
+  }
+
+  /* ---- portrait lightbox for Shorts ----
+     A vertical 9:16 Short pillar-boxes to a sliver inside the default 16:9
+     frame. site.js toggles this class per open; the width cap guarantees the
+     portrait frame's height (width x 16/9 + ~9rem of chrome) fits the
+     viewport. !important: the shell's max-w-5xl utility would otherwise win
+     the cascade over a component-layer rule. */
+  .lightbox-shell-portrait {
+    max-width: min(24rem, 92vw, calc((100vh - 9rem) * 9 / 16)) !important;
+  }
+  .lightbox-shell-portrait #video-lightbox-frame {
+    aspect-ratio: 9 / 16;
+  }
+
   /* ---- page vocabulary: every content block is a .section ---- */
   .section {
     @apply mb-12;
