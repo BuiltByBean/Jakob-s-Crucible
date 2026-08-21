@@ -73,17 +73,15 @@
   <section class="section">
     <h2 class="section-title"><span>Where to begin</span></h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-      {% if statement %}
-      <a href="{{ url_for('public.teaching_detail', slug=statement.slug) }}" class="card card-hover p-6 flex items-start gap-4">
+      <a href="{{ url_for('public.statement_of_faith') }}" class="card card-hover p-6 flex items-start gap-4">
         <span class="text-flame-400 mt-0.5">{{ icons.icon('document', 24) }}</span>
         <span>
           <span class="block font-display text-lg font-semibold text-surface-50">Statement of Faith</span>
           <span class="block mt-1 text-sm text-surface-300 leading-relaxed">
-            The doctrinal foundation, examined at length — the right place to weigh this ministry's teaching.
+            The doctrinal foundation, stated plainly — the right place to weigh this ministry's teaching.
           </span>
         </span>
       </a>
-      {% endif %}
       <a href="{{ url_for('public.library') }}" class="card card-hover p-6 flex items-start gap-4">
         <span class="text-flame-400 mt-0.5">{{ icons.icon('library', 24) }}</span>
         <span>

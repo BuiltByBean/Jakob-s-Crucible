@@ -74,7 +74,28 @@ The words are right there in front of them. Yet the misunderstanding, or in some
 
 Grammatical nitpicking aside, let’s read the immediate context for this superscript — That is, all 7 verses of the psalm.
 
-*Read Psalm 110*
+> The Lord says to my Lord:
+> “Sit at my right hand,
+> until I make your enemies your footstool.”
+> The Lord sends forth from Zion
+> your mighty scepter.
+> Rule in the midst of your enemies!
+> Your people will offer themselves freely on the day of your power,
+> in holy garments;
+> from the womb of the morning,
+> the dew of your youth will be yours.
+> The Lord has sworn
+> and will not change his mind,
+> “You are a priest forever
+> after the order of Melchizedek.”
+> The Lord is at your right hand;
+> he will shatter kings on the day of his wrath.
+> He will execute judgment among the nations,
+> filling them with corpses;
+> he will shatter chiefs
+> over the wide earth.
+> He will drink from the brook by the way;
+> therefore he will lift up his head.
 
 Looking back at v. 1, David says, “my Lord” — not a term he would likely use to refer to himself or a subordinate, or a descendent.
 

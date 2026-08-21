@@ -10,7 +10,13 @@
   <header class="mb-10 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Explore Topics</h1>
     <p class="mt-3 text-surface-300 leading-relaxed">
-      A deliberately small set of themes — enough to find your way, never a hundred tags for their own sake.
+      A deliberately small set of themes to guide your way to particular categories
+      of content. Not all content fits a category, and some content fits multiple
+      categories. If you don't find what you're looking for, try the
+      <a href="{{ url_for('explore.search') }}" class="text-flame-300 hover:text-flame-200 underline decoration-flame-500/40 hover:decoration-flame-300 transition-colors">Search</a>
+      feature or submit a request on the
+      <a href="{{ url_for('public.contact') }}" class="text-flame-300 hover:text-flame-200 underline decoration-flame-500/40 hover:decoration-flame-300 transition-colors">Contact</a>
+      page.
     </p>
   </header>
 

@@ -120,7 +120,7 @@ def scripture_book(slug):
 
 @bp.route("/topics")
 def topics_index():
-    topics = Topic.query.order_by(Topic.sort_order, Topic.name).all()
+    topics = Topic.query.order_by(Topic.name).all()  # alphabetical (owner's rule)
     return render_template("topics.html", topics=topics)
 
 

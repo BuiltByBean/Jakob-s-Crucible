@@ -12,21 +12,29 @@ In our previous discussion of Psalm 110 we studied from the superscript through 
 
 This is important to understand because without that you miss out on the rich Christological prophecy of this psalm, and you likely miss similar revelation in other scriptures as well.
 
-To paint a picture for you; psalter prophecies are the hinges allowing the door to be opened from the mortal court of David to the eternal court of Christ. Let me assure you, this door has many prophetic hinges in the OT.
+To paint a picture for you; psalter prophecies are the hinges allowing the door to be opened from the mortal court of David to the eternal court of Christ.
 
-We will begin with Psalm 110 again, but spend most of our time in this discussion allowing other scriptures to expand our understanding of the significance of the order of Melchizedek in verse 4. That said, let’s dig in together.
+Let me assure you, this door has many prophetic hinges in the OT.
+
+We will begin with Psalm 110 again, but spend most of our time in this discussion allowing other scriptures to expand our understanding of the significance of the order of Melchizedek in verse 4.
+
+That said, let’s dig in together.
 
 ### THE ORDER OF MELCHIZEDEK
 
 I’m going to start by reading verse 4 from the psalm.
 
-*Read verse 4*
+> The Lord has sworn
+> and will not change his mind,
+> “You are a priest forever
+> after the order of Melchizedek.”
 
 This is the only Psalm mentioning the order of Melchizedek. What do you make of this?
 
 Let’s examine Genesis 14 starting in verse 8 for historical context.
 
-*Read verses 8-16*
+> Then the king of Sodom, the king of Gomorrah, the king of Admah, the king of Zeboiim, and the king of Bela (that is, Zoar) went out, and they joined battle in the Valley of Siddim with Chedorlaomer king of Elam, Tidal king of Goiim, Amraphel king of Shinar, and Arioch king of Ellasar, four kings against five. Now the Valley of Siddim was full of bitumen pits, and as the kings of Sodom and Gomorrah fled, some fell into them, and the rest fled to the hill country. So the enemy took all the possessions of Sodom and Gomorrah, and all their provisions, and went their way. They also took Lot, the son of Abram’s brother, who was dwelling in Sodom, and his possessions, and went their way.
+> Then one who had escaped came and told Abram the Hebrew, who was living by the oaks of Mamre the Amorite, brother of Eshcol and of Aner. These were allies of Abram. When Abram heard that his kinsman had been taken captive, he led forth his trained men, born in his house, 318 of them, and went in pursuit as far as Dan. And he divided his forces against them by night, he and his servants, and defeated them and pursued them to Hobah, north of Damascus. Then he brought back all the possessions, and also brought back his kinsman Lot with his possessions, and the women and the people.
 
 So, to summarize:
 
@@ -44,58 +52,97 @@ It's also interesting to note that Melchizedek is said to be both king and pries
 
 Now, listen to verses 17-18.
 
-*Read verse 17-18*
+> After his return from the defeat of Chedorlaomer and the kings who were with him, the king of Sodom went out to meet him at the Valley of Shaveh (that is, the King’s Valley). And Melchizedek king of Salem brought out bread and wine. (He was priest of God Most High.)
 
-So, Abram returns victorious, greeted by two kings: The first mentioned is the king of Sodom. The second is Melchizedek, king of Salem — priest of God Most High. He brings out bread and wine, foreshadowing communion due to him serving as a typology, or a representative figure of Christ.
+So, Abram returns victorious, greeted by two kings:
 
-Up to this point in Genesis, it seems every major character has a genealogy, or at least a father named, and even the measure of their lifespan for some. The Holy Spirit omits these details for Melchizedek to prefigure an eternal priesthood with no beginning and no end.
+The first mentioned is the king of Sodom.
 
-The New Living Translation of John 1:1 says,
+The second is Melchizedek, king of Salem — priest of God Most High. He brings out bread and wine, foreshadowing communion due to him serving as a typology, or a representative figure of Christ.
 
-> In the beginning the Word already existed.
-> The Word was with God, and the Word was God.
+Up to this point in Genesis, it seems every major character has a genealogy, or at least a father named, and even the measure of their lifespan for some.
 
-The Word is Jesus. He is the eternal priest — With no beginning, and no end. Amen!
+The Holy Spirit omits these details for Melchizedek to prefigure an eternal priesthood with no beginning and no end.
+
+The New Living Translation of John 1:1 says, “In the beginning the Word already existed. The Word was with God, and the Word was God.”
+
+The Word is Jesus. He is the eternal priest — With no beginning, and no end.
+
+Amen!
 
 ### TITHING & THE MOSAIC LAW
 
 Now, verses 19 & 20.
 
-*Read verses 19-20*
+> And he blessed him and said,
+> “Blessed be Abram by God Most High,
+> Possessor of heaven and earth;
+> and blessed be God Most High,
+> who has delivered your enemies into your hand!”
+> And Abram gave him a tenth of everything.
 
-Melchizedek declares a blessing on Abram from El Elyon — God Most High. “Abram gave him a tenth of everything” a symbolic confession that success belongs to the LORD, as Melchizedek indicated in verse 20. It also foreshadows the coming Mosaic Law.
+Melchizedek declares a blessing on Abram from El Elyon — God Most High.
 
-The people of Israel would be commanded to give one tenth of all they earned directly to the Levitical priesthood, indirectly to God Most High. Abram demonstrates the heart of the law 400 years before the letter of the law was written. He gave through genuine faith and gratitude, without needing it to be explicitly legislated.
+“Abram gave him a tenth of everything” a symbolic confession that success belongs to the LORD, as Melchizedek indicated in verse 20. It also foreshadows the coming Mosaic Law.
+
+The people of Israel would be commanded to give one tenth of all they earned directly to the Levitical priesthood, indirectly to God Most High.
+
+Abram demonstrates the heart of the law 400 years before the letter of the law was written. He gave through genuine faith and gratitude, without needing it to be explicitly legislated.
 
 We too, should strive to develop an attitude of gratitude that acts without requiring obligation.
 
 ### APPOINTMENT OF PRIESTHOOD
 
-Moving on… Melchizedek is said to be a priest of God Most High. Let’s go to Hebrews 5 to find a thorough explanation of what that means.
+Moving on…
 
-*Read Hebrews 5:1–2*
+Melchizedek is said to be a priest of God Most High. Let’s go to Hebrews 5 to find a thorough explanation of what that means.
 
-First God empathized from on high — Then He empathized from down here, in the incarnation, to the cross. Amazing!
+> For every high priest chosen from among men is appointed to act on behalf of men in relation to God, to offer gifts and sacrifices for sins. He can deal gently with the ignorant and wayward, since he himself is beset with weakness.
 
-You might wonder after reading the next verse if there’s a contradiction in applying the previous verses to Jesus since it mentions an obligation to offer sacrifices for their own sins. Jesus was the perfect man, right? He didn’t have personal sin to make sacrifices for.
+First God empathized from on high — Then He empathized from down here, in the incarnation, to the cross.
 
-The answer is in verse 5’s subtle clarification of how Jesus is like but not equal to the previous priesthood. Listen to what verses 3-7 have to say.
+Amazing!
 
-*Read Hebrews 5:3–7*
+You might wonder after reading the next verse if there’s a contradiction in applying the previous verses to Jesus since it mentions an obligation to offer sacrifices for their own sins.
 
-Every high priest is appointed to act on behalf of men in relation to God, to offer gifts and sacrifices for sins. That’s the primary similarity between Jesus and the previous priesthood that the author of Hebrews is revealing to us.
+Jesus was the perfect man, right? He didn’t have personal sin to make sacrifices for.
 
-Let’s discuss appointment for moment. Appointed — indicates calling rather than ambition. The appointment of priesthood is to all believers under the New Covenant, but we are still given prescriptions for local leadership, such as in Titus 1:5 where Paul describes the qualifications for elders.
+The answer is in verse 5’s subtle clarification of how Jesus is like but not equal to the previous priesthood.
 
-Those of you who lead in ministry, listen and think carefully on what I’m about to say: Do you lead to be ambitious, type A, upwardly mobile, strong and independent, your best self — or do you lead because God called you to Him — because you want to lead the way straight into our Father’s arms?
+Listen to what verses 3-7 have to say.
+
+> Because of this he is obligated to offer sacrifice for his own sins just as he does for those of the people. And no one takes this honor for himself, but only when called by God, just as Aaron was.
+> So also Christ did not exalt himself to be made a high priest, but was appointed by him who said to him,
+> “You are my Son,
+> today I have begotten you”;
+> as he says also in another place,
+> “You are a priest forever,
+> after the order of Melchizedek.”
+> In the days of his flesh, Jesus offered up prayers and supplications, with loud cries and tears, to him who was able to save him from death, and he was heard because of his reverence.
+
+Every high priest is appointed to act on behalf of men in relation to God, to offer gifts and sacrifices for sins.
+
+That’s the primary similarity between Jesus and the previous priesthood that the author of Hebrews is revealing to us.
+
+Let’s discuss appointment for moment.
+
+Appointed — indicates calling rather than ambition. The appointment of priesthood is to all believers under the New Covenant, but we are still given prescriptions for local leadership, such as in Titus 1:5 where Paul describes the qualifications for elders.
+
+Those of you who lead in ministry, listen and think carefully on what I’m about to say:
+
+Do you lead to be ambitious, type A, upwardly mobile, strong and independent, your best self — or do you lead because God called you to Him — because you want to lead the way straight into our Father’s arms?
 
 A true calling should bring you to your knees — before it lifts you to a pulpit, or a streaming platform, in this age.
 
-If you need to pray about that, I encourage you to pause this recording and take a min to do so before you resume. That said, let’s get back to the scriptures…
+If you need to pray about that, I encourage you to pause this recording and take a min to do so before you resume.
+
+That said, let’s get back to the scriptures…
 
 ### LOGICAL ARGUMENT FOR SACRIFICE
 
-The blood in Mosaic sacrifices points to the punishment and suffering of Jesus, which we now live in the glorious reality of! Praise the LORD!
+The blood in Mosaic sacrifices points to the punishment and suffering of Jesus, which we now live in the glorious reality of!
+
+Praise the LORD!
 
 Jesus was appointed by God the Father, to act through his perfect righteousness to offer the gift and sacrifice of his own suffering and blood — not just the blood, but also the suffering — to remove the relational distance between us and God, which essentially is sin.
 
@@ -113,23 +160,33 @@ Therefore, God did not just have to bleed on my behalf — He had to suffer on m
 
 Hebrews 6:20 affirms Jesus as a “high priest forever after the order of Melchizedek”, and 6:20–7:28 expands on how Jesus fulfills and surpasses the priesthood.
 
-You can picture it like this: The Levitical priest was the shadow of Christ — cast by the brilliance of the Father through the Law.
+You can picture it like this:
+
+The Levitical priest was the shadow of Christ — cast by the brilliance of the Father through the Law.
 
 ### SCRIPTURE REVEALS SCRIPTURE
 
-Let’s talk about Hebrews chapter 7. It can be described as an inspired commentary revealing everything we need to know about Melchizedek that was not explained in Genesis: Listen to verses 1-3.
+Let’s talk about Hebrews chapter 7. It can be described as an inspired commentary revealing everything we need to know about Melchizedek that was not explained in Genesis:
 
-*Read Hebrews 7:1-3*
+Listen to verses 1-3.
+
+> For this Melchizedek, king of Salem, priest of the Most High God, met Abraham returning from the slaughter of the kings and blessed him, and to him Abraham apportioned a tenth part of everything. He is first, by translation of his name, king of righteousness, and then he is also king of Salem, that is, king of peace. He is without father or mother or genealogy, having neither beginning of days nor end of life, but resembling the Son of God he continues a priest forever.
 
 Melchizedek = king of righteousness → Jesus
 
 King of Salem = king of peace → Jesus
 
-Personally, I prefer the sound of the Hebrew pronunciation for SAY-lum, which would sound more like shah-LAYM, because it sounds more like the root word, shah-LOHM, for peace. It has a more gentle and peaceful resonance to it.
+Personally, I prefer the sound of the Hebrew pronunciation for SAY-lum, which would sound more like shah-LAYM, because it sounds more like the root word, shah-LOHM, for peace.
 
-Anyway, moving on… Melchizedek has no genealogy, beginning, or end: This reminds me of a certain title for God the Father — Alpha & Omega. Similarly, yet still intentionally submissive to the Father — Revelation 1:17 says that Jesus is “the first and the last”.
+It has a more gentle and peaceful resonance to it.
 
-Verse 3 says that Melchizedek “resembles the Son of God”. I want to clarify that this is not a theophany — a literal appearance of God in some form — or a Christophany — a literal appearance of God through Christ. A statue may bear a king’s face, but it is not the king himself.
+Anyway, moving on…
+
+Melchizedek has no genealogy, beginning, or end: This reminds me of a certain title for God the Father — Alpha & Omega. Similarly, yet still intentionally submissive to the Father — Revelation 1:17 says that Jesus is “the first and the last”.
+
+Verse 3 says that Melchizedek “resembles the Son of God”. I want to clarify that this is not a theophany — a literal appearance of God in some form — or a Christophany — a literal appearance of God through Christ.
+
+A statue may bear a king’s face, but it is not the king himself.
 
 Melchizedek is a literal king of a physical city, shah-LAYM. which, by the way, is geographically located where Jerusalem would later stand.
 
@@ -137,17 +194,21 @@ Isn’t that awesome? God is the unfathomably thoughtful — and intentional aut
 
 Let’s listen to verses 4-9.
 
-*Read verses 4-9*
+> See how great this man was to whom Abraham the patriarch gave a tenth of the spoils! And those descendants of Levi who receive the priestly office have a commandment in the law to take tithes from the people, that is, from their brothers, though these also are descended from Abraham. But this man who does not have his descent from them received tithes from Abraham and blessed him who had the promises. It is beyond dispute that the inferior is blessed by the superior. In the one case tithes are received by mortal men, but in the other case, by one of whom it is testified that he lives. One might even say that Levi himself, who receives tithes, paid tithes through Abraham…
 
 Verse 7 says that Melchizedek was “superior” to Abram, because the superior blesses the inferior.
 
-A man was sent out to pursue the lost — and returning to the king of righteousness and peace — he was blessed with the bread and the cup. That was Abram. That is us.
+A man was sent out to pursue the lost — and returning to the king of righteousness and peace — he was blessed with the bread and the cup.
+
+That was Abram. That is us.
 
 Pursuing the lost with the gospel of Christ is our mission, and Jesus awaits us with peace and rest at the end.
 
 ### FORESHADOWING IN GENESIS 14
 
-Thinking back to Genesis 14… The exchange between Abram and Melchizedek in verses 18–20 foreshadows what would later be fulfilled between David and the Messiah.
+Thinking back to Genesis 14…
+
+The exchange between Abram and Melchizedek in verses 18–20 foreshadows what would later be fulfilled between David and the Messiah.
 
 To help you think about that, I’m going to re-read those verses with some different terms. Note that I’m not saying that this is the literal intended meaning of this passage.
 
@@ -166,7 +227,9 @@ Bread/wine, kingship, blessing from the superior to the inferior
 
 ### THE RESURRECTION FREEDOM
 
-Even the liberty we have in Jesus’s resurrection was foreshadowed in the Old Testament: Only the sons of Levi were to be priests. Jesus, the Lion of Judah, was from a tribe outside the Levitical bloodline.
+Even the liberty we have in Jesus’s resurrection was foreshadowed in the Old Testament:
+
+Only the sons of Levi were to be priests. Jesus, the Lion of Judah, was from a tribe outside the Levitical bloodline.
 
 Therefore, the first time the Old Testament prophesied a Messiah outside the tribe of Levi, it set the stage for the letter of the Law — the order of the Levitical Priesthood — to be laid aside for the heart of the Law — the order of Melchizedek — Jesus Christ, who established the Universal Priesthood — all believers sharing direct access to God as 1 Peter 2:9 describes.
 
@@ -184,15 +247,20 @@ Isaiah 53 describes the life and suffering in incredible detail — 700 years pr
 
 ### A BETTER COVENANT
 
-Let’s skip ahead for a minute to Hebrews 7:11–18. Here, scripture explains that the law, by which no one was made perfect, was always planned to eventually be set aside for the hope of a better covenant.
+Let’s skip ahead for a minute to Hebrews 7:11–18.
 
-*Read Hebrews 7:11-17*
+Here, scripture explains that the law, by which no one was made perfect, was always planned to eventually be set aside for the hope of a better covenant.
+
+> Now if perfection had been attainable through the Levitical priesthood (for under it the people received the law), what further need would there have been for another priest to arise after the order of Melchizedek, rather than one named after the order of Aaron? For when there is a change in the priesthood, there is necessarily a change in the law as well. For the one of whom these things are spoken belonged to another tribe, from which no one has ever served at the altar. For it is evident that our Lord was descended from Judah, and in connection with that tribe Moses said nothing about priests.
+> This becomes even more evident when another priest arises in the likeness of Melchizedek, who has become a priest, not on the basis of a legal requirement concerning bodily descent, but by the power of an indestructible life. For it is witnessed of him,
+> “You are a priest forever,
+> after the order of Melchizedek.”
 
 There we have it; verse 4.5 of Psalm 110 in Hebrews 7:17.
 
 Picking up in verse 18…
 
-*Read Hebrews 7:18*
+> For on the one hand, a former commandment is set aside because of its weakness and uselessness (for the law made nothing perfect); but on the other hand, a better hope is introduced, through which we draw near to God.
 
 Praise God and amen for that truth!
 
@@ -200,17 +268,19 @@ Praise God and amen for that truth!
 
 Now let’s back up to chapter 5 again, and read verses 11-14.
 
-*Read Hebrews 5:11-14*
+> About this we have much to say, and it is hard to explain, since you have become dull of hearing. For though by this time you ought to be teachers, you need someone to teach you again the basic principles of the oracles of God. You need milk, not solid food, for everyone who lives on milk is unskilled in the word of righteousness, since he is a child. But solid food is for the mature, for those who have their powers of discernment trained by constant practice to distinguish good from evil.
 
 The analogy is this: Milk is good, but our Father expects us to eventually move on to solid food: to write the basics of Christianity on our hearts, grow in discernment, and become leaders ourselves.
 
-Remember that all of us, believers, are priests in the order of Christ the Messiah. If pew-sitter connotes passivity, Universal priesthood demands action! James 2:17 confirms this: “faith without works is dead”.
+Remember that all of us, believers, are priests in the order of Christ the Messiah. If pew-sitter connotes passivity, Universal priesthood demands action!
+
+James 2:17 confirms this: “faith without works is dead”.
 
 ### WARNING AGAINST APOSTASY
 
 Moving on the Hebrews 6…
 
-*Read Hebrews 6:1-8*
+> Therefore let us leave the elementary doctrine of Christ and go on to maturity, not laying again a foundation of repentance from dead works and of faith toward God, and of instruction about washings, the laying on of hands, the resurrection of the dead, and eternal judgment. And this we will do if God permits. For it is impossible, in the case of those who have once been enlightened, who have tasted the heavenly gift, and have shared in the Holy Spirit, and have tasted the goodness of the word of God and the powers of the age to come, and then have fallen away, to restore them again to repentance, since they are crucifying once again the Son of God to their own harm and holding him up to contempt. For land that has drunk the rain that often falls on it, and produces a crop useful to those for whose sake it is cultivated, receives a blessing from God. But if it bears thorns and thistles, it is worthless and near to being cursed, and its end is to be burned.
 
 Take notice of the consequences of tasting the truth of Scripture yet falling away from repentance; the proper attitude towards sin.
 
@@ -224,9 +294,13 @@ That in mind, let verse 8 speak to you again as though the ink were still wet.
 > it is worthless and near to being cursed,
 > and its end is to be burned.
 
-That statement is sobering — it warns against the mindset that you can act however you want, simply because you prayed the sinner’s prayer. For those who run from the light there is only darkness.
+That statement is sobering — it warns against the mindset that you can act however you want, simply because you prayed the sinner’s prayer.
 
-Understanding and confidence in your relationship with God requires discipline, obedience, and ongoing transformation. The transformation of sanctification is a process, not a quick burst of Sunday morning church feels, not the moment when a pastor pried an amen from your tongue.
+For those who run from the light there is only darkness.
+
+Understanding and confidence in your relationship with God requires discipline, obedience, and ongoing transformation.
+
+The transformation of sanctification is a process, not a quick burst of Sunday morning church feels, not the moment when a pastor pried an amen from your tongue.
 
 Remember that, as both warning and encouragement. Maintain an attitude of repentance, and trust that God will continue to refine your spirit through the process of sanctification — making you holy.
 
@@ -236,7 +310,9 @@ Time to tie it back to the psalm.
 
 Reading from Genesis to Revelation is like watching God weave themes of righteousness, sacrifice, and peace into a tapestry depicting the Christ: You have no idea whose hand is reaching out for you until you come to the point where the threads converge on the face of Jesus, and then through Revelation, we see Him pointing us towards and leading us into the New Creation.
 
-Psalm 110 carries those threads clearly, beautifully, and poetically: He sits at the right hand of the LORD, exalted in Heaven. His enemies are made his footstool, bruising the head of the serpent. He will execute judgment on the nations, and hold his head high.
+Psalm 110 carries those threads clearly, beautifully, and poetically:
+
+He sits at the right hand of the LORD, exalted in Heaven. His enemies are made his footstool, bruising the head of the serpent. He will execute judgment on the nations, and hold his head high.
 
 Jesus Christ: the spotless lamb that was slain for me, and for you. How could you not take his outstretched hand?
 

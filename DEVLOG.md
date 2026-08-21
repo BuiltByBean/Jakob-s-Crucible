@@ -2,6 +2,20 @@
 
 User-facing change history, newest first.
 
+## 2026-08-21 — Clickable cards, topic reorganization, fuller Psalm 110 scripts
+
+Episode cards are now fully clickable: anywhere on the text half opens the
+episode page (title and scripture chips keep their own targets), while the
+thumbnail half still pops the video overlay. Topics reorganized per Jakob's
+new philosophy — Apologetics, Christian Living & Discipleship (merged),
+Christology, Doctrine & Theology, and the new Special Episodes; Faith &
+Trust retired; listings alphabetical; new descriptions throughout; Haggai
+part 2 deliberately carries no topic. The three Psalm 110 manuscripts were
+replaced with Jakob's updated scripts that now include the quoted passages
+in full (word-preservation verified again), and their downloadable notes
+were refreshed to match. Study Resources reworded and alphabetized; every
+Statement of Faith card/button now routes to the Statement of Faith page.
+
 ## 2026-08-20 — Statement of Faith page, manuscripts everywhere, gold books
 
 A new Statement of Faith section joins the navigation: the easy-to-read

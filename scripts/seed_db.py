@@ -46,24 +46,36 @@ SERIES_ORDER = [
 STATEMENT_OF_FAITH_YT = "_qVItgpBYvg"  # 'What Is Fundamental for The Faith?'
 FEATURED_YT = "OD6Jb7sUz8g"  # 'What Is Faith?' — the flagship study
 
-# Curated, deterministic topic assignment (restrained on purpose — a handful of
-# themes, never hundreds of tags). New uploads stay unassigned until curated.
+# Curated, deterministic topic assignment. Owner's philosophy (2026-08):
+# topics are DISCOVERY ROUTES, not exclusive categories — multiple tags are
+# fine, but assign a topic only when it names a PRIMARY focus or purpose of
+# the teaching. A broad verse-by-verse exposition takes NO topic (its "topic"
+# is the book being expounded, discoverable via Explore Scripture). New topics
+# only when at least one item fits no existing topic well, or the content's
+# approach/audience is distinct (e.g. Christology beats Doctrine & Theology
+# when Christ is the primary theological subject; Apologetics is its own
+# audience even when another topic could hold it).
 TOPICS = [
-    ("faith", "Faith & Trust", "What faith is, where it comes from, and what it asks of us."),
-    ("doctrine", "Doctrine & Theology", "The foundations of The Faith — what Scripture teaches and why precision matters."),
-    ("christology", "Christology", "The person and work of Christ across both testaments."),
-    ("apologetics", "Apologetics", "Responding to skeptics and handling objections to Scripture."),
-    ("discipleship", "Discipleship", "Following Christ deliberately — teaching, preparation, and perseverance."),
-    ("christian-living", "Christian Living", "Priorities, trials, and the daily shape of a life under the Word."),
+    ("apologetics", "Apologetics",
+     "Demonstrating the reasoning of Christian beliefs — defending truth, removing obstacles, strengthening faith."),
+    ("christian-living-discipleship", "Christian Living & Discipleship",
+     "Following Christ deliberately — from emulating his example to being another's example."),
+    ("christology", "Christology",
+     "The study of Christ — his nature, his identity, his works."),
+    ("doctrine", "Doctrine & Theology",
+     "Carefully defined foundations of The Faith — what Scripture teaches and why it matters."),
+    ("special-episodes", "Special Episodes",
+     "Content outside of the ordinary teaching formats — ministry news, creative productions, and other special episodes."),
 ]
 TOPIC_MAP = {
-    "faith": ["OD6Jb7sUz8g", "5aSR8NQLifg", "xSesIhhAZ-A"],
-    "doctrine": ["_qVItgpBYvg", "QzWQCp8T-QQ", "Y3ySXC-HjwY", "7dqYRBCVeZE"],
-    "christology": ["M4bquqXsiyY", "kw2nAbhjAqw", "JkHLTohTOwQ", "mGEcs8slGaI", "Y3ySXC-HjwY"],
-    "apologetics": ["QzWQCp8T-QQ", "Cl2TfIEjYmA", "bb65k6s86oE", "YkpogwCLMlI", "lq-mY9sZ5K4"],
-    "discipleship": ["1RClTjjUOeM", "ojI5U_s7RqY", "5e_bFOQDnG0", "XVzQhjP1P3w", "sv_VaxKYaZU", "K-uHxvayq6k"],
-    "christian-living": ["Qha46IBJoLo", "5vn7Ip6Z60w", "K-uHxvayq6k", "SpSbOn1CBsc", "HmDuPr7HxUE",
-                         "KFI38ZdOSWY", "zQdwujoro0Q", "9kltXjyKiUI", "pVJ8yoixVhQ"],
+    "apologetics": ["QzWQCp8T-QQ", "Cl2TfIEjYmA", "OD6Jb7sUz8g", "bb65k6s86oE", "YkpogwCLMlI", "lq-mY9sZ5K4"],
+    "christian-living-discipleship": ["1RClTjjUOeM", "ojI5U_s7RqY", "5e_bFOQDnG0", "XVzQhjP1P3w", "sv_VaxKYaZU",
+                                      "K-uHxvayq6k", "Qha46IBJoLo", "5vn7Ip6Z60w", "SpSbOn1CBsc", "HmDuPr7HxUE",
+                                      "KFI38ZdOSWY", "zQdwujoro0Q", "9kltXjyKiUI", "pVJ8yoixVhQ"],
+    # Haggai P2 deliberately carries NO topic (broad passage exposition).
+    "christology": ["M4bquqXsiyY", "kw2nAbhjAqw", "JkHLTohTOwQ", "QzWQCp8T-QQ", "Y3ySXC-HjwY"],
+    "doctrine": ["_qVItgpBYvg", "QzWQCp8T-QQ", "OD6Jb7sUz8g", "Y3ySXC-HjwY", "7dqYRBCVeZE"],
+    "special-episodes": ["YQMt5gHGzS8"],
 }
 
 # Study Resources page seed — only recommendations the owner has actually named.

@@ -31,11 +31,9 @@
       <a href="{{ url_for('public.library') }}" class="btn-primary">
         {{ icons.icon('library', 18) }} Browse the Teaching Library
       </a>
-      {% if statement %}
-      <a href="{{ url_for('public.teaching_detail', slug=statement.slug) }}" class="btn-ghost">
+      <a href="{{ url_for('public.statement_of_faith') }}" class="btn-ghost">
         {{ icons.icon('document', 18) }} Statement of Faith
       </a>
-      {% endif %}
     </div>
     <div class="mt-7 flex items-center justify-center gap-2 animate-fade-in" style="animation-delay: .4s">
       <a href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener" title="YouTube" aria-label="YouTube channel"
@@ -95,7 +93,10 @@
     <h2 class="section-title"><span>New here? Start with these</span></h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       {% for t, why in starting_points %}
-      <a href="{{ url_for('public.teaching_detail', slug=t.slug) }}" class="card card-hover p-5 flex items-start gap-4 group">
+      {# The Statement of Faith entry routes to the SoF page (which links the
+         full episode onward); other starting points go straight to episodes. #}
+      <a href="{{ url_for('public.statement_of_faith') if t.is_statement_of_faith else url_for('public.teaching_detail', slug=t.slug) }}"
+         class="card card-hover p-5 flex items-start gap-4 group">
         <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"
              alt="" loading="lazy" width="120" height="68"
              class="w-24 aspect-video object-cover rounded-lg shrink-0 mt-0.5">

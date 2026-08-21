@@ -203,7 +203,8 @@ def statement_of_faith():
 @bp.route("/resources")
 def resources():
     rows = (
-        Resource.query.order_by(Resource.category_order, Resource.category, Resource.sort_order).all()
+        # Alphabetical within each category (owner's rule).
+        Resource.query.order_by(Resource.category_order, Resource.category, Resource.name).all()
     )
     categories: list[tuple[str, list[Resource]]] = []
     for r in rows:

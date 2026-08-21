@@ -16,7 +16,28 @@ In the first leg of our journey through Psalm 110 we focused on the superscript,
 
 Anyway, back to main course — Verse 1 of Psalm 110.
 
-*Read v. 1-7.*
+> The Lord says to my Lord:
+> “Sit at my right hand,
+> until I make your enemies your footstool.”
+> The Lord sends forth from Zion
+> your mighty scepter.
+> Rule in the midst of your enemies!
+> Your people will offer themselves freely on the day of your power,
+> in holy garments;
+> from the womb of the morning,
+> the dew of your youth will be yours.
+> The Lord has sworn
+> and will not change his mind,
+> “You are a priest forever
+> after the order of Melchizedek.”
+> The Lord is at your right hand;
+> he will shatter kings on the day of his wrath.
+> He will execute judgment among the nations,
+> filling them with corpses;
+> he will shatter chiefs
+> over the wide earth.
+> He will drink from the brook by the way;
+> therefore he will lift up his head.
 
 Verse 1 is quoted in: Matthew 22:44 — Mark 12:35 — and Luke 20:41.
 
@@ -32,7 +53,11 @@ But they are not exact quotations. The NT verses that I mentioned are exact quot
 
 Let’s examine the passage from Matthew 22 beginning in v. 41.
 
-*Read v. 41-46.*
+> *Now while the Pharisees were gathered together, Jesus asked them a question, saying, “What do you think about the Christ? Whose Son is He?” They said to Him, “The Son of David.” He said to them, “How is it then that David, in the Spirit, calls Him Lord, saying,*
+> *“ ‘The Lord said to my Lord,
+> “Sit at my right hand,
+> until I put your enemies under your feet” ’?*
+> *If then David calls Him Lord, how is He his Son?” And no one was able to answer Him a word, nor from that day did anyone dare to ask Him any more questions.*
 
 The New Testament Koine Greek words that Jesus’s speech was recorded through is a direct quote of Psalm 110 v. 1 from the Greek Old Testament — the Septuagint.
 
@@ -104,7 +129,14 @@ This verse is also excellent for discussing the biblical canon, because it gives
 
 Peter affirms our interpretation of Psalm 110 in Acts 2:34, where he is recorded giving his Pentecostal sermon.
 
-*Read Acts 2:29–36, emphasize verse 36, then read verses 37–38.*
+(Acts 2:29-38)
+
+> *“Brothers, I may say to you with confidence about the patriarch David that he both died and was buried, and his tomb is with us to this day. Being therefore a prophet, and knowing that God had sworn with an oath to him that He would set one of his descendants on his throne, he foresaw and spoke about the resurrection of the Christ, that He was not abandoned to Hades, nor did his flesh see corruption. This Jesus God raised up, and of that we all are witnesses. Being therefore exalted at the right hand of God, and having received from the Father the promise of the Holy Spirit, He has poured out this that you yourselves are seeing and hearing. For David did not ascend into the heavens, but he himself says,*
+> *“ ‘The Lord said to my Lord,
+> “Sit at my right hand,
+> until I make your enemies your footstool.” ’*
+> *Let all the house of Israel therefore know for certain that God has made Him both Lord and Christ, this Jesus whom you crucified.”*
+> *Now when they heard this they were cut to the heart, and said to Peter and the rest of the apostles, “Brothers, what shall we do?” And Peter said to them, “Repent and be baptized every one of you in the name of Jesus Christ for the forgiveness of your sins, and you will receive the gift of the Holy Spirit.*
 
 ### PETER’S APPROACH
 
