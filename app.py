@@ -264,6 +264,7 @@ def create_app(config_cls=Config) -> Flask:
             "now_year": datetime.now(timezone.utc).year,
             "content": sc.content,
             "site_links": sc.links,
+            "effect_on": sc.enabled,
             "PAGE_GROUPS": sc.GROUPS,
             "MINISTRY": {
                 "name": app.config["MINISTRY_NAME"],

@@ -38,7 +38,19 @@
     <p class="text-xs text-red-300 mb-2.5">{{ errors[entry.key] }}</p>
     {% endif %}
 
-    {% if entry.kind == 'links' %}
+    {% if entry.kind == 'toggle' %}
+      {#- The hidden "off" always submits; the checkbox adds "on" when ticked,
+          and the route takes the LAST value. Without it an unticked box sends
+          nothing at all and would read as "field not submitted". -#}
+      <input type="hidden" name="{{ entry.key }}" value="off">
+      <label class="flex items-center gap-3 min-h-[44px] cursor-pointer">
+        <input type="checkbox" name="{{ entry.key }}" value="on"
+               class="w-5 h-5 shrink-0 accent-flame-500"
+               {% if (submitted.get(entry.key) or sc.content(entry.key)) != 'off' %}checked{% endif %}>
+        <span class="text-sm text-surface-200">Show this on the site</span>
+      </label>
+
+    {% elif entry.kind == 'links' %}
       {#- Rows are SERVER-RENDERED. They used to come from an Alpine x-for
           template, so a blocked or slow script submitted zero rows — silently
           deleting every podcast platform while reporting success. Alpine now
@@ -90,9 +102,9 @@
 
   {# Solid backdrop: a transparent sticky bar sat on top of the textarea the
      owner was typing into, swallowing taps meant for the text. #}
-  <div class="sticky bottom-0 -mx-1 px-1 py-4 bg-surface-950/95 backdrop-blur-sm border-t border-white/5 flex items-center gap-3">
-    <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save changes</button>
+  <div class="sticky bottom-0 -mx-1 px-1 py-4 bg-surface-950/95 backdrop-blur-sm border-t border-white/5 flex items-center justify-end gap-3">
     <a href="{{ url_for('admin.dashboard') }}" class="btn-ghost">Cancel</a>
+    <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save changes</button>
   </div>
 </form>
 {% endblock %}

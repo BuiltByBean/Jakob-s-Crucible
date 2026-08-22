@@ -41,9 +41,9 @@
     <textarea class="input resize-y leading-relaxed" id="description" name="description" rows="5"
               maxlength="4000">{{ form['description'] if form else (resource.description if resource else '') }}</textarea>
   </div>
-  <div class="flex items-center gap-3">
-    <button type="submit" class="btn-primary">{{ icons.icon('check', 18) }} Save</button>
+  <div class="flex items-center justify-end gap-3">
     <a href="{{ url_for('admin.resources') }}" class="btn-ghost">Cancel</a>
+    <button type="submit" class="btn-primary">{{ icons.icon('check', 18) }} Save</button>
   </div>
 </form>
 {% endblock %}

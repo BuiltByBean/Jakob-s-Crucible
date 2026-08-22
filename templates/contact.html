@@ -43,9 +43,11 @@
         <label class="field-label" for="message">Message <span class="text-flame-400">*</span></label>
         <textarea class="input resize-none" id="message" name="message" rows="7" maxlength="8000" required>{{ form.get('message', '') }}</textarea>
       </div>
-      <button type="submit" class="btn-primary">
-        {{ icons.icon('mail', 18) }} Send message
-      </button>
+      <div class="flex justify-end">
+        <button type="submit" class="btn-primary">
+          {{ icons.icon('mail', 18) }} Send message
+        </button>
+      </div>
     </form>
 
     <aside class="space-y-6">

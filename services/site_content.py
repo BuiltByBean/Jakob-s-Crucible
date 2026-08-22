@@ -43,6 +43,7 @@ class Entry:
 # --- groups (one admin screen each) ----------------------------------------
 
 GROUPS = [
+    ("appearance", "Background effects", "The rising sparks, the glow, and the texture."),
     ("home", "Home page", "The hero line and the wayfinding cards."),
     ("library", "Teaching Library", "The blurb under the Teaching Library heading."),
     ("scripture", "Explore Scripture", "The description and the shelf legend."),
@@ -60,6 +61,15 @@ GROUP_LABELS = {slug: label for slug, label, _ in GROUPS}
 # --- the registry ----------------------------------------------------------
 
 REGISTRY: list[Entry] = [
+    # ---- appearance: the three atmosphere layers, each switchable ----
+    Entry("appearance.embers", "appearance", "Rising sparks", "toggle", "on",
+          help="Embers drifting up the page. They always stay off for visitors who "
+               "ask their device to reduce motion."),
+    Entry("appearance.glow", "appearance", "Glow from below", "toggle", "on",
+          help="The blue light rising from the bottom of the screen."),
+    Entry("appearance.grain", "appearance", "Fine texture", "toggle", "on",
+          help="A very faint grain over the background, so large dark areas don't band."),
+
     # ---- home ----
     Entry("home.hero_subline", "home", "Hero line (under the tagline)", "text",
           "Verse-by-verse study and thoughtful reflection with Jakob McClain"),
@@ -236,6 +246,12 @@ def links(key: str) -> list[dict]:
     return _parse_links(entry.default) if entry else []
 
 
+def enabled(key: str) -> bool:
+    """A 'toggle' value as a boolean. Anything but a stored 'off' is on, so a
+    damaged row leaves the site looking the way it shipped."""
+    return content(key).strip().lower() != "off"
+
+
 def is_overridden(key: str) -> bool:
     return bool((_overrides().get(key) or "").strip())
 
@@ -294,6 +310,8 @@ def validation_error(entry: Entry, value: str) -> str | None:
     value = (value or "").strip()
     if not value:
         return None  # empty = restore the default
+    if entry.kind == "toggle" and value not in ("on", "off"):
+        return "That switch can only be on or off."
     if entry.kind == "url" and not safe_url(value):
         return "Please enter a full web address starting with https://"
     if entry.kind == "email":

@@ -122,6 +122,17 @@ wording, links, resources, topics, manuscripts, or notes.
   an entry added to one and not the other is a shipped bug.
 - Section grammar: `.section` > `.section-title` (uppercase, letter-spaced,
   flame accent). Empty states are honest gray copy, never "Coming soon".
+- **Form actions sit on the RIGHT** (owner's rule: most people are
+  right-handed): `flex items-center justify-end gap-3`, secondary action to
+  the LEFT of the primary. Applies to the public contact form and every admin
+  form.
+- Long PICK-lists inside a form scroll inside themselves (`.scroll-list`,
+  which sets `overscroll-behavior: contain` so hitting the end doesn't start
+  scrolling the page). Browse lists keep normal page scrolling — never nest a
+  page's main content in an inner scroller.
+- The atmosphere layers (sparks canvas, grain, glow) render site-wide from
+  base.html and are each switchable from /admin (`appearance.*` toggles).
+  Sparks stay off under `prefers-reduced-motion` regardless of the switch.
 - Base `grid-cols-1` on every responsive grid. RECORDED EXCEPTION: the
   Explore-Scripture book grid uses base `grid-cols-2` — 66 one-line book names
   in a single column is worse mobile UX than two narrow columns; cells keep

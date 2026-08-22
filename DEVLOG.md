@@ -2,6 +2,16 @@
 
 User-facing change history, newest first.
 
+## 2026-08-22 — Effects everywhere, with switches
+
+The rising sparks, the glow and the fine texture now appear on every page
+rather than only the home page, and each one has its own on/off switch in
+the admin under Background effects — so the look can be dialled back without
+a code change. Sparks still stay off for visitors whose device asks for
+reduced motion. Long choose-from lists (the featured picker, a topic's
+teachings) now scroll within themselves instead of dragging the whole page,
+and every form's action button moved to the right-hand side.
+
 ## 2026-08-22 — Choose the featured teaching
 
 The admin gains its own Featured teaching screen: pick any teaching to pin at

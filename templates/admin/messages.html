@@ -12,6 +12,23 @@
   </p>
 </header>
 
+{% if not mail_configured %}
+{# Silent failure made loud: without SMTP credentials nothing is emailed, and
+   the only symptom is an inbox that never rings. #}
+<div class="card !border-amber-400/40 bg-amber-500/5 p-4 mb-6">
+  <p class="text-sm text-amber-100">
+    <strong>Email notifications are switched off.</strong>
+    Messages are still saved here — nothing is being lost — but no email is
+    sent to {{ MINISTRY.email }} when one arrives.
+  </p>
+  <p class="mt-2 text-xs text-amber-200/80 leading-relaxed">
+    To turn them on, your developer needs to add the <code>MAIL_USERNAME</code>
+    and <code>MAIL_PASSWORD</code> settings on the hosting dashboard (a Gmail
+    app password, not the account password).
+  </p>
+</div>
+{% endif %}
+
 <div class="flex flex-wrap items-center gap-2 mb-8">
   <a href="{{ url_for('admin.messages') }}" class="chip {{ 'chip-active' if not archived }}">Inbox</a>
   <a href="{{ url_for('admin.messages', show='archived') }}" class="chip {{ 'chip-active' if archived }}">Archived</a>

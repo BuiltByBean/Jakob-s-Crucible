@@ -240,6 +240,13 @@ def page_group(group):
                 value = _links_from_form(entry.key)
                 if value is None:
                     continue  # field genuinely absent from this submission
+            elif entry.kind == "toggle":
+                # A hidden "off" plus a checked "on" both arrive; the checkbox
+                # is rendered second, so the last value is the real answer.
+                sent = request.form.getlist(entry.key)
+                if not sent:
+                    continue
+                value = "on" if "on" in sent else "off"
             else:
                 value = request.form.get(entry.key)
                 if value is None:
@@ -273,6 +280,7 @@ def page_group(group):
 
 
 _PREVIEW_URLS = {
+    "appearance": "public.home",
     "home": "public.home",
     "library": "public.library",
     "scripture": "explore.scripture_index",
@@ -629,7 +637,8 @@ def messages():
         if row.read_at is None:
             row.read_at = now
     db.session.commit()
-    return render_template("admin/messages.html", messages=rows, archived=archived)
+    return render_template("admin/messages.html", messages=rows, archived=archived,
+                           mail_configured=bool(current_app.config.get("MAIL_USERNAME")))
 
 
 @bp.route("/messages/<int:message_id>/archive", methods=["POST"])

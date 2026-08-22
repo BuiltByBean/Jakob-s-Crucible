@@ -155,6 +155,21 @@
     aspect-ratio: 9 / 16;
   }
 
+  /* ---- self-contained scrolling list ----
+     For long PICK-lists inside a form (choose a featured teaching, tick the
+     teachings in a topic): the list scrolls within itself so the Save button
+     stays put, and `overscroll-behavior: contain` stops the scroll chaining
+     onto the page when you reach either end — without it the page lurches as
+     soon as the list bottoms out. Browse lists keep normal page scrolling;
+     nesting a page's main content in an inner scroller just gives you two
+     scrollbars fighting each other. */
+  .scroll-list {
+    max-height: min(30rem, 62vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
   /* Links inside admin-authored prose carry no utility classes of their own
      (the owner types [Search](/search)), so style them by context. */
   .prose-links a,

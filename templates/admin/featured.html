@@ -28,7 +28,9 @@
 <form method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-  <div class="card divide-y divide-white/5 mb-6">
+  {# The list scrolls inside itself — the Save button stays reachable, and the
+     page behind it doesn't move (see .scroll-list). #}
+  <div class="card divide-y divide-white/5 mb-6 scroll-list">
     {# Automatic first: the sensible default for a channel that keeps publishing. #}
     <label class="flex items-start gap-4 p-5 cursor-pointer hover:bg-white/5 transition-colors">
       <input type="radio" name="featured" value="" class="mt-1 w-4 h-4 shrink-0 accent-flame-500"
@@ -63,9 +65,9 @@
     {% endfor %}
   </div>
 
-  <div class="sticky bottom-0 -mx-1 px-1 py-4 bg-surface-950/95 backdrop-blur-sm border-t border-white/5 flex items-center gap-3">
-    <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save</button>
+  <div class="sticky bottom-0 -mx-1 px-1 py-4 bg-surface-950/95 backdrop-blur-sm border-t border-white/5 flex items-center justify-end gap-3">
     <a href="{{ url_for('admin.dashboard') }}" class="btn-ghost">Cancel</a>
+    <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save</button>
   </div>
 </form>
 {% endblock %}

@@ -27,7 +27,7 @@
               name="description__{{ s.id }}" rows="3" maxlength="4000">{{ s.description }}</textarea>
   </div>
   {% endfor %}
-  <div class="flex items-center gap-3 sticky bottom-4">
+  <div class="sticky bottom-0 -mx-1 px-1 py-4 bg-surface-950/95 backdrop-blur-sm border-t border-white/5 flex items-center justify-end gap-3">
     <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save descriptions</button>
   </div>
 </form>

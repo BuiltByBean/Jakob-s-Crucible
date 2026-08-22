@@ -20,7 +20,9 @@
       <input class="input" type="email" id="email" name="email" maxlength="320" required value="{{ user.email }}">
       <p class="mt-1.5 text-xs text-surface-400">This is the address you sign in with.</p>
     </div>
-    <button type="submit" class="btn-primary">{{ icons.icon('check', 18) }} Save</button>
+    <div class="flex justify-end">
+      <button type="submit" class="btn-primary">{{ icons.icon('check', 18) }} Save</button>
+    </div>
   </form>
 
   <section class="card p-5 sm:p-6">
