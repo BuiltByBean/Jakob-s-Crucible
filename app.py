@@ -47,6 +47,32 @@ def _compute_asset_version() -> str:
 ASSET_V = _compute_asset_version()
 
 
+def _create_all_safely() -> None:
+    """db.create_all(), tolerant of the multi-worker startup race.
+
+    create_all checks-then-creates, which is not atomic. gunicorn boots its
+    workers simultaneously, so on the first deploy after a new table is added
+    two workers can both see it missing and both try to create it — the loser
+    raises 'table X already exists' and dies, taking the app down until
+    gunicorn retries. Observed in production on the deploy that added the
+    admin tables."""
+    import time
+
+    for attempt in range(1, 4):
+        try:
+            db.create_all()
+            return
+        except Exception as exc:  # noqa: BLE001
+            db.session.rollback()
+            if "already exists" in str(exc).lower():
+                logging.info("schema: another worker created the tables first — continuing")
+                return
+            if attempt == 3:
+                logging.error("schema: create_all failed after %d attempts: %s", attempt, exc)
+                return
+            time.sleep(0.4 * attempt)
+
+
 def create_app(config_cls=Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_cls)
@@ -364,7 +390,7 @@ def create_app(config_cls=Config) -> Flask:
 
     # ---- DB boot ------------------------------------------------------------
     with app.app_context():
-        db.create_all()
+        _create_all_safely()
         ensure_columns(db)
         missing = verify_model_columns(db)
         if missing:
