@@ -21,8 +21,13 @@ def send_email_safe(app, *, subject: str, recipients: list[str], body: str,
     reply_to: the visitor's address, so a plain Reply in the owner's mail
     client reaches the visitor (without it, Reply targets the ministry's own
     authenticated From address). Callers must pass it newline-flattened."""
-    if not app.config.get("MAIL_USERNAME"):
-        logging.info("Email skipped (MAIL_USERNAME unset): subject=%r to=%s", subject, recipients)
+    # BOTH are required. Gating on the username alone meant that setting it
+    # without a password flipped every "is email configured?" check to true
+    # while sending still failed at SMTP auth — the worst of both worlds:
+    # the admin's warning banner disappears and mail still doesn't arrive.
+    if not app.config.get("MAIL_USERNAME") or not app.config.get("MAIL_PASSWORD"):
+        missing = "MAIL_USERNAME" if not app.config.get("MAIL_USERNAME") else "MAIL_PASSWORD"
+        logging.info("Email skipped (%s unset): subject=%r to=%s", missing, subject, recipients)
         return False
 
     msg = Message(subject=subject, recipients=recipients, body=body, reply_to=reply_to or None)

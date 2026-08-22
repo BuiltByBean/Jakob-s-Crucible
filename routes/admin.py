@@ -638,7 +638,8 @@ def messages():
             row.read_at = now
     db.session.commit()
     return render_template("admin/messages.html", messages=rows, archived=archived,
-                           mail_configured=bool(current_app.config.get("MAIL_USERNAME")))
+                           mail_configured=bool(current_app.config.get("MAIL_USERNAME")
+                                                and current_app.config.get("MAIL_PASSWORD")))
 
 
 @bp.route("/messages/<int:message_id>/archive", methods=["POST"])
