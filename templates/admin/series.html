@@ -1,0 +1,34 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'series' %}
+{% block title %}Series{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+  <h1 class="font-display text-3xl font-semibold text-surface-50">Series</h1>
+  <p class="mt-2 text-surface-300 max-w-2xl">
+    Series names and their episodes come straight from your YouTube playlists —
+    rename a playlist there and the site follows. The descriptions are yours to
+    write here.
+  </p>
+</header>
+
+<form method="post" class="space-y-4">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% for s in series_list %}
+  <div class="card p-5 sm:p-6">
+    <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+      <label class="field-label !mb-0" for="description__{{ s.id }}">{{ s.title }}</label>
+      <span class="text-xs text-surface-500">
+        {{ s.teachings | length }} episode{{ 's' if s.teachings | length != 1 }}
+      </span>
+    </div>
+    <textarea class="input resize-y leading-relaxed" id="description__{{ s.id }}"
+              name="description__{{ s.id }}" rows="3" maxlength="4000">{{ s.description }}</textarea>
+  </div>
+  {% endfor %}
+  <div class="flex items-center gap-3 sticky bottom-4">
+    <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save descriptions</button>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_group = group %}
+{% block title %}{{ label }}{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 class="font-display text-3xl font-semibold text-surface-50">{{ label }}</h1>
+    <p class="mt-2 text-surface-300 max-w-2xl">
+      Leave a box empty to restore the site's original wording.
+    </p>
+  </div>
+  {% if preview_url %}
+  <a href="{{ url_for(preview_url) }}" target="_blank" rel="noopener" class="btn-ghost shrink-0">
+    {{ icons.icon('external', 17) }} See the page
+  </a>
+  {% endif %}
+</header>
+
+<form method="post" class="space-y-6">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  {% for entry in entries %}
+  {#- A rejected save re-renders with what was typed, so nothing is ever lost. -#}
+  {% set value = submitted.get(entry.key, sc.content(entry.key)) %}
+  <div class="card p-5 sm:p-6 {{ 'border-red-400/50' if errors.get(entry.key) }}">
+    <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+      <label class="field-label !mb-0" for="{{ entry.key }}">{{ entry.label }}</label>
+      {% if sc.is_overridden(entry.key) %}
+      <span class="text-[11px] font-semibold uppercase tracking-wider text-flame-400/90">edited</span>
+      {% endif %}
+    </div>
+    {% if entry.help %}
+    <p class="text-xs text-surface-400 mb-2.5 leading-relaxed">{{ entry.help }}</p>
+    {% endif %}
+    {% if errors.get(entry.key) %}
+    <p class="text-xs text-red-300 mb-2.5">{{ errors[entry.key] }}</p>
+    {% endif %}
+
+    {% if entry.kind == 'links' %}
+      {#- Rows are SERVER-RENDERED. They used to come from an Alpine x-for
+          template, so a blocked or slow script submitted zero rows — silently
+          deleting every podcast platform while reporting success. Alpine now
+          only adds/removes rows on top of real inputs. The __present marker
+          sits outside the rows so "form not submitted" is distinguishable
+          from "the owner removed every row". -#}
+      <div x-data="{}">
+        <input type="hidden" name="{{ entry.key }}__present" value="1">
+        <div>
+          {% for row in sc.links(entry.key) %}
+          <div class="flex flex-wrap sm:flex-nowrap gap-2 mb-2" data-row>
+            <input class="input sm:w-56" type="text" name="{{ entry.key }}__name"
+                   value="{{ row.name }}" placeholder="Name" aria-label="Platform name">
+            <input class="input flex-1" type="url" name="{{ entry.key }}__url"
+                   value="{{ row.url }}" placeholder="https://" aria-label="Platform address">
+            <button type="button" class="btn-ghost !px-3 shrink-0"
+                    @click="$el.closest('[data-row]').remove()"
+                    aria-label="Remove {{ row.name or 'this row' }}">{{ icons.icon('trash', 16) }}</button>
+          </div>
+          {% endfor %}
+          <template x-ref="tpl">
+            <div class="flex flex-wrap sm:flex-nowrap gap-2 mb-2" data-row>
+              <input class="input sm:w-56" type="text" name="{{ entry.key }}__name" placeholder="Name" aria-label="Platform name">
+              <input class="input flex-1" type="url" name="{{ entry.key }}__url" placeholder="https://" aria-label="Platform address">
+              <button type="button" class="btn-ghost !px-3 shrink-0"
+                      @click="$el.closest('[data-row]').remove()" aria-label="Remove this row">{{ icons.icon('trash', 16) }}</button>
+            </div>
+          </template>
+        </div>
+        <button type="button" class="btn-ghost !py-2 text-sm"
+                @click="$refs.tpl.parentNode.insertBefore($refs.tpl.content.cloneNode(true), $refs.tpl)">
+          {{ icons.icon('plus', 16) }} Add a platform
+        </button>
+        <p class="mt-2 text-xs text-surface-400">Remove every row and save to bring the original list back.</p>
+      </div>
+
+    {% elif entry.kind in ('text', 'url', 'email', 'phone') %}
+      <input class="input" id="{{ entry.key }}" name="{{ entry.key }}"
+             type="{{ 'url' if entry.kind == 'url' else 'email' if entry.kind == 'email' else 'text' }}"
+             value="{{ value }}"
+             {% if entry.kind == 'phone' %}inputmode="tel"{% endif %}>
+
+    {% else %}
+      <textarea class="input resize-y leading-relaxed{{ ' font-mono text-sm' if entry.kind == 'markdown' }}"
+                id="{{ entry.key }}" name="{{ entry.key }}" rows="{{ entry.rows }}">{{ value }}</textarea>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  {# Solid backdrop: a transparent sticky bar sat on top of the textarea the
+     owner was typing into, swallowing taps meant for the text. #}
+  <div class="sticky bottom-0 -mx-1 px-1 py-4 bg-surface-950/95 backdrop-blur-sm border-t border-white/5 flex items-center gap-3">
+    <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save changes</button>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

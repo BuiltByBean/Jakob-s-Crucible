@@ -12,7 +12,14 @@ import logging
 
 # (table, column, sql_type, default_literal_or_None)
 COLUMNS_TO_ADD: list[tuple[str, str, str, str | None]] = [
-    # (empty at launch — add entries here when evolving shipped tables)
+    # 2026-08 admin inbox: contact messages gained read/archive state.
+    ("contact_messages", "read_at", "DATETIME", None),
+    # "false" parses on SQLite AND Postgres; a bare 0 is rejected by Postgres for a
+    # boolean column, and ensure_columns swallows that failure silently.
+    ("contact_messages", "archived", "BOOLEAN", "false"),
+    # 2026-08 admin: "notes removed" for a file committed under static/ has to
+    # be recorded, since the image is rebuilt from git on every deploy.
+    ("teachings", "notes_hidden", "BOOLEAN", "false"),
 ]
 
 

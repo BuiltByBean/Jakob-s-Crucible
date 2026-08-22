@@ -1,0 +1,147 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'teachings' %}
+{% block title %}{{ teaching.title }}{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+  <p class="text-xs text-surface-400 mb-2">
+    <a href="{{ url_for('admin.teachings', kind=teaching.kind) }}" class="hover:text-flame-200 transition-colors">
+      &larr; {{ 'Shorts' if teaching.kind == 'short' else 'Manuscripts & notes' }}
+    </a>
+  </p>
+  <h1 class="font-display text-2xl sm:text-3xl font-semibold text-surface-50 leading-tight">{{ teaching.title }}</h1>
+  <p class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-surface-400">
+    <span>{{ teaching.published_at | datefmt }}</span>
+    <a href="{{ url_for('public.teaching_detail', slug=teaching.slug) }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-1.5 text-flame-300 hover:text-flame-200">
+      {{ icons.icon('external', 15) }} See the page
+    </a>
+    <a href="{{ teaching.youtube_url }}" target="_blank" rel="noopener"
+       class="inline-flex items-center gap-1.5 text-flame-300 hover:text-flame-200">
+      {{ icons.icon('youtube', 15) }} On YouTube
+    </a>
+  </p>
+</header>
+
+<div class="space-y-6 max-w-3xl">
+
+  {# ---- Manuscript ---- #}
+  <section class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold text-surface-50 mb-1">Manuscript</h2>
+    <p class="text-sm text-surface-400 mb-5">
+      The script you taught from, shown on the episode page and searchable word
+      by word. Upload the Word document and it is converted for you.
+    </p>
+
+    {# ONE form, one Save button. Two separate forms meant that choosing a file
+       and then pressing the lower "Save" silently discarded the file — and
+       that pressing "Upload" with no file selected wiped the manuscript. #}
+    <form method="post" enctype="multipart/form-data"
+          x-data="{ cleared: false, original: {{ (teaching.manuscript or '') | length }} }">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="manuscript">
+
+      <label class="field-label" for="manuscript_file">Upload a document</label>
+      <input class="input !py-2.5" type="file" id="manuscript_file"
+             name="manuscript_file" accept=".docx,.md,.txt">
+      <p class="mt-2 mb-6 text-xs text-surface-400">
+        Word (.docx), Markdown (.md), or plain text (.txt), up to 25MB.
+        Choosing a file replaces the text below when you save.
+      </p>
+
+      <label class="field-label" for="manuscript">Or edit it directly</label>
+      <textarea class="input resize-y font-mono text-sm leading-relaxed" id="manuscript"
+                name="manuscript" rows="18"
+                @input="cleared = original > 0 && $el.value.trim() === ''">{{ teaching.manuscript or '' }}</textarea>
+      <p class="mt-2 text-xs text-surface-400">
+        Start a section with ### — blank line between paragraphs, **bold**,
+        *italic*, and &gt; for a quoted passage.
+      </p>
+
+      {# Emptying the box deletes the owner's largest body of work; make it deliberate. #}
+      <label x-show="cleared" x-cloak class="mt-4 flex items-start gap-3 p-3 rounded-xl border border-red-400/40 bg-red-500/5 cursor-pointer">
+        <input type="checkbox" name="confirm_clear" value="yes" class="mt-0.5 w-4 h-4 shrink-0 accent-red-400">
+        <span class="text-sm text-red-200">Yes, delete this entire manuscript.</span>
+      </label>
+
+      <button type="submit" class="btn-primary mt-4">{{ icons.icon('check', 18) }} Save manuscript</button>
+    </form>
+  </section>
+
+  {# ---- Study notes ---- #}
+  <section class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold text-surface-50 mb-1">Study notes</h2>
+    <p class="text-sm text-surface-400 mb-5">
+      The downloadable handout. Its address never changes, so it is safe to
+      paste into a YouTube description:
+      <code class="text-flame-300 break-all">{{ request.url_root.rstrip('/') }}{{ url_for('public.notes_download', slug=teaching.slug) }}</code>
+    </p>
+
+    {% if teaching.notes_hidden %}
+    <div class="flex flex-wrap items-center gap-3 mb-5">
+      <span class="chip">notes removed — nothing to download on the episode page</span>
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="notes_restore">
+        <button type="submit" class="btn-ghost !py-2 !px-3 text-sm">Put them back</button>
+      </form>
+    </div>
+    {% elif notes_path %}
+    <div class="flex flex-wrap items-center gap-3 mb-5">
+      <span class="chip !border-flame-400/40 !text-flame-200">{{ icons.icon('check', 14) }} {{ notes_path.name }}</span>
+      <a href="{{ url_for('public.notes_download', slug=teaching.slug) }}" class="btn-ghost !py-2 !px-3 text-sm">Download</a>
+      <form method="post" x-data="{ sure: false }" @submit="if (!sure) { $event.preventDefault(); sure = true }">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="notes_delete">
+        <button type="submit" class="btn-ghost !py-2 !px-3 text-sm"
+                :class="sure ? '!border-red-400/50 !text-red-200' : ''"
+                x-text="sure ? 'Tap again to remove' : 'Remove'">Remove</button>
+      </form>
+    </div>
+    {% elif teaching.notes_url %}
+    <p class="text-sm text-surface-300 mb-5">
+      Currently linking out to <a href="{{ teaching.notes_url | safe_url }}" target="_blank" rel="noopener"
+      class="text-flame-300 hover:text-flame-200 break-all">{{ teaching.notes_url }}</a>.
+      Uploading a file here replaces that link with a download from this site.
+    </p>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="notes">
+      <label class="field-label" for="notes_file">{{ 'Replace the file' if notes_path else 'Upload a file' }}</label>
+      <div class="flex flex-wrap items-center gap-3">
+        <input class="input flex-1 min-w-[14rem] !py-2.5" type="file" id="notes_file"
+               name="notes_file" accept=".pdf,.docx">
+        <button type="submit" class="btn-primary shrink-0">{{ icons.icon('upload', 18) }} Upload</button>
+      </div>
+      <p class="mt-2 text-xs text-surface-400">PDF or Word (.docx), up to 25MB.</p>
+    </form>
+  </section>
+
+  {# ---- Featured ---- #}
+  {% if teaching.kind == 'teaching' %}
+  <section class="card p-5 sm:p-6 flex flex-wrap items-center gap-4">
+    <div class="min-w-0 flex-1">
+      <h2 class="font-display text-lg font-semibold text-surface-50">Featured teaching</h2>
+      <p class="mt-1 text-sm text-surface-400">
+        {% if teaching.is_featured %}
+        This teaching is featured at the top of the home page.
+        {% else %}
+        Put this one at the top of the home page.
+        {% endif %}
+      </p>
+    </div>
+    {% if not teaching.is_featured %}
+    <form method="post" class="shrink-0">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="featured">
+      <button type="submit" class="btn-ghost">Feature this teaching</button>
+    </form>
+    {% endif %}
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}

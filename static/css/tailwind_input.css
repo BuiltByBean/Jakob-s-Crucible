@@ -150,6 +150,17 @@
     aspect-ratio: 9 / 16;
   }
 
+  /* Links inside admin-authored prose carry no utility classes of their own
+     (the owner types [Search](/search)), so style them by context. */
+  .prose-links a,
+  .prose-dark a {
+    @apply text-flame-300 underline decoration-flame-500/40 transition-colors;
+  }
+  .prose-links a:hover,
+  .prose-dark a:hover {
+    @apply text-flame-200 decoration-flame-300;
+  }
+
   /* ---- nav highlight (ported from Built-By-Beans style.css .nav-link) ----
      Same mechanics as the source: muted label that brightens and lifts 2px on
      hover while a thin gradient bar sweeps in left-to-right (scaleX 0 -> 1,

@@ -1,0 +1,57 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'account' %}
+{% block title %}Your account{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+  <h1 class="font-display text-3xl font-semibold text-surface-50">Your account</h1>
+</header>
+
+<div class="space-y-6 max-w-2xl">
+  <form method="post" class="card p-5 sm:p-6 space-y-5">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div>
+      <label class="field-label" for="name">Your name</label>
+      <input class="input" type="text" id="name" name="name" maxlength="120" value="{{ user.name or '' }}">
+    </div>
+    <div>
+      <label class="field-label" for="email">Sign-in email</label>
+      <input class="input" type="email" id="email" name="email" maxlength="320" required value="{{ user.email }}">
+      <p class="mt-1.5 text-xs text-surface-400">This is the address you sign in with.</p>
+    </div>
+    <button type="submit" class="btn-primary">{{ icons.icon('check', 18) }} Save</button>
+  </form>
+
+  <section class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold text-surface-50">Password</h2>
+    <p class="mt-1 text-sm text-surface-400">
+      Changing your password signs out every other device you're signed in on.
+    </p>
+    <a href="{{ url_for('admin.change_password') }}" class="btn-ghost mt-4">
+      {{ icons.icon('lock', 17) }} Change your password
+    </a>
+  </section>
+
+  <section class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold text-surface-50 mb-1">Who can sign in</h2>
+    <p class="text-sm text-surface-400 mb-4">
+      Accounts are created by your developer, not from this screen.
+    </p>
+    <ul class="divide-y divide-white/5 -mx-1">
+      {% for u in users %}
+      <li class="px-1 py-3 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+        <span class="text-surface-100">{{ u.name or u.email }}</span>
+        {% if u.name %}<span class="text-surface-400 break-all">{{ u.email }}</span>{% endif %}
+        {% if u.id == user.id %}<span class="badge">you</span>{% endif %}
+        {% if u.must_change_password %}
+        <span class="text-xs text-flame-300 ml-auto">hasn't set a password yet</span>
+        {% elif u.last_login_at %}
+        <span class="text-xs text-surface-500 ml-auto">last signed in {{ u.last_login_at | datefmt }}</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}

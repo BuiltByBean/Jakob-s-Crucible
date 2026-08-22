@@ -1,0 +1,54 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'resources' %}
+{% block title %}Study resources{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 class="font-display text-3xl font-semibold text-surface-50">Study resources</h1>
+    <p class="mt-2 text-surface-300 max-w-2xl">
+      The tools recommended on the Study Resources page. They are listed
+      alphabetically within each category.
+    </p>
+  </div>
+  <a href="{{ url_for('admin.resource_form') }}" class="btn-primary shrink-0">
+    {{ icons.icon('plus', 18) }} Add a resource
+  </a>
+</header>
+
+{% if resources %}
+<div class="card divide-y divide-white/5">
+  {% for r in resources %}
+  <div class="p-5 flex flex-wrap items-start gap-4">
+    <div class="min-w-0 flex-1">
+      <p class="text-[11px] font-semibold uppercase tracking-wider text-flame-400/90">{{ r.category }}</p>
+      <p class="mt-1 font-display text-lg font-semibold text-surface-50">{{ r.name }}</p>
+      {% if r.url %}
+      <a href="{{ r.url | safe_url }}" target="_blank" rel="noopener"
+         class="mt-0.5 inline-block text-sm text-flame-300 hover:text-flame-200 break-all">{{ r.url }}</a>
+      {% endif %}
+      <p class="mt-1.5 text-sm text-surface-300 leading-relaxed">{{ r.description }}</p>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <a href="{{ url_for('admin.resource_form', resource_id=r.id) }}" class="btn-ghost !py-2 !px-3 text-sm">Edit</a>
+      <form method="post" action="{{ url_for('admin.resource_delete', resource_id=r.id) }}"
+            x-data="{ sure: false }" @submit="if (!sure) { $event.preventDefault(); sure = true }">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-ghost !py-2 !px-3 text-sm"
+                :class="sure ? '!border-red-400/50 !text-red-200' : ''"
+                x-text="sure ? 'Tap again to remove' : 'Remove'">Remove</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="card p-8 text-center text-surface-400">No resources yet.</p>
+{% endif %}
+
+<p class="mt-6 text-sm text-surface-400">
+  Want to change the wording above the list?
+  <a href="{{ url_for('admin.page_group', group='resources') }}" class="text-flame-300 hover:text-flame-200 underline decoration-flame-500/40">Edit the page description</a>.
+</p>
+{% endblock %}

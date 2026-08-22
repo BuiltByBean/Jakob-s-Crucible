@@ -11,16 +11,13 @@
 <div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
   <header class="mb-10 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Statement of Faith</h1>
-    <p class="mt-3 text-surface-300 leading-relaxed">
-      The primary doctrinal truths this ministry holds firmly, stated plainly —
-      each conviction with the Scriptures that carry it. Weigh everything
-      explained here against not only the proof texts, but also the cohesive
-      narrative of all Scripture.
+    <p class="mt-3 max-w-3xl text-surface-300 leading-relaxed prose-links">
+      {{ content('statement_of_faith.description') | rich_text }}
     </p>
   </header>
 
   <div class="prose-dark sof-prose">
-    {{ content | manuscript_html }}
+    {{ body | manuscript_html }}
   </div>
 
   {% if teaching %}

@@ -75,10 +75,12 @@ def home():
         .order_by(Teaching.published_at.asc())
         .first()
     )
+    from services.site_content import content as site_text
+
     starting_points = []
-    for t, why in ((intro, "Meet Jakob and hear what the crucible is for."),
-                   (statement, "The doctrinal foundation, laid out at length."),
-                   (featured, "The flagship study — what faith actually is.")):
+    for t, why in ((intro, site_text("home.start_intro")),
+                   (statement, site_text("home.start_statement")),
+                   (featured, site_text("home.start_featured"))):
         if t and all(t.id != s[0].id for s in starting_points):
             starting_points.append((t, why))
     return render_template(
@@ -155,16 +157,20 @@ def notes_download(slug):
     self-hosting later."""
     from flask import send_from_directory
 
+    from services.site_content import safe_url
+
     teaching = Teaching.query.filter_by(slug=slug).first_or_404()
-    notes_dir = BASE_DIR / "static" / "notes"
-    for ext in (".pdf", ".docx"):
-        if (notes_dir / f"{slug}{ext}").is_file():
-            return send_from_directory(
-                notes_dir, f"{slug}{ext}", as_attachment=True,
-                download_name=f"{teaching.title} - Study Notes{ext}", conditional=True,
-            )
-    if teaching.notes_url:
-        return redirect(teaching.notes_url)
+    path = teaching.notes_path  # admin upload (volume) first, then committed file
+    if path is not None:
+        return send_from_directory(
+            path.parent, path.name, as_attachment=True,
+            download_name=f"{teaching.title} - Study Notes{path.suffix}", conditional=True,
+        )
+    # Scheme-checked: notes_url is admin-editable, and an unchecked redirect
+    # target would make the ministry's domain a phishing hop.
+    external = safe_url(teaching.notes_url or "")
+    if external:
+        return redirect(external)
     abort(404)
 
 
@@ -196,14 +202,22 @@ def teaching_detail(slug):
 
 @bp.route("/statement-of-faith")
 def statement_of_faith():
-    """The easy-to-read Statement of Faith (content/statement_of_faith.md),
-    with a pointer to the full confession-of-faith episode for the long form."""
-    sof_path = BASE_DIR / "content" / "statement_of_faith.md"
-    content = sof_path.read_text(encoding="utf-8") if sof_path.is_file() else ""
-    # The document's own title line would duplicate the page heading.
-    content = re.sub(r"^### Personal Statement of Faith\s*\n", "", content)
+    """The easy-to-read Statement of Faith, with a pointer to the full
+    confession-of-faith episode for the long form.
+
+    The text lives in the database (admin-editable), seeded once at boot from
+    content/statement_of_faith.md — a repo file would be overwritten by every
+    deploy, so an edit made in the admin would silently vanish."""
+    from services.site_content import content as site_text
+
+    body = site_text("statement_of_faith.body")
+    if not body:  # first boot before seeding, or the row was cleared
+        sof_path = BASE_DIR / "content" / "statement_of_faith.md"
+        body = sof_path.read_text(encoding="utf-8") if sof_path.is_file() else ""
+        body = re.sub(r"^### Personal Statement of Faith\s*\n", "", body)
     teaching = Teaching.query.filter_by(is_statement_of_faith=True).first()
-    return render_template("statement_of_faith.html", content=content, teaching=teaching)
+    # NOT named `content`: that would shadow the global content() helper.
+    return render_template("statement_of_faith.html", body=body, teaching=teaching)
 
 
 @bp.route("/resources")
@@ -269,10 +283,14 @@ def contact():
             f"Subject: {subject or '(no subject)'}\n\n"
             f"{message}\n"
         )
+        from services.site_content import content as site_text
+
+        # Admin-editable, falling back to the configured address.
+        recipient = site_text("ministry.contact_recipient") or current_app.config["CONTACT_RECIPIENT"]
         row.emailed = send_email_safe(
             current_app._get_current_object(),
             subject=f"[The Wisdom Crucible] {subject or 'New contact message'}",
-            recipients=[current_app.config["CONTACT_RECIPIENT"]],
+            recipients=[recipient],
             body=body,
             # Reply in the owner's mail client goes straight to the visitor.
             # email is newline-flattened by _line() above (header-safe).

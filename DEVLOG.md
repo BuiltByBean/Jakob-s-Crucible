@@ -2,6 +2,27 @@
 
 User-facing change history, newest first.
 
+## 2026-08-22 — The admin area
+
+thewisdomcrucible.com/admin now exists, behind a sign-in. Everything on the
+site that isn't pulled from YouTube can be changed there, with no developer
+involved: the wording on every page (home, library, Explore Scripture,
+Explore Topics, Statement of Faith, Study Resources, About, Contact), the
+Statement of Faith itself, the study resources (add, edit, remove), topics
+and which teachings belong to them, series descriptions, the featured
+teaching, and every contact detail and link — email, phone, YouTube, the
+podcast, X, and the list of podcast platforms. Leaving a box empty restores
+the site's original wording, so nothing can be permanently lost by editing.
+
+Manuscripts and study notes are uploads now: drop in the Word document and
+the manuscript is converted and published (and immediately searchable);
+notes get a download button at an address stable enough to paste into a
+YouTube description. A Messages inbox shows every contact-form submission —
+including the ones that arrived while email delivery was unconfigured.
+
+Under the hood: admin edits are recorded separately from the content tables,
+so re-syncing the channel from YouTube can never quietly revert them.
+
 ## 2026-08-21 — Home atmosphere: rising blue-white sparks
 
 The home page (only) gains the Vault-of-Ash atmosphere recolored to the

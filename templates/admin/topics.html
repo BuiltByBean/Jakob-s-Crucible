@@ -1,0 +1,61 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'topics' %}
+{% block title %}Topics{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 class="font-display text-3xl font-semibold text-surface-50">Topics</h1>
+    <p class="mt-2 text-surface-300 max-w-2xl">
+      Topics are discovery routes, not exclusive categories — a teaching can
+      carry several, and a broad verse-by-verse exposition can carry none.
+      Shorts never take topics.
+    </p>
+  </div>
+  <a href="{{ url_for('admin.topic_form') }}" class="btn-primary shrink-0">
+    {{ icons.icon('plus', 18) }} Add a topic
+  </a>
+</header>
+
+<div class="card divide-y divide-white/5 mb-8">
+  {% for topic in topics %}
+  <div class="p-5 flex flex-wrap items-start gap-4">
+    <div class="min-w-0 flex-1">
+      <p class="font-display text-lg font-semibold text-surface-50">
+        {{ topic.name }}
+        <span class="ml-2 badge">{{ topic.teachings | length }}</span>
+      </p>
+      <p class="mt-1.5 text-sm text-surface-300 leading-relaxed">{{ topic.description }}</p>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <a href="{{ url_for('admin.topic_form', topic_id=topic.id) }}" class="btn-ghost !py-2 !px-3 text-sm">Edit</a>
+      <form method="post" action="{{ url_for('admin.topic_delete', topic_id=topic.id) }}"
+            x-data="{ sure: false }" @submit="if (!sure) { $event.preventDefault(); sure = true }">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-ghost !py-2 !px-3 text-sm"
+                :class="sure ? '!border-red-400/50 !text-red-200' : ''"
+                x-text="sure ? 'Tap again to remove' : 'Remove'">Remove</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="p-8 text-center text-surface-400">No topics yet.</p>
+  {% endfor %}
+</div>
+
+{% if untopiced %}
+<section class="section">
+  <h2 class="section-title"><span>Teachings with no topic</span></h2>
+  <p class="text-sm text-surface-400 mb-4 max-w-2xl">
+    Deliberate for broad expositions — their subject is the book of Scripture
+    they open, found through Explore Scripture.
+  </p>
+  <div class="card divide-y divide-white/5">
+    {% for t in untopiced %}
+    <p class="px-5 py-3 text-sm text-surface-200">{{ t.title }}</p>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

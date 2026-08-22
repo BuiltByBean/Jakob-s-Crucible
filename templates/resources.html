@@ -11,10 +11,8 @@
 <div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
   <header class="mb-10 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Study Resources</h1>
-    <p class="mt-3 text-surface-300 leading-relaxed">
-      These are tools potentially worth using for your own study of Scripture. The
-      list is deliberately short. Resources are only added after they have
-      demonstrated their merit in the Crucible.
+    <p class="mt-3 text-surface-300 leading-relaxed prose-links">
+      {{ content('resources.description') | rich_text }}
     </p>
   </header>
 
@@ -29,7 +27,8 @@
     </h2>
     <div x-show="open" x-collapse class="space-y-3">
       {% for r in items %}
-      <a href="{{ r.url }}" target="_blank" rel="noopener" class="card card-hover p-5 flex items-start gap-4 group">
+      {# safe_url: this href is admin-editable, so the scheme is re-checked here. #}
+      <a href="{{ r.url | safe_url }}" target="_blank" rel="noopener" class="card card-hover p-5 flex items-start gap-4 group">
         <span class="text-flame-400 mt-0.5 shrink-0">{{ icons.icon('external', 20) }}</span>
         <span class="min-w-0">
           <span class="block font-semibold text-surface-50 group-hover:text-flame-200 transition-colors">{{ r.name }}</span>

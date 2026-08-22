@@ -1,0 +1,47 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'teachings' %}
+{% block title %}Manuscripts & notes{% endblock %}
+
+{% block content %}
+<header class="mb-6">
+  <h1 class="font-display text-3xl font-semibold text-surface-50">Manuscripts &amp; notes</h1>
+  <p class="mt-2 text-surface-300 max-w-2xl">
+    Upload the script you taught from and the study notes people download.
+    Episodes themselves come from YouTube — this is what you add on top.
+  </p>
+</header>
+
+<div class="flex flex-wrap items-center gap-2 mb-8">
+  <a href="{{ url_for('admin.teachings') }}" class="chip {{ 'chip-active' if kind == 'teaching' }}">Teachings</a>
+  <a href="{{ url_for('admin.teachings', kind='short') }}" class="chip {{ 'chip-active' if kind == 'short' }}">Shorts</a>
+</div>
+
+<div class="card divide-y divide-white/5">
+  {% for t in teachings %}
+  <a href="{{ url_for('admin.teaching_form', teaching_id=t.id) }}"
+     class="flex flex-wrap items-center gap-4 p-4 hover:bg-white/5 transition-colors group">
+    <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"
+         alt="" loading="lazy" width="96" height="54" class="w-20 aspect-video object-cover rounded-md shrink-0">
+    <span class="min-w-0 flex-1">
+      <span class="block text-sm font-semibold text-surface-100 group-hover:text-flame-200 transition-colors">
+        {{ t.title }}{% if t.is_featured %} <span class="badge ml-1">featured</span>{% endif %}
+      </span>
+      <span class="block text-xs text-surface-500 mt-0.5">
+        {{ t.series.title if t.series else 'No series' }} &middot; {{ t.published_at | datefmt }}
+      </span>
+    </span>
+    <span class="flex items-center gap-2 shrink-0 text-xs">
+      <span class="chip !py-1 {{ '!border-flame-400/40 !text-flame-200' if t.manuscript }}">
+        {{ 'manuscript' if t.manuscript else 'no manuscript' }}
+      </span>
+      <span class="chip !py-1 {{ '!border-flame-400/40 !text-flame-200' if t.has_notes }}">
+        {{ 'notes' if t.has_notes else 'no notes' }}
+      </span>
+    </span>
+  </a>
+  {% else %}
+  <p class="p-8 text-center text-surface-400">Nothing here yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -273,6 +273,15 @@ def run() -> None:
                 db.session.add(ScriptureRef(teaching=t, source="manual", **r))
         db.session.commit()
 
+        # ---- replay the owner's admin edits ---------------------------------
+        # This wipe/rebuild recreates series, topics and resources from the
+        # constants above. Anything the owner changed in /admin was recorded in
+        # admin_edits (which this script never touches) and is reapplied here,
+        # so a YouTube re-sync can never quietly revert his wording.
+        from services import admin_edits
+
+        admin_edits.apply_all()
+
         # ---- search index ---------------------------------------------------
         search_svc.rebuild_index()
 

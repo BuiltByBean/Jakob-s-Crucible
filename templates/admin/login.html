@@ -1,0 +1,40 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% block title %}Sign in{% endblock %}
+
+{% block auth_content %}
+<div class="min-h-screen flex items-center justify-center px-4 py-16">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-8">
+      <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}"
+           alt="" width="60" height="85" class="mx-auto h-20 w-auto logo-glow-lg">
+      <h1 class="mt-5 font-display text-2xl font-semibold text-surface-50">Site admin</h1>
+      <p class="mt-1.5 text-sm text-surface-400">{{ MINISTRY.name }}</p>
+    </div>
+
+    <form method="post" action="{{ url_for('admin.login') }}" class="card p-6 space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if request.args.get('next') %}
+      <input type="hidden" name="next" value="{{ request.args.get('next') }}">
+      {% endif %}
+      <div>
+        <label class="field-label" for="email">Email</label>
+        <input class="input" type="email" id="email" name="email" value="{{ email or '' }}"
+               autocomplete="username" required autofocus>
+      </div>
+      <div>
+        <label class="field-label" for="password">Password</label>
+        <input class="input" type="password" id="password" name="password"
+               autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn-primary w-full justify-center">
+        {{ icons.icon('lock', 18) }} Sign in
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-xs text-surface-500">
+      <a href="{{ url_for('public.home') }}" class="hover:text-flame-200 transition-colors">&larr; Back to the site</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

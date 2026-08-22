@@ -1,0 +1,58 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'topics' %}
+{% block title %}{{ 'Edit topic' if topic else 'Add a topic' }}{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+  <p class="text-xs text-surface-400 mb-2">
+    <a href="{{ url_for('admin.topics') }}" class="hover:text-flame-200 transition-colors">&larr; Topics</a>
+  </p>
+  <h1 class="font-display text-3xl font-semibold text-surface-50">{{ topic.name if topic else 'Add a topic' }}</h1>
+</header>
+
+<form method="post" class="space-y-6 max-w-3xl">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="card p-5 sm:p-6 space-y-5">
+    <div>
+      <label class="field-label" for="name">Name</label>
+      <input class="input" type="text" id="name" name="name" maxlength="120" required
+             value="{{ form.get('name') or (topic.name if topic else '') }}">
+    </div>
+    <div>
+      <label class="field-label" for="description">Description</label>
+      <textarea class="input resize-y leading-relaxed" id="description" name="description" rows="4"
+                maxlength="4000">{{ form.get('description') or (topic.description if topic else '') }}</textarea>
+      <p class="mt-1.5 text-xs text-surface-400">Shown on the topic card and at the top of the topic's page.</p>
+    </div>
+  </div>
+
+  <div class="card p-5 sm:p-6">
+    <p class="field-label">Teachings in this topic</p>
+    <p class="text-xs text-surface-400 mb-4">
+      Tick a teaching only when this topic is a <em>primary</em> focus of it.
+    </p>
+    <div class="space-y-1 max-h-[28rem] overflow-y-auto pr-1">
+      {% for t in teachings %}
+      <label class="flex items-start gap-3 p-2.5 rounded-lg hover:bg-white/5 cursor-pointer min-h-[44px]">
+        <input type="checkbox" name="teachings" value="{{ t.youtube_id }}"
+               class="mt-1 w-4 h-4 shrink-0 accent-flame-500"
+               {% if t.youtube_id in selected %}checked{% endif %}>
+        <span class="min-w-0">
+          <span class="block text-sm text-surface-100 leading-snug">{{ t.title }}</span>
+          <span class="block text-xs text-surface-500 mt-0.5">
+            {{ t.series.title if t.series else 'No series' }} &middot; {{ t.published_at | datefmt }}
+          </span>
+        </span>
+      </label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <button type="submit" class="btn-primary">{{ icons.icon('check', 18) }} Save topic</button>
+    <a href="{{ url_for('admin.topics') }}" class="btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

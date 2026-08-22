@@ -1,0 +1,49 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'resources' %}
+{% block title %}{{ 'Edit resource' if resource else 'Add a resource' }}{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+  <p class="text-xs text-surface-400 mb-2">
+    <a href="{{ url_for('admin.resources') }}" class="hover:text-flame-200 transition-colors">&larr; Study resources</a>
+  </p>
+  <h1 class="font-display text-3xl font-semibold text-surface-50">
+    {{ resource.name if resource else 'Add a resource' }}
+  </h1>
+</header>
+
+{# form[...] not form.get(...) OR default: an intentionally emptied field must
+   stay empty when the form comes back, not silently refill from the record. #}
+<form method="post" class="card p-5 sm:p-6 space-y-5 max-w-2xl">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div>
+    <label class="field-label" for="name">Name</label>
+    <input class="input" type="text" id="name" name="name" maxlength="200" required
+           value="{{ form['name'] if form else (resource.name if resource else '') }}">
+  </div>
+  <div>
+    <label class="field-label" for="url">Web address</label>
+    <input class="input" type="url" id="url" name="url" maxlength="400" placeholder="https://"
+           value="{{ form['url'] if form else (resource.url if resource else '') }}">
+  </div>
+  <div>
+    <label class="field-label" for="category">Category heading</label>
+    <input class="input" type="text" id="category" name="category" maxlength="120" list="admin-categories"
+           value="{{ form['category'] if form else (resource.category if resource else 'Bible Software & Digital Tools') }}">
+    <datalist id="admin-categories">
+      <option value="Bible Software & Digital Tools"></option>
+    </datalist>
+    <p class="mt-1.5 text-xs text-surface-400">Resources are grouped under this heading on the page.</p>
+  </div>
+  <div>
+    <label class="field-label" for="description">Description</label>
+    <textarea class="input resize-y leading-relaxed" id="description" name="description" rows="5"
+              maxlength="4000">{{ form['description'] if form else (resource.description if resource else '') }}</textarea>
+  </div>
+  <div class="flex items-center gap-3">
+    <button type="submit" class="btn-primary">{{ icons.icon('check', 18) }} Save</button>
+    <a href="{{ url_for('admin.resources') }}" class="btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

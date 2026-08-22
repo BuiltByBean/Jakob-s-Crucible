@@ -21,24 +21,7 @@
            alt="The crucible and blue-white flame" width="96" height="136"
            class="h-32 w-auto mx-auto md:mx-0 md:order-2 logo-glow-lg">
       <div class="prose-dark md:order-1">
-        <p>
-          The Wisdom Crucible exists to refine understanding through Scripture — where study leads to
-          transformation.
-        </p>
-        <p>
-          The crucible symbolizes this mortal life in which we are continually refined by trials — the
-          heat that purifies and burns away what does not belong. The blue-white flame is not merely for
-          aesthetic preference, but because a blue flame burns hotter than the typical red-to-yellow
-          flame. It reflects the desire for a passion that burns intensely for the understanding and
-          application of the truth revealed in the Holy Scriptures of the Bible.
-        </p>
-        <p>
-          The mission is to help others grow in curiosity, understanding, and — God willing — a deepening
-          passion for both the Word of God and for God Himself. That mission is pursued through two
-          complementary forms of teaching — detailed and methodical verse-by-verse and topical studies
-          that draw truth directly from Scripture, and reflective messages that connect biblical
-          principles to everyday life through vivid illustration and thoughtful meditation.
-        </p>
+        {{ content('about.ministry_body') | manuscript_html }}
       </div>
     </div>
   </section>
@@ -50,26 +33,7 @@
            alt="Portrait of Jakob McClain" width="160" height="171"
            class="w-36 sm:w-40 rounded-2xl object-cover border border-white/10 mx-auto sm:mx-0 sm:order-2">
       <div class="prose-dark sm:order-1">
-        <p>
-          My name is Jakob McClain, and my primary roles are those of husband, father, physical
-          therapist, and Bible study teacher — yet, more than those things, my identity is in Christ! I
-          was raised in Northeast Texas, educated in the Baylor Doctor of Physical Therapy program, and
-          most importantly, trained from childhood as a lifelong student of Scripture in preparation to
-          obey the Great Commission — to do my part for the sake of discipling all people.
-        </p>
-        <p>
-          Until autumn of 2025, my focus when studying Scripture was mostly to develop my personal
-          relationship with God. In fact, I had expressly told God that I did not want to teach because I
-          didn&rsquo;t think that role would suit me. It seems the problem with that idea was that God had
-          prepared me to suit that role. He eventually employed several others of the body of Christ to
-          ask me to consider serving as a teacher for a Sunday morning adult Bible study. I eventually
-          agreed, and I&rsquo;ve never regretted that obedient response for a single moment!
-        </p>
-        <p>
-          Ministry isn&rsquo;t a hobby. It&rsquo;s a mission. The Wisdom Crucible is my attempt to
-          dedicate my mission to the Lord — to be a disciple of Jesus Christ laboring to produce
-          disciples of Jesus Christ!
-        </p>
+        {{ content('about.bio_body') | manuscript_html }}
       </div>
     </div>
   </section>
@@ -82,7 +46,7 @@
         <span>
           <span class="block font-display text-lg font-semibold text-surface-50">Statement of Faith</span>
           <span class="block mt-1 text-sm text-surface-300 leading-relaxed">
-            The doctrinal foundation, stated plainly — the right place to weigh this ministry's teaching.
+            {{ content('about.begin_statement') }}
           </span>
         </span>
       </a>
@@ -91,7 +55,7 @@
         <span>
           <span class="block font-display text-lg font-semibold text-surface-50">The Teaching Library</span>
           <span class="block mt-1 text-sm text-surface-300 leading-relaxed">
-            Every study and reflection, organised by series — watch, listen, or read from one page.
+            {{ content('about.begin_library') }}
           </span>
         </span>
       </a>

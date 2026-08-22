@@ -56,6 +56,22 @@ def create_app(config_cls=Config) -> Flask:
 
     db.init_app(app)
     mail.init_app(app)
+
+    # REGISTERED BEFORE CSRFProtect ON PURPOSE. Flask runs app-level
+    # before_request hooks in registration order, and Flask-WTF's hook reads
+    # request.form — which parses the body. Anything that must bound the body
+    # has to run before that, and has to work off content_length rather than
+    # touching request.form itself.
+    @app.before_request
+    def _bound_public_bodies():
+        limit = app.config["PUBLIC_MAX_CONTENT_LENGTH"]
+        if (request.blueprint != "admin"
+                and request.content_length is not None
+                and request.content_length > limit):
+            from werkzeug.exceptions import RequestEntityTooLarge
+
+            raise RequestEntityTooLarge()
+
     app.csrf = CSRFProtect(app)
 
     # SQLite PRAGMAs per-connection (a boot-time one-shot only hits one pooled
@@ -73,11 +89,29 @@ def create_app(config_cls=Config) -> Flask:
                 cur.execute("PRAGMA foreign_keys=ON")
                 cur.close()
 
+    # Shaped to what this site actually loads. 'unsafe-eval' is required by
+    # Alpine (it compiles x-data/@click expressions with new Function) —
+    # without it the mobile drawer and every dropdown die.
+    # 'inline-speculation-rules' keeps base.html's prefetch block working.
+    # form-action 'self' and base-uri 'none' are the two directives that most
+    # directly protect the admin forms.
+    _CSP = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-eval' 'inline-speculation-rules'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https://i.ytimg.com https://*.ytimg.com; "
+        "frame-src https://www.youtube-nocookie.com; "
+        "connect-src 'self'; "
+        "frame-ancestors 'self'; base-uri 'none'; form-action 'self'; object-src 'none'"
+    )
+
     @app.after_request
     def _security_headers(resp):
         resp.headers.setdefault("X-Content-Type-Options", "nosniff")
         resp.headers.setdefault("X-Frame-Options", "SAMEORIGIN")
         resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        resp.headers.setdefault("Content-Security-Policy", _CSP)
         return resp
 
     # ---- Jinja filters / globals -------------------------------------------
@@ -143,7 +177,10 @@ def create_app(config_cls=Config) -> Flask:
                 out.append(f"<ul>{items}</ul>")
             elif all(re.match(r"\d{1,3}[.)] ", line) for line in lines):
                 items = "".join(
-                    f"<li>{_inline_md(re.sub(r'^\\d{1,3}[.)] ', '', line).strip())}</li>" for line in lines
+                    # [0-9] not \d: this lives in an f-string, where the escape
+                    # became a literal backslash and never matched — so every
+                    # numbered list rendered as "1. 1. Item".
+                    f"<li>{_inline_md(re.sub(r'^[0-9]{1,3}[.)] ', '', line).strip())}</li>" for line in lines
                 )
                 out.append(f"<ol>{items}</ol>")
             else:
@@ -154,34 +191,75 @@ def create_app(config_cls=Config) -> Flask:
         s = str(escape(text))
         s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
         s = re.sub(r"(?<!\*)\*([^*\n]+)\*(?!\*)", r"<em>\1</em>", s)
+        s = _inline_links(s)
         return s.replace("\n", "<br>")
+
+    def _inline_links(escaped: str) -> str:
+        """[label](/path) -> an anchor. Runs over ALREADY-ESCAPED text, and the
+        href is re-checked against the scheme allowlist, so an admin-authored
+        'javascript:' link can never reach the page."""
+        from services.site_content import safe_url
+
+        def _replace(match):
+            label, target = match.group(1), match.group(2)
+            href = safe_url(target.replace("&amp;", "&"))
+            if not href:
+                return label
+            external = href.startswith("http")
+            attrs = ' target="_blank" rel="noopener"' if external else ""
+            return f'<a href="{escape(href)}"{attrs}>{label}</a>'
+
+        return re.sub(r"\[([^\]\n]{1,120})\]\(([^)\s]{1,400})\)", _replace, escaped)
+
+    @app.template_filter("rich_text")
+    def rich_text(text):
+        """One paragraph of admin-authored prose: escaped first, then **bold**,
+        *italic*, and [links](/path). Never emits raw HTML."""
+        return Markup(_inline_md(text or ""))
+
+    @app.template_filter("safe_url")
+    def safe_url_filter(value):
+        """Defence in depth at render time: a URL stored by an older code path
+        or edited straight in the database still cannot become javascript:."""
+        from services.site_content import safe_url
+
+        return safe_url(value) or "#"
 
     @app.context_processor
     def _globals():
         from datetime import datetime, timezone
 
+        from services import site_content as sc
+
+        # MINISTRY reads through the content registry: every value is
+        # admin-editable and falls back to the shipped config default.
         return {
             "ASSET_V": ASSET_V,
             "now_year": datetime.now(timezone.utc).year,
+            "content": sc.content,
+            "site_links": sc.links,
+            "PAGE_GROUPS": sc.GROUPS,
             "MINISTRY": {
                 "name": app.config["MINISTRY_NAME"],
-                "tagline": app.config["MINISTRY_TAGLINE"],
-                "email": app.config["MINISTRY_EMAIL"],
-                "phone": app.config["MINISTRY_PHONE"],
-                "youtube": app.config["YOUTUBE_URL"],
-                "youtube_community": app.config["YOUTUBE_COMMUNITY_URL"],
-                "podcast": app.config["PODCAST_URL"],
-                "podcast_platforms": app.config["PODCAST_PLATFORMS"],
-                "twitter": app.config["TWITTER_URL"],
+                "tagline": sc.content("ministry.tagline"),
+                "email": sc.content("ministry.email"),
+                "phone": sc.content("ministry.phone"),
+                "youtube": sc.content("ministry.youtube_url"),
+                "youtube_community": sc.content("ministry.youtube_community_url"),
+                "podcast": sc.content("ministry.podcast_url"),
+                "podcast_platforms": [(row["name"], row["url"]) for row in sc.links("ministry.podcast_platforms")],
+                "twitter": sc.content("ministry.x_url"),
             },
         }
 
     # ---- Blueprints ---------------------------------------------------------
+    from routes.admin import bp as admin_bp
     from routes.explore import bp as explore_bp
     from routes.public import bp as public_bp
 
     app.register_blueprint(public_bp)
     app.register_blueprint(explore_bp)
+    app.register_blueprint(admin_bp)
 
     # ---- Health + errors ----------------------------------------------------
     @app.route("/healthz")
@@ -189,6 +267,18 @@ def create_app(config_cls=Config) -> Flask:
         # Auth-free, DB-free, template-free: platform probes must not depend
         # on a warm database or a working template.
         return "ok", 200, {"Content-Type": "text/plain; charset=utf-8"}
+
+    @app.route("/robots.txt")
+    def robots():
+        # Politeness, not protection — the admin also sends X-Robots-Tag and a
+        # noindex meta, which are what actually cover a URL a crawler found
+        # some other way.
+        body = (
+            "User-agent: *\n"
+            "Disallow: /admin\n"
+            "Allow: /\n"
+        )
+        return body, 200, {"Content-Type": "text/plain; charset=utf-8"}
 
     _ERROR_PAGE = (
         '<!doctype html><html style="background:#0a0f1a;color-scheme:dark;">'
@@ -248,9 +338,29 @@ def create_app(config_cls=Config) -> Flask:
     @app.errorhandler(413)
     def payload_too_large(_e):
         return _ERROR_PAGE.format(
-            code=413, title="Message too large",
-            message="That submission was too large. Please shorten it and try again.",
+            code=413, title="File too large",
+            message="That file was too large to accept. Study notes and manuscripts can be up to 25MB.",
         ), 413
+
+    @app.errorhandler(403)
+    def forbidden(_e):
+        # Reached whenever an admin session expires with a form still open —
+        # ordinary for someone writing a long manuscript. Werkzeug's default
+        # here is a white page, which is a shipped bug for this owner.
+        return _ERROR_PAGE.format(
+            code=403, title="Your session has expired",
+            message='For safety you are signed out after a while. '
+                    '<a href="/admin/login" style="color:#4ab5f6;">Sign in again</a> '
+                    'to continue &mdash; use your browser&rsquo;s Back button first if you '
+                    'want to copy anything you had typed.',
+        ), 403
+
+    @app.errorhandler(503)
+    def unavailable(_e):
+        return _ERROR_PAGE.format(
+            code=503, title="Temporarily unavailable",
+            message="This part of the site isn&rsquo;t available right now. Please try again shortly.",
+        ), 503
 
     # ---- DB boot ------------------------------------------------------------
     with app.app_context():
@@ -262,6 +372,37 @@ def create_app(config_cls=Config) -> Flask:
                 "schema drift: %s missing — add to services/schema_migrations.COLUMNS_TO_ADD",
                 ", ".join(missing),
             )
+        # The statement of faith moves from the repo file into the DB once, so
+        # the owner can edit it (a repo file would be overwritten every deploy).
+        from services.site_content import seed_statement_of_faith_if_empty
+
+        seed_statement_of_faith_if_empty()
+
+        # Log where the database actually resolved to. If this prints a path
+        # inside the container instead of the mounted volume, every admin edit
+        # (and the owner's password) is silently discarded on the next deploy.
+        from config import DATA_DIR
+
+        logging.info("data directory: %s", Path(DATA_DIR).resolve())
+
+        # Scream in the deploy logs if a live account still uses the temporary
+        # password. Cheap (a couple of hashes, once per process) and the only
+        # thing standing between a public /admin and anyone who guesses it.
+        try:
+            from werkzeug.security import check_password_hash
+
+            from models import AdminUser
+
+            weak = [u.email for u in AdminUser.query.filter_by(is_active=True).all()
+                    if u.password_hash and check_password_hash(u.password_hash, "password")]
+            if weak:
+                logging.critical(
+                    "ADMIN ACCOUNT(S) STILL USING THE TEMPORARY PASSWORD: %s — "
+                    "sign in at /admin and change it now.", ", ".join(weak),
+                )
+        except Exception as exc:  # noqa: BLE001 — never block boot on a warning
+            db.session.rollback()
+            logging.debug("admin password audit skipped: %s", exc)
 
     return app
 

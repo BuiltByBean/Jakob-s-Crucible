@@ -11,11 +11,16 @@ The DOCX_MAP below names which file belongs to which teaching slug.
 """
 from __future__ import annotations
 
-import re
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO))
+
+# The conversion itself lives in services/documents so the /admin upload and
+# this batch import can never diverge.
+from services.documents import docx_to_markdown  # noqa: E402
+
 OUT_DIR = REPO / "content" / "manuscripts"
 
 # docx filename -> teaching slug (see data/seed; slugs are stable).
@@ -36,104 +41,8 @@ DOCX_MAP = {
     # statement_of_faith.docx is handled separately -> content/statement_of_faith.md
 }
 
-W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-
-
-def _runs_markdown(paragraph) -> str:
-    """All runs in document order, hyperlink children included, with
-    bold/italic markers merged across adjacent same-format runs. Soft line
-    breaks (w:br) become newlines — Jakob scripts with poetic line breaks for
-    speaking cadence, and the site renderer shows them as <br>."""
-    pieces: list[tuple[str, bool, bool]] = []
-    for r in paragraph._p.iter(f"{W}r"):
-        rpr = r.find(f"{W}rPr")
-
-        def _on(tag):
-            if rpr is None:
-                return False
-            el = rpr.find(f"{W}{tag}")
-            return el is not None and el.get(f"{W}val") not in ("false", "0", "none")
-
-        # children in document order: text, soft breaks, tabs
-        text = ""
-        for child in r:
-            tag = child.tag
-            if tag == f"{W}t":
-                text += child.text or ""
-            elif tag == f"{W}br":
-                text += "\n"
-            elif tag == f"{W}tab":
-                text += " "
-        if not text:
-            continue
-        pieces.append((text, _on("b"), _on("i")))
-
-    merged: list[tuple[str, bool, bool]] = []
-    for text, b, i in pieces:
-        if merged and merged[-1][1] == b and merged[-1][2] == i:
-            merged[-1] = (merged[-1][0] + text, b, i)
-        else:
-            merged.append((text, b, i))
-
-    out = ""
-    for text, b, i in merged:
-        # markers can't wrap leading/trailing whitespace
-        lead = text[: len(text) - len(text.lstrip())]
-        trail = text[len(text.rstrip()):]
-        core = text.strip()
-        if not core:
-            out += text
-            continue
-        if b and i:
-            core = f"***{core}***"
-        elif b:
-            core = f"**{core}**"
-        elif i:
-            core = f"*{core}*"
-        out += lead + core + trail
-    return out.strip()
-
-
-# A short line that is nothing but bold (Jakob's header idiom in these docs)
-_BOLD_HEADER = re.compile(r"^\*{2,3}([^*]{1,70})\*{2,3}$")
-
-
 def convert(path: Path) -> str:
-    import docx
-
-    doc = docx.Document(str(path))
-    lines: list[str] = []
-    for p in doc.paragraphs:
-        style = (p.style.name if p.style is not None else "") or ""
-        text = _runs_markdown(p)
-        if not text:
-            continue
-        m = re.match(r"Heading (\d)", style)
-        if style == "Title" or (m and m.group(1) == "1"):
-            lines.append(f"## {text}")
-        elif m and m.group(1) == "2":
-            lines.append(f"### {text}")
-        elif m:
-            lines.append(f"### {text}")
-        elif "List" in style:
-            lines.append(f"- {text}")
-        elif _BOLD_HEADER.match(text):
-            # lone bold line = a section header in Jakob's authoring style
-            lines.append(f"### {_BOLD_HEADER.match(text).group(1).strip()}")
-        else:
-            lines.append(text)
-        lines.append("")
-    # keep consecutive bullets in one block (no blank line between items)
-    squeezed: list[str] = []
-    for line in lines:
-        if line == "" and len(squeezed) >= 1 and squeezed[-1].startswith("- "):
-            continue
-        if squeezed and squeezed[-1].startswith("- ") and line and not line.startswith("- "):
-            squeezed.append("")
-        squeezed.append(line)
-    md = "\n".join(squeezed)
-    md = re.sub(r"\n{3,}", "\n\n", md).strip() + "\n"
-    return md
+    return docx_to_markdown(str(path))
 
 
 def run(src_dir: Path) -> None:

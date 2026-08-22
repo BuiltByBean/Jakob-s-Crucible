@@ -10,7 +10,7 @@
 <div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
   <header class="mb-8">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Teaching Library</h1>
-    <p class="mt-2 text-surface-300 max-w-2xl">Every episode in one place — watch, listen, read, or download from each teaching's page.</p>
+    <p class="mt-2 text-surface-300 prose-links max-w-2xl">{{ content('library.description') | rich_text }}</p>
   </header>
 
   {# Filter chips: plain links (server-side filtering), state lives in the URL. #}

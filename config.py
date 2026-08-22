@@ -6,6 +6,7 @@ SECRET_KEY, DATA_DIR (volume mount), DATABASE_URL (optional Postgres),
 MAIL_* + CONTACT_RECIPIENT for the contact form, TWC_FORCE_HTTPS=1.
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -40,9 +41,14 @@ class Config:
             "sessions and CSRF tokens are signed with the public dev key. Set SECRET_KEY now."
         )
 
-    # Bound request bodies: the largest legitimate POST is the contact form
-    # (~8KB of text). Without a cap, Werkzeug 3.x accepts unlimited bodies.
-    MAX_CONTENT_LENGTH = 1 * 1024 * 1024
+    # Bound request bodies. The admin uploads Word manuscripts and scanned
+    # study-notes PDFs, so the global ceiling is 25MB; every non-admin route is
+    # held to PUBLIC_MAX_CONTENT_LENGTH by an app-level before_request that
+    # runs BEFORE Flask-WTF's CSRF hook (which parses the body, and would
+    # otherwise raise 413 under the smaller cap before any blueprint hook
+    # could raise it). Without a cap at all, Werkzeug accepts unlimited bodies.
+    MAX_CONTENT_LENGTH = 25 * 1024 * 1024
+    PUBLIC_MAX_CONTENT_LENGTH = 1 * 1024 * 1024
 
     SQLALCHEMY_DATABASE_URI = _normalise_db_url(
         os.environ.get("DATABASE_URL", f"sqlite:///{DATA_DIR / 'wisdom_crucible.db'}")
@@ -57,10 +63,16 @@ class Config:
         "pool_timeout": 10,
     }
 
-    # Cookies (public site has no login, but the session carries flashes + CSRF).
+    # Cookies. The session now carries the admin login, so Secure must not
+    # depend on someone remembering to set TWC_FORCE_HTTPS in the dashboard —
+    # any production signal turns it on.
+    SESSION_COOKIE_NAME = "twc_session"
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = "Lax"
-    SESSION_COOKIE_SECURE = _env_bool("TWC_FORCE_HTTPS")
+    SESSION_COOKIE_SECURE = _env_bool("TWC_FORCE_HTTPS") or bool(os.environ.get("RAILWAY_ENVIRONMENT"))
+    # Admin sessions carry their own absolute + idle expiry (services/auth);
+    # this is the cookie's own lifetime, deliberately a little longer.
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=14)
 
     # CSRF: token tied to session, no expiry — a contact form left open
     # overnight should not 400 on submit.

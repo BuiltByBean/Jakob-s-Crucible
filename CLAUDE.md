@@ -59,6 +59,44 @@ manuscript, transcript, chapters, scripture refs, and topics all hang off one
 - Explore-Scripture lights a book only when it is the PRIMARY passage of a
   full teaching; passing citations don't count as "opened".
 
+## Admin area (/admin)
+
+The owner maintains the site here; a code change should never be needed for
+wording, links, resources, topics, manuscripts, or notes.
+
+- Hand-rolled session auth in `services/auth.py` (no Flask-Login). ONE
+  `before_request` on the blueprint guards every route — a new admin route is
+  protected by default. Nothing mutates on GET (base.html prefetches internal
+  links, which would fire GET mutations on hover).
+- `session_epoch` on the user row is copied into the session and compared per
+  request: changing a password signs out every other device. Absolute (12h)
+  and idle (2h) expiry are enforced in the same guard.
+- Login throttling is DB-backed (`login_attempts`), keyed on BOTH IP and
+  email — gunicorn runs multiple workers, so an in-process dict would throttle
+  only the worker that served the request. IP = RIGHTMOST X-Forwarded-For.
+- **Admin tables must never declare an FK to teachings/series/topics.** The
+  re-sync wipes those tables and SQLite enforces CASCADE, which would empty
+  the admin data. Reference content by `youtube_id`/slug instead.
+- **Editable content lives in the DB, never in repo files.** The container
+  filesystem is rebuilt from git on deploy; only DATA_DIR persists. The
+  statement of faith moved from `content/statement_of_faith.md` into
+  `site_content` (seeded once at boot). Uploaded notes go to DATA_DIR/notes
+  keyed by youtube_id, never under `static/`.
+- Every admin edit to content the re-sync rebuilds is ALSO recorded in
+  `admin_edits` (JSON payload keyed by slug/youtube_id) and replayed by
+  `services/admin_edits.apply_all()` at the end of `seed_db.py`. That is what
+  makes a YouTube sync non-destructive — smoke-tested end to end.
+- Page copy is a registry (`services/site_content.py`): every key declares the
+  shipped default, so the site renders identically until edited and clearing a
+  field restores the original wording. Templates call `content('key')`.
+- Admin-supplied URLs are scheme-checked on write AND re-checked at render
+  (`|safe_url`) — an admin field reaching an `href` is the real stored-XSS
+  surface. Admin prose renders through `manuscript_html`/`rich_text`, which
+  escape before applying markup.
+- Accounts are created by `scripts/seed_admin.py` (never resets an existing
+  password) and recovered with `scripts/reset_admin_password.py`. No
+  email-based reset: mail is a silent no-op unless MAIL_USERNAME is set.
+
 ## UI rules (hard)
 
 - **Dark only.** Canvas `#0a0f1a`. Every `<html>` tag (base.html AND any
@@ -133,6 +171,8 @@ manuscript, transcript, chapters, scripture refs, and topics all hang off one
 
 ```
 npm run build:css                       # rebuild static/css/tailwind.css
+python scripts/seed_admin.py            # create the admin accounts (idempotent)
+python scripts/reset_admin_password.py <email> <pw>   # forgotten-password recovery
 python scripts/seed_db.py               # (re)build DB from data/seed/*.json
 python scripts/sync_youtube.py          # re-scrape channel -> data/seed + upsert (dev deps)
 python scripts/import_manuscripts.py    # content/manuscripts/*.md -> Teaching.manuscript

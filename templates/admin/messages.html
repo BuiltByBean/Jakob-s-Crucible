@@ -1,0 +1,58 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'messages' %}
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<header class="mb-6">
+  <h1 class="font-display text-3xl font-semibold text-surface-50">Messages</h1>
+  <p class="mt-2 text-surface-300 max-w-2xl">
+    Everything sent through the contact form. Messages are stored here whether
+    or not the notification email goes out, so nothing is ever lost.
+  </p>
+</header>
+
+<div class="flex flex-wrap items-center gap-2 mb-8">
+  <a href="{{ url_for('admin.messages') }}" class="chip {{ 'chip-active' if not archived }}">Inbox</a>
+  <a href="{{ url_for('admin.messages', show='archived') }}" class="chip {{ 'chip-active' if archived }}">Archived</a>
+</div>
+
+{% if messages %}
+<div class="space-y-4">
+  {% for m in messages %}
+  <article class="card p-5">
+    <header class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-2">
+      <span class="font-display text-lg font-semibold text-surface-50">{{ m.name or 'Someone' }}</span>
+      <a href="mailto:{{ m.email }}" class="text-sm text-flame-300 hover:text-flame-200 break-all">{{ m.email }}</a>
+      <span class="text-xs text-surface-500 ml-auto">{{ m.created_at | datefmt }}</span>
+    </header>
+    {% if m.subject %}
+    <p class="text-sm font-semibold text-surface-200 mb-2">{{ m.subject }}</p>
+    {% endif %}
+    <div class="prose-dark text-sm">
+      {% for para in m.message.split('\n\n') if para.strip() %}
+      <p>{{ para | nl2br }}</p>
+      {% endfor %}
+    </div>
+    <footer class="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center gap-3">
+      <a href="mailto:{{ m.email }}?subject={{ (('Re: ' + m.subject) if m.subject else 'Re: your message') | urlencode }}"
+         class="btn-ghost !py-2 !px-3 text-sm">{{ icons.icon('mail', 16) }} Reply</a>
+      <form method="post" action="{{ url_for('admin.message_archive', message_id=m.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-ghost !py-2 !px-3 text-sm">
+          {{ 'Move back to inbox' if m.archived else 'Archive' }}
+        </button>
+      </form>
+      {% if not m.emailed %}
+      <span class="text-xs text-surface-500 ml-auto">no notification email was sent</span>
+      {% endif %}
+    </footer>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="card p-8 text-center text-surface-400">
+  {{ 'Nothing archived.' if archived else 'No messages yet.' }}
+</p>
+{% endif %}
+{% endblock %}

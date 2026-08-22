@@ -74,6 +74,11 @@ class Teaching(db.Model):
     published_at = db.Column(db.DateTime, index=True)  # UTC
 
     manuscript = db.Column(db.Text, default="")  # markdown; blog-form of the script
+    # Set when the owner removes notes in the admin. Needed because the 12
+    # launch-era files committed under static/notes/ cannot be deleted at
+    # runtime (the image is rebuilt from git on every deploy) — so "removed"
+    # has to be recorded rather than performed.
+    notes_hidden = db.Column(db.Boolean, default=False)
     is_featured = db.Column(db.Boolean, default=False)
     is_statement_of_faith = db.Column(db.Boolean, default=False)
 
@@ -135,15 +140,34 @@ class Teaching(db.Model):
         return self.transcript_segments.limit(1).count() > 0
 
     @property
-    def has_notes(self) -> bool:
-        """Notes exist self-hosted (static/notes/<slug>.pdf or .docx) or as an
-        external link scraped from the video description."""
-        from config import BASE_DIR
+    def notes_path(self):
+        """The self-hosted notes file, or None.
 
-        notes_dir = BASE_DIR / "static" / "notes"
-        return bool(self.notes_url) or any(
-            (notes_dir / f"{self.slug}{ext}").is_file() for ext in (".pdf", ".docx")
-        )
+        Admin uploads land on the DATA_DIR volume keyed by youtube_id (stable
+        across re-seeds and title changes) and win; the repo's committed
+        static/notes/<slug>.ext files are the launch-era fallback. Nothing
+        under static/ survives a redeploy, so uploads must never go there."""
+        from pathlib import Path
+
+        from config import BASE_DIR, DATA_DIR
+
+        if self.notes_hidden:
+            return None
+        for directory, stem in ((Path(DATA_DIR) / "notes", self.youtube_id),
+                                (BASE_DIR / "static" / "notes", self.slug)):
+            for ext in (".pdf", ".docx"):
+                candidate = directory / f"{stem}{ext}"
+                if candidate.is_file():
+                    return candidate
+        return None
+
+    @property
+    def has_notes(self) -> bool:
+        """Notes exist self-hosted (uploaded or committed) or as an external
+        link scraped from the video description."""
+        if self.notes_hidden:
+            return False
+        return bool(self.notes_url) or self.notes_path is not None
 
 
 class Chapter(db.Model):
@@ -275,3 +299,91 @@ class ContactMessage(db.Model):
     message = db.Column(db.Text, default="")
     created_at = db.Column(db.DateTime, default=_utcnow)
     emailed = db.Column(db.Boolean, default=False)
+    read_at = db.Column(db.DateTime)  # set when opened in the admin inbox
+    archived = db.Column(db.Boolean, default=False)  # never hard-deleted
+
+
+# ---------------------------------------------------------------------------
+# Admin tables.
+#
+# HARD RULE: none of these may declare a ForeignKey to teachings / series /
+# topics. scripts/seed_db.py wipes those tables on every content re-sync and
+# SQLite now enforces ON DELETE CASCADE — an FK here would silently empty the
+# owner's admin data on the next YouTube sync. Anything that must point at a
+# teaching stores its youtube_id (stable across re-seeds AND title changes).
+# ---------------------------------------------------------------------------
+
+
+class AdminUser(db.Model):
+    """A site maintainer. Two accounts by design (owner + developer)."""
+
+    __tablename__ = "admin_users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(320), unique=True, nullable=False, index=True)
+    name = db.Column(db.String(120), default="")
+    password_hash = db.Column(db.String(255), nullable=False, default="")
+    is_active = db.Column(db.Boolean, default=True)
+    # Forces the change-password screen before any other admin page renders.
+    must_change_password = db.Column(db.Boolean, default=False)
+    # Bumped on every password change; the session carries a copy, so changing
+    # the password signs out every other device (the only revocation available
+    # with client-side signed-cookie sessions).
+    session_epoch = db.Column(db.Integer, default=1, nullable=False)
+    last_login_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=_utcnow)
+    updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
+
+
+class SiteContent(db.Model):
+    """Admin-editable copy, keyed by a dotted registry key.
+
+    Rows are OVERRIDES: a missing key falls back to the code default in
+    services/site_content.REGISTRY, so the site renders identically until the
+    owner actually edits something, and a bad row can be deleted to restore
+    the shipped wording."""
+
+    __tablename__ = "site_content"
+
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    value = db.Column(db.Text, default="")
+    updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
+    updated_by = db.Column(db.String(320), default="")
+
+
+class AdminEdit(db.Model):
+    """The DURABLE record of every hand-edit the admin makes to content that
+    scripts/seed_db.py rebuilds (series descriptions, topics, resources,
+    per-teaching flags).
+
+    The content tables are derived data — a YouTube re-sync wipes and rebuilds
+    them. This table is not touched by the re-sync, and services/admin_edits
+    replays it afterwards, so the owner's edits survive every sync. Keys are
+    slugs / youtube_ids, never row ids (ids change on every rebuild)."""
+
+    __tablename__ = "admin_edits"
+
+    id = db.Column(db.Integer, primary_key=True)
+    entity_type = db.Column(db.String(32), nullable=False, index=True)  # series|topic|resources|teaching
+    entity_key = db.Column(db.String(160), nullable=False, default="")  # slug / youtube_id / '*'
+    payload = db.Column(db.Text, default="{}")  # JSON of the edited fields
+    updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
+    updated_by = db.Column(db.String(320), default="")
+
+    __table_args__ = (
+        db.UniqueConstraint("entity_type", "entity_key", name="uq_admin_edit_entity"),
+    )
+
+
+class LoginAttempt(db.Model):
+    """Failed admin logins, for throttling. DB-backed rather than in-memory:
+    gunicorn runs multiple workers, and an in-process dict throttles only the
+    worker that happened to serve the request."""
+
+    __tablename__ = "login_attempts"
+
+    id = db.Column(db.Integer, primary_key=True)
+    ip = db.Column(db.String(64), default="", index=True)
+    email = db.Column(db.String(320), default="", index=True)
+    created_at = db.Column(db.DateTime, default=_utcnow, index=True)

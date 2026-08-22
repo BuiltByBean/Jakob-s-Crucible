@@ -1,0 +1,84 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'dashboard' %}
+{% block title %}Overview{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+  <h1 class="font-display text-3xl font-semibold text-surface-50">
+    Welcome{{ ', ' + admin_user.name.split(' ')[0] if admin_user.name }}
+  </h1>
+  <p class="mt-2 text-surface-300">
+    Everything on this site that isn't pulled from YouTube can be changed here.
+    Edits go live immediately.
+  </p>
+</header>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+  <a href="{{ url_for('admin.messages') }}" class="card card-hover p-5">
+    <p class="text-3xl font-display font-semibold {{ 'text-flame-300' if unread else 'text-surface-50' }}">{{ unread }}</p>
+    <p class="mt-1 text-sm text-surface-300">unread message{{ 's' if unread != 1 }}</p>
+  </a>
+  <a href="{{ url_for('admin.teachings') }}" class="card card-hover p-5">
+    <p class="text-3xl font-display font-semibold text-surface-50">{{ with_manuscript }}<span class="text-surface-500 text-xl">/{{ teachings }}</span></p>
+    <p class="mt-1 text-sm text-surface-300">teachings with a manuscript</p>
+  </a>
+  <a href="{{ url_for('admin.resources') }}" class="card card-hover p-5">
+    <p class="text-3xl font-display font-semibold text-surface-50">{{ resources }}</p>
+    <p class="mt-1 text-sm text-surface-300">study resource{{ 's' if resources != 1 }}</p>
+  </a>
+  <a href="{{ url_for('admin.topics') }}" class="card card-hover p-5">
+    <p class="text-3xl font-display font-semibold text-surface-50">{{ topics }}</p>
+    <p class="mt-1 text-sm text-surface-300">topic{{ 's' if topics != 1 }}</p>
+  </a>
+</div>
+
+<section class="section">
+  <h2 class="section-title"><span>Change the wording on a page</span></h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for slug, label, hint in groups %}
+    <a href="{{ url_for('admin.page_group', group=slug) }}" class="card card-hover p-5">
+      <span class="block font-display text-lg font-semibold text-surface-50">{{ label }}</span>
+      <span class="block mt-1 text-sm text-surface-400 leading-relaxed">{{ hint }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">
+    <span>Latest messages</span>
+    <a href="{{ url_for('admin.messages') }}" class="normal-case tracking-normal font-medium text-sm text-surface-300 hover:text-flame-200 transition-colors">All messages &rarr;</a>
+  </h2>
+  {% if recent %}
+  <div class="card divide-y divide-white/5">
+    {% for m in recent %}
+    <div class="p-5">
+      <p class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span class="font-semibold text-surface-50">{{ m.name or 'Someone' }}</span>
+        <a href="mailto:{{ m.email }}" class="text-sm text-flame-300 hover:text-flame-200 break-all">{{ m.email }}</a>
+        <span class="text-xs text-surface-500 ml-auto">{{ m.created_at | datefmt }}</span>
+      </p>
+      {% if m.subject %}<p class="mt-1.5 text-sm font-medium text-surface-200">{{ m.subject }}</p>{% endif %}
+      <p class="mt-1 text-sm text-surface-300 leading-relaxed line-clamp-2">{{ m.message }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="card p-8 text-center text-surface-400">No messages yet.</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <h2 class="section-title"><span>Featured teaching</span></h2>
+  <div class="card p-5 flex flex-wrap items-center gap-4">
+    <div class="min-w-0 flex-1">
+      <p class="text-sm text-surface-400">Shown at the top of the home page:</p>
+      <p class="mt-1 font-display text-lg font-semibold text-surface-50">
+        {{ featured.title if featured else 'The most recent teaching' }}
+      </p>
+    </div>
+    <a href="{{ url_for('admin.teachings') }}" class="btn-ghost">Change</a>
+  </div>
+</section>
+{% endblock %}

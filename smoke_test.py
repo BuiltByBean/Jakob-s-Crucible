@@ -156,6 +156,87 @@ def run() -> int:
         stored = ContactMessage.query.count()
     check("real message stored, bot message not", stored == 1, f"got {stored}")
 
+    # ---- admin -------------------------------------------------------------
+    # These assert the NEGATIVE cases: for admin routes an unauthenticated 200
+    # is the bug, which a route-returns-200 sweep would happily miss.
+    print("\n-- admin is locked")
+    import re as _re
+
+    with app.app_context():
+        from models import AdminUser, db as _db
+        from services.auth import hash_password
+
+        _db.session.add(AdminUser(email="smoke@example.com", name="Smoke",
+                                  password_hash=hash_password("smoke-password-1"),
+                                  is_active=True, session_epoch=1))
+        _db.session.commit()
+
+    # Every admin rule is guarded: GET redirects to the login, POST is refused
+    # outright (never bounce a POST to a form — the body is already gone).
+    admin_rules = [r for r in app.url_map.iter_rules() if str(r.rule).startswith("/admin")]
+    check("admin routes exist", len(admin_rules) >= 10, f"got {len(admin_rules)}")
+    anon = app.test_client()
+    unguarded = []
+    for rule in admin_rules:
+        if rule.endpoint == "admin.login":
+            continue
+        path = str(rule.rule)
+        if "<" in path:  # concrete value for parameterised rules
+            path = _re.sub(r"<[^>]+>", "1", path)
+        if "GET" in rule.methods:
+            resp = anon.get(path)
+            if resp.status_code not in (302, 303, 403, 404):
+                unguarded.append(f"GET {path} -> {resp.status_code}")
+        if "POST" in rule.methods:
+            resp = anon.post(path, data={})
+            if resp.status_code not in (403, 400, 404):
+                unguarded.append(f"POST {path} -> {resp.status_code}")
+    check("every admin route refuses anonymous access", not unguarded, "; ".join(unguarded[:4]))
+
+    r = anon.get("/admin/", follow_redirects=True)
+    check("anonymous admin lands on the login form", b'name="password"' in r.data)
+
+    def _token(html: bytes) -> str:
+        m = _re.search(rb'name="csrf_token"[^>]*value="([^"]+)"', html)
+        return m.group(1).decode() if m else ""
+
+    r = anon.get("/admin/login")
+    check("login page has a CSRF token", bool(_token(r.data)))
+    r = anon.post("/admin/login", data={"email": "smoke@example.com", "password": "smoke-password-1"})
+    check("login without CSRF is refused", r.status_code == 400, f"-> {r.status_code}")
+
+    r = anon.post("/admin/login", data={
+        "csrf_token": _token(anon.get("/admin/login").data),
+        "email": "smoke@example.com", "password": "wrong",
+    })
+    check("wrong password is rejected", r.status_code == 401, f"-> {r.status_code}")
+
+    r = anon.post("/admin/login", data={
+        "csrf_token": _token(anon.get("/admin/login").data),
+        "email": "smoke@example.com", "password": "smoke-password-1",
+    })
+    check("correct password signs in", r.status_code == 302, f"-> {r.status_code}")
+    r = anon.get("/admin/", follow_redirects=True)
+    check("dashboard renders when signed in", b"Overview" in r.data or b"Welcome" in r.data)
+    check("admin responses are noindex", "noindex" in anon.get("/admin/").headers.get("X-Robots-Tag", ""))
+
+    # An open redirect through ?next= would make the ministry domain a phishing hop.
+    from services.auth import safe_next
+
+    check("safe_next rejects off-site targets",
+          all(safe_next(bad) is None for bad in
+              ("//evil.example", "https://evil.example", "/\\evil.example", "/teachings", "\\\\evil")))
+    check("safe_next allows admin paths", safe_next("/admin/resources") == "/admin/resources")
+
+    r = anon.post("/admin/logout", data={"csrf_token": _token(anon.get("/admin/").data)})
+    check("logout signs out", r.status_code == 302, f"-> {r.status_code}")
+    r = anon.get("/admin/", follow_redirects=True)
+    check("dashboard is locked again after logout", b'name="password"' in r.data)
+
+    print("\n-- robots")
+    r = client.get("/robots.txt")
+    check("robots.txt disallows /admin", r.status_code == 200 and b"Disallow: /admin" in r.data)
+
     print()
     if FAILURES:
         print(f"SMOKE TEST FAILED — {len(FAILURES)} failure(s)")

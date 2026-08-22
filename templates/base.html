@@ -27,7 +27,7 @@
   <script defer src="{{ url_for('static', filename='js/site.js') }}?v={{ ASSET_V }}"></script>
   {# Prefetch internal links on hover — prefetch, NOT prerender (prerender executes scripts). #}
   <script type="speculationrules">
-    {"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/contact"}}]}, "eagerness": "moderate"}]}
+    {"prefetch": [{"where": {"and": [{"href_matches": "/*"}, {"not": {"href_matches": "/contact"}}, {"not": {"href_matches": "/admin*"}}]}, "eagerness": "moderate"}]}
   </script>
 </head>
 {# Body stays background-transparent ON PURPOSE: the canvas color is painted
@@ -176,6 +176,8 @@
     </div>
     <div class="border-t border-white/5 py-5 text-center text-xs text-surface-400">
       &copy; {{ now_year if now_year else '2026' }} The Wisdom Crucible with Jakob McClain
+      <span class="mx-2 text-surface-700" aria-hidden="true">&middot;</span>
+      <a href="{{ url_for('admin.dashboard') }}" class="text-surface-600 hover:text-flame-300 transition-colors">Admin</a>
     </div>
   </footer>
 

@@ -7,6 +7,12 @@ flask-sqlalchemy==3.1.1
 flask-wtf==1.2.2
 flask-mail==0.10.0
 gunicorn==26.1.0
+# Reads the owner's Word manuscripts when he uploads one in /admin — a
+# production dependency since that conversion now happens in a request.
+python-docx==1.2.0
+# lxml is python-docx's compiled transitive: pinned per this file's policy, since a
+# release without a cp312 manylinux wheel would break the image build with no code change.
+lxml==6.1.2
 # Load-bearing transitives — pinned explicitly so they can't float either.
 sqlalchemy==2.0.48
 werkzeug==3.1.7

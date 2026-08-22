@@ -1,0 +1,137 @@
+{% import "_icon_macros.html" as icons %}
+{#- The admin shell. Its own layout rather than base.html: the public nav and
+    footer are noise here, and admin pages must never be indexed or cached.
+    The anti-flash inline style on <html> applies here too — same eyes. -#}
+<!doctype html>
+<html lang="en" style="background:#0a0f1a;color-scheme:dark;">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0f1a">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>{% block title %}Admin{% endblock %} — {{ MINISTRY.name }}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}?v={{ ASSET_V }}">
+  <script defer src="{{ url_for('static', filename='js/alpine-collapse.min.js') }}?v={{ ASSET_V }}"></script>
+  <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}?v={{ ASSET_V }}"></script>
+</head>
+<body class="min-h-screen flex flex-col" x-data="{ drawer: false }">
+
+{% if admin_user %}
+<header class="sticky top-0 z-40 bg-surface-950/90 backdrop-blur-md border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 lg:px-6 flex items-center gap-4 h-16">
+    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-2.5 shrink-0">
+      <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}" alt=""
+           width="24" height="35" class="h-8 w-auto logo-glow">
+      <span class="font-display font-semibold text-surface-50 text-[15px] tracking-wide">Site admin</span>
+    </a>
+    <div class="ml-auto flex items-center gap-2">
+      <a href="{{ url_for('public.home') }}" target="_blank" rel="noopener"
+         class="hidden sm:inline-flex items-center gap-1.5 text-sm text-surface-300 hover:text-flame-200 transition-colors px-3 py-2">
+        {{ icons.icon('external', 16) }} View site
+      </a>
+      <form method="post" action="{{ url_for('admin.logout') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn-ghost !py-2 !px-3 text-sm">Sign out</button>
+      </form>
+      <button type="button" class="lg:hidden p-2.5 rounded-lg text-surface-200 hover:bg-white/5"
+              @click="drawer = !drawer" :aria-expanded="drawer" aria-label="Admin menu">
+        <span x-show="!drawer">{{ icons.icon('menu', 22) }}</span>
+        <span x-show="drawer" x-cloak>{{ icons.icon('close', 22) }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+{% endif %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="fixed top-20 right-4 z-[10000] space-y-2 max-w-md w-full pointer-events-none" aria-live="polite" role="status">
+    {% for category, message in messages %}
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-end="opacity-0 -translate-y-2"
+         class="pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-xl text-sm font-medium shadow-lg border
+                {{ 'bg-surface-800 border-red-400/40 text-red-200' if category == 'error' else 'bg-surface-800 border-flame-400/40 text-flame-100' }}">
+      <span class="flex-1">{{ message }}</span>
+      <button type="button" @click="show = false" class="opacity-60 hover:opacity-100" aria-label="Dismiss">
+        {{ icons.icon('close', 16) }}
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+{% if admin_user %}
+{%- set nav = [
+  ('admin.dashboard', 'dashboard', 'Overview', 'home'),
+  ('admin.teachings', 'teachings', 'Manuscripts & notes', 'document'),
+  ('admin.resources', 'resources', 'Study resources', 'library'),
+  ('admin.topics', 'topics', 'Topics', 'tag'),
+  ('admin.series', 'series', 'Series', 'library'),
+  ('admin.messages', 'messages', 'Messages', 'mail'),
+  ('admin.account', 'account', 'Your account', 'user'),
+] -%}
+
+<div class="flex-1 w-full max-w-7xl mx-auto px-4 lg:px-6 py-8 grid grid-cols-1 lg:grid-cols-[15rem_minmax(0,1fr)] gap-8">
+  {# Sidebar; on mobile it becomes the drawer panel. #}
+  <nav class="lg:block" :class="drawer ? 'block' : 'hidden'" aria-label="Admin sections">
+    {# Mirrors the header's "View site" link, which is hidden on small screens —
+       an entry in one and not the other is a shipped bug (CLAUDE.md). #}
+    <a href="{{ url_for('public.home') }}" target="_blank" rel="noopener"
+       class="sm:hidden flex items-center gap-2.5 min-h-[44px] px-3 mb-4 rounded-xl text-sm font-medium text-surface-200 hover:bg-white/5">
+      {{ icons.icon('external', 17) }} View site
+    </a>
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-flame-300 mb-3">Sections</p>
+    <ul class="space-y-1 mb-6">
+      {% for endpoint, key, label, icon in nav %}
+      <li>
+        <a href="{{ url_for(endpoint) }}" @click="drawer = false"
+           class="flex items-center gap-2.5 min-h-[44px] px-3 rounded-xl text-sm font-medium transition-colors
+                  {{ 'bg-flame-500/10 text-flame-200' if active_admin == key else 'text-surface-200 hover:bg-white/5 hover:text-surface-50' }}">
+          {{ icons.icon(icon, 17) }} {{ label }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-flame-300 mb-3">Page wording</p>
+    <ul class="space-y-1">
+      {% for slug, label, _hint in PAGE_GROUPS %}
+      <li>
+        <a href="{{ url_for('admin.page_group', group=slug) }}" @click="drawer = false"
+           class="flex items-center min-h-[40px] px-3 rounded-xl text-sm transition-colors
+                  {{ 'bg-flame-500/10 text-flame-200 font-medium' if active_group == slug else 'text-surface-300 hover:bg-white/5 hover:text-surface-50' }}">
+          {{ label }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <main class="min-w-0">
+    {% if using_temp_password %}
+    {# This site is public. A password anyone could guess is worth interrupting for. #}
+    <div class="card !border-red-400/40 bg-red-500/5 p-4 mb-6 flex flex-wrap items-center gap-4">
+      <span class="text-sm text-red-100 flex-1 min-w-[16rem]">
+        You're signed in with the temporary password. Anyone who guesses it can
+        edit this site — please choose your own.
+      </span>
+      <a href="{{ url_for('admin.change_password') }}" class="btn-primary !py-2 shrink-0">
+        {{ icons.icon('lock', 16) }} Choose a password
+      </a>
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+<main class="flex-1 w-full">
+  {% block auth_content %}{% endblock %}
+</main>
+{% endif %}
+
+</body>
+</html>
