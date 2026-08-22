@@ -301,7 +301,16 @@ def enabled(key: str) -> bool:
 
 
 def is_overridden(key: str) -> bool:
-    return bool((_overrides().get(key) or "").strip())
+    """True only when the stored value actually DIFFERS from what shipped.
+
+    Rows written before save() started dropping no-op values still exist in
+    production, and treating their presence as an edit made every untouched
+    switch claim to be 'edited'."""
+    stored = (_overrides().get(key) or "").strip()
+    if not stored:
+        return False
+    entry = BY_KEY.get(key)
+    return entry is None or stored != entry.default.strip()
 
 
 # --- write -----------------------------------------------------------------
