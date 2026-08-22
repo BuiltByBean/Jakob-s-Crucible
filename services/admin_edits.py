@@ -19,6 +19,13 @@ SERIES = "series"
 TOPIC = "topic"
 RESOURCES = "resources"
 TEACHING = "teaching"
+# Which teaching the home page leads with. One record, key "*":
+#   {"youtube_id": "abc"} -> pin that teaching
+#   {"youtube_id": None}  -> automatic, always the newest teaching
+# Held separately from the per-teaching records because "automatic" is a
+# site-level choice, and because seed_db flags FEATURED_YT on every re-sync —
+# without a record saying otherwise, that flag would come back.
+FEATURED = "featured"
 
 
 def record(entity_type: str, entity_key: str, payload: dict, editor: str = "") -> None:
@@ -112,15 +119,10 @@ def apply_all() -> dict[str, int]:
             counts["resources"] += 1
 
     # ---- per-teaching flags ----
-    featured_ids = []
     for youtube_id, payload in _payloads(TEACHING).items():
         teaching = Teaching.query.filter_by(youtube_id=youtube_id).first()
         if teaching is None:
             continue
-        if "is_featured" in payload:
-            if payload["is_featured"]:
-                featured_ids.append(teaching.id)
-            counts["teachings"] += 1
         if "notes_hidden" in payload:
             teaching.notes_hidden = bool(payload["notes_hidden"])
             counts["teachings"] += 1
@@ -129,14 +131,19 @@ def apply_all() -> dict[str, int]:
         if payload.get("manuscript") and not (teaching.manuscript or "").strip():
             teaching.manuscript = payload["manuscript"]
             counts["teachings"] += 1
-    if featured_ids:
-        # Exactly one featured teaching: the newest recorded pick wins.
+    # ---- the home page's featured teaching ----
+    featured_record = _payloads(FEATURED).get("*")
+    if featured_record is not None:
+        # The owner has made a choice, so his choice replaces the seed's.
         Teaching.query.filter(Teaching.is_featured.is_(True)).update(
             {"is_featured": False}, synchronize_session=False
         )
-        Teaching.query.filter(Teaching.id == featured_ids[-1]).update(
-            {"is_featured": True}, synchronize_session=False
-        )
+        wanted = featured_record.get("youtube_id")
+        if wanted:
+            Teaching.query.filter_by(youtube_id=wanted).update(
+                {"is_featured": True}, synchronize_session=False
+            )
+        counts["teachings"] += 1
 
     db.session.commit()
     if any(counts.values()):

@@ -1,0 +1,71 @@
+{% extends "admin/_layout.html" %}
+{% import "_icon_macros.html" as icons %}
+{% set active_admin = 'featured' %}
+{% block title %}Featured teaching{% endblock %}
+
+{% block content %}
+<header class="mb-8 flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 class="font-display text-3xl font-semibold text-surface-50">Featured teaching</h1>
+    <p class="mt-2 text-surface-300 max-w-2xl">
+      The teaching at the very top of the home page. Pin one you want people to
+      find first, or let it follow whatever you publish next.
+    </p>
+  </div>
+  <a href="{{ url_for('public.home') }}" target="_blank" rel="noopener" class="btn-ghost shrink-0">
+    {{ icons.icon('external', 17) }} See the home page
+  </a>
+</header>
+
+<div class="card p-5 mb-8 flex flex-wrap items-center gap-4">
+  <span class="text-sm text-surface-400">Showing right now:</span>
+  <span class="font-display text-lg font-semibold text-surface-50 min-w-0 flex-1">
+    {% if current %}{{ current.title }}{% elif newest %}{{ newest.title }}{% else %}Nothing yet{% endif %}
+  </span>
+  <span class="chip !py-1 shrink-0">{{ 'pinned' if current else 'newest, automatically' }}</span>
+</div>
+
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="card divide-y divide-white/5 mb-6">
+    {# Automatic first: the sensible default for a channel that keeps publishing. #}
+    <label class="flex items-start gap-4 p-5 cursor-pointer hover:bg-white/5 transition-colors">
+      <input type="radio" name="featured" value="" class="mt-1 w-4 h-4 shrink-0 accent-flame-500"
+             {% if not current %}checked{% endif %}>
+      <span class="min-w-0">
+        <span class="block font-semibold text-surface-50">Always my newest teaching</span>
+        <span class="block mt-1 text-sm text-surface-400 leading-relaxed">
+          The home page updates itself every time you publish.
+          {% if newest %}Right now that would be “{{ newest.title }}”.{% endif %}
+        </span>
+      </span>
+    </label>
+
+    {% for t in teachings %}
+    <label class="flex items-start gap-4 p-4 cursor-pointer hover:bg-white/5 transition-colors">
+      <input type="radio" name="featured" value="{{ t.youtube_id }}"
+             class="mt-6 w-4 h-4 shrink-0 accent-flame-500"
+             {% if current and current.id == t.id %}checked{% endif %}>
+      <img src="{{ t.thumbnail_url or 'https://i.ytimg.com/vi/' + t.youtube_id + '/hqdefault.jpg' }}"
+           alt="" loading="lazy" width="112" height="63"
+           class="w-24 aspect-video object-cover rounded-md shrink-0">
+      <span class="min-w-0">
+        <span class="block font-semibold text-surface-100 leading-snug">{{ t.title }}</span>
+        {% if t.subtitle %}
+        <span class="block text-sm text-surface-400 mt-0.5">{{ t.subtitle }}</span>
+        {% endif %}
+        <span class="block text-xs text-surface-500 mt-1">
+          {{ t.series.title if t.series else 'No series' }} &middot; {{ t.published_at | datefmt }}
+        </span>
+      </span>
+    </label>
+    {% endfor %}
+  </div>
+
+  <div class="sticky bottom-0 -mx-1 px-1 py-4 bg-surface-950/95 backdrop-blur-sm border-t border-white/5 flex items-center gap-3">
+    <button type="submit" class="btn-primary shadow-lg">{{ icons.icon('check', 18) }} Save</button>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

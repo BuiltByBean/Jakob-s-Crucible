@@ -468,6 +468,43 @@ def series():
 # Teachings: manuscripts, notes, featured
 # ---------------------------------------------------------------------------
 
+@bp.route("/featured", methods=["GET", "POST"])
+def featured():
+    """Choose what the home page leads with: one pinned teaching, or always
+    the newest. Kept as its own screen because it's the single most visible
+    editorial decision on the site."""
+    teachings_list = (
+        Teaching.query.filter_by(kind="teaching").order_by(Teaching.published_at.desc()).all()
+    )
+
+    if request.method == "POST":
+        choice = (request.form.get("featured") or "").strip()  # "" = automatic
+        if choice and not any(t.youtube_id == choice for t in teachings_list):
+            flash("That teaching could not be found.", "error")
+            return redirect(url_for("admin.featured"))
+
+        Teaching.query.filter(Teaching.is_featured.is_(True)).update(
+            {"is_featured": False}, synchronize_session=False
+        )
+        picked = None
+        if choice:
+            picked = Teaching.query.filter_by(youtube_id=choice).first()
+            picked.is_featured = True
+        # Record BOTH cases, including automatic: seed_db flags its own
+        # FEATURED_YT on every re-sync, so "automatic" has to be stated.
+        admin_edits.record(admin_edits.FEATURED, "*", {"youtube_id": choice or None},
+                           current_admin().email)
+        db.session.commit()
+        flash(f"“{picked.title}” is now featured on the home page." if picked
+              else "The home page will always lead with your newest teaching.", "success")
+        return redirect(url_for("admin.featured"))
+
+    current = Teaching.query.filter_by(is_featured=True, kind="teaching").first()
+    newest = teachings_list[0] if teachings_list else None
+    return render_template("admin/featured.html", teachings=teachings_list,
+                           current=current, newest=newest)
+
+
 @bp.route("/teachings")
 def teachings():
     kind = request.args.get("kind", "teaching")
@@ -548,15 +585,15 @@ def teaching_form(teaching_id):
             flash("Study notes restored.", "success")
 
         elif action == "featured":
+            # Same record the dedicated picker writes, so the two agree.
             Teaching.query.filter(Teaching.is_featured.is_(True)).update(
                 {"is_featured": False}, synchronize_session=False
             )
             teaching.is_featured = True
-            for row in db.session.query(Teaching.youtube_id).filter(Teaching.youtube_id != teaching.youtube_id):
-                admin_edits.forget(admin_edits.TEACHING, row.youtube_id)
-            admin_edits.record(admin_edits.TEACHING, teaching.youtube_id, {"is_featured": True}, editor)
+            admin_edits.record(admin_edits.FEATURED, "*",
+                               {"youtube_id": teaching.youtube_id}, editor)
             db.session.commit()
-            flash(f"“{teaching.title}” is now the featured teaching.", "success")
+            flash(f"“{teaching.title}” is now featured on the home page.", "success")
 
         return redirect(url_for("admin.teaching_form", teaching_id=teaching.id))
 

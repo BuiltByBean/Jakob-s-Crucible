@@ -2,6 +2,13 @@
 
 User-facing change history, newest first.
 
+## 2026-08-22 — Choose the featured teaching
+
+The admin gains its own Featured teaching screen: pick any teaching to pin at
+the top of the home page, or choose "always my newest teaching" and let the
+home page follow each new upload by itself. Whichever you choose survives the
+next channel sync.
+
 ## 2026-08-22 — Brighter embers, steadier underline
 
 The home page's sparks now read as embers rising off a flame — soft glowing

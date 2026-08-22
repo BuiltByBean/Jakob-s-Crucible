@@ -75,10 +75,10 @@
     <div class="min-w-0 flex-1">
       <p class="text-sm text-surface-400">Shown at the top of the home page:</p>
       <p class="mt-1 font-display text-lg font-semibold text-surface-50">
-        {{ featured.title if featured else 'The most recent teaching' }}
+        {{ featured.title if featured else 'Whatever you published most recently' }}
       </p>
     </div>
-    <a href="{{ url_for('admin.teachings') }}" class="btn-ghost">Change</a>
+    <a href="{{ url_for('admin.featured') }}" class="btn-ghost shrink-0">Choose a different one</a>
   </div>
 </section>
 {% endblock %}
