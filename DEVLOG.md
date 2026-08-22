@@ -2,6 +2,15 @@
 
 User-facing change history, newest first.
 
+## 2026-08-22 — Brighter embers, steadier underline
+
+The home page's sparks now read as embers rising off a flame — soft glowing
+streaks that pulse and stretch as they climb, instead of the flat round dots
+they were — and the blue glow beneath them is anchored to the bottom of the
+screen where it can actually be seen. The nav underline no longer dims when
+its sweep finishes: it was a half-pixel tall, so it thinned out the moment
+the animation stopped compositing.
+
 ## 2026-08-22 — The admin area
 
 thewisdomcrucible.com/admin now exists, behind a sign-in. Everything on the
