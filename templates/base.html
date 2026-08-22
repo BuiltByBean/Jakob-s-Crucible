@@ -44,11 +44,18 @@
       Each layer is switchable from the admin (Background effects); the
       canvas is only emitted when sparks are on, so site.js never starts its
       animation loop otherwise. -#}
-  {% if effect_on('appearance.embers') or effect_on('appearance.glow') or effect_on('appearance.grain') %}
+  {%- set atmo_page = (active_nav | default('other')) in site_pages('appearance.pages') -%}
+  {% if atmo_page and (effect_on('appearance.embers') or effect_on('appearance.glow') or effect_on('appearance.grain')) %}
   <div id="crucible-atmosphere" aria-hidden="true">
     {% if effect_on('appearance.embers') %}<canvas id="crucible-embers"></canvas>{% endif %}
     {% if effect_on('appearance.grain') %}<div class="atmo-grain"></div>{% endif %}
-    {% if effect_on('appearance.glow') %}<div class="atmo-vignette"></div>{% endif %}
+    {%- if effect_on('appearance.glow') %}
+    {#- Gradients authored at the 150% maximum; opacity scales them down, so
+        100% reproduces the standard look exactly. The shade is separate so
+        the strength slider only moves the glow. -#}
+    <div class="atmo-shade"></div>
+    <div class="atmo-vignette" style="opacity: {{ '%.3f' | format(site_number('appearance.glow_strength') / 150) }}"></div>
+    {%- endif %}
   </div>
   {% endif %}
 

@@ -28,9 +28,11 @@ from models import SiteContent, db
 
 
 class Entry:
-    __slots__ = ("key", "group", "label", "help", "kind", "default", "rows")
+    __slots__ = ("key", "group", "label", "help", "kind", "default", "rows",
+                 "min", "max", "step")
 
-    def __init__(self, key, group, label, kind, default, help="", rows=4):
+    def __init__(self, key, group, label, kind, default, help="", rows=4,
+                 min=0, max=100, step=1):
         self.key = key
         self.group = group
         self.label = label
@@ -38,6 +40,23 @@ class Entry:
         self.default = default
         self.help = help
         self.rows = rows
+        self.min, self.max, self.step = min, max, step
+
+
+# The pages the background effects can be applied to, keyed by the `active_nav`
+# value each template already sets. Order is the site's own nav order.
+PAGE_CHOICES = [
+    ("home", "Home"),
+    ("teachings", "Teaching Library & episodes"),
+    ("scripture", "Explore Scripture"),
+    ("topics", "Explore Topics"),
+    ("statement", "Statement of Faith"),
+    ("resources", "Study Resources"),
+    ("about", "About"),
+    ("contact", "Contact"),
+    ("search", "Search"),
+]
+ALL_PAGES = ",".join(key for key, _ in PAGE_CHOICES)
 
 
 # --- groups (one admin screen each) ----------------------------------------
@@ -67,8 +86,13 @@ REGISTRY: list[Entry] = [
                "ask their device to reduce motion."),
     Entry("appearance.glow", "appearance", "Glow from below", "toggle", "on",
           help="The blue light rising from the bottom of the screen."),
+    Entry("appearance.glow_strength", "appearance", "How strong the glow is", "range", "100",
+          min=0, max=150, step=5,
+          help="100% is the standard look. Lower is subtler; above 100% is brighter."),
     Entry("appearance.grain", "appearance", "Fine texture", "toggle", "on",
           help="A very faint grain over the background, so large dark areas don't band."),
+    Entry("appearance.pages", "appearance", "Which pages show the effects", "pages", ALL_PAGES,
+          help="Untick a page to leave its background plain."),
 
     # ---- home ----
     Entry("home.hero_subline", "home", "Hero line (under the tagline)", "text",
@@ -246,6 +270,30 @@ def links(key: str) -> list[dict]:
     return _parse_links(entry.default) if entry else []
 
 
+def number(key: str) -> int:
+    """A 'range' value, clamped to the entry's own bounds. A damaged row falls
+    back to the shipped default rather than rendering something absurd."""
+    entry = BY_KEY.get(key)
+    try:
+        value = int(float(content(key)))
+    except (TypeError, ValueError):
+        value = int(entry.default) if entry else 0
+    if entry is not None:
+        value = max(entry.min, min(entry.max, value))
+    return value
+
+
+def page_list(key: str) -> set[str]:
+    """A 'pages' value as a set of page keys. The 'none' sentinel means the
+    owner deliberately chose no pages (an empty string would be indis-
+    tinguishable from 'never set', which restores the default)."""
+    raw = content(key).strip()
+    if raw.lower() == "none":
+        return set()
+    valid = {k for k, _ in PAGE_CHOICES}
+    return {part.strip() for part in raw.split(",") if part.strip() in valid}
+
+
 def enabled(key: str) -> bool:
     """A 'toggle' value as a boolean. Anything but a stored 'off' is on, so a
     damaged row leaves the site looking the way it shipped."""
@@ -265,6 +313,11 @@ def save(key: str, value: str, editor: str = "") -> None:
     """Upsert one key. An empty value deletes the override, restoring the
     shipped default (that is the owner's 'undo')."""
     value = (value or "").replace("\r\n", "\n").strip()[:MAX_VALUE_LENGTH]
+    entry = BY_KEY.get(key)
+    # A value identical to the shipped default is not an edit — storing it
+    # anyway marked every untouched switch as "edited" in the admin.
+    if entry is not None and value == entry.default.strip():
+        value = ""
     row = SiteContent.query.filter_by(key=key).first()
     if not value:
         if row is not None:
@@ -312,6 +365,17 @@ def validation_error(entry: Entry, value: str) -> str | None:
         return None  # empty = restore the default
     if entry.kind == "toggle" and value not in ("on", "off"):
         return "That switch can only be on or off."
+    if entry.kind == "range":
+        try:
+            n = int(float(value))
+        except (TypeError, ValueError):
+            return "Please choose a value with the slider."
+        if not entry.min <= n <= entry.max:
+            return f"Please choose a value between {entry.min} and {entry.max}."
+    if entry.kind == "pages":
+        valid = {k for k, _ in PAGE_CHOICES}
+        if value.lower() != "none" and not {p.strip() for p in value.split(",")} <= valid:
+            return "That isn't a page on this site."
     if entry.kind == "url" and not safe_url(value):
         return "Please enter a full web address starting with https://"
     if entry.kind == "email":

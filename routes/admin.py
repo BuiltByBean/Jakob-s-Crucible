@@ -247,6 +247,12 @@ def page_group(group):
                 if not sent:
                     continue
                 value = "on" if "on" in sent else "off"
+            elif entry.kind == "pages":
+                if request.form.get(f"{entry.key}__present") != "1":
+                    continue
+                # "none" rather than "": an empty value would restore the
+                # default (every page) instead of honouring "no pages".
+                value = ",".join(request.form.getlist(entry.key)) or "none"
             else:
                 value = request.form.get(entry.key)
                 if value is None:
@@ -263,7 +269,7 @@ def page_group(group):
             return render_template(
                 "admin/page_group.html", group=group, label=sc.GROUP_LABELS[group],
                 entries=entries, sc=sc, preview_url=_PREVIEW_URLS.get(group),
-                submitted=submitted, errors=errors,
+                submitted=submitted, errors=errors, intro=_group_intro(group),
             ), 400
 
         for key, value in submitted.items():
@@ -275,8 +281,15 @@ def page_group(group):
     return render_template(
         "admin/page_group.html", group=group, label=sc.GROUP_LABELS[group],
         entries=entries, sc=sc, preview_url=_PREVIEW_URLS.get(group),
-        submitted={}, errors={},
+        submitted={}, errors={}, intro=_group_intro(group),
     )
+
+
+def _group_intro(group: str) -> str:
+    if group == "appearance":
+        return ("Switch each effect on or off, set how strong the glow is, and "
+                "choose which pages show them.")
+    return "Leave a box empty to restore the site's original wording."
 
 
 _PREVIEW_URLS = {

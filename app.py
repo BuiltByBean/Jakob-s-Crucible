@@ -265,6 +265,8 @@ def create_app(config_cls=Config) -> Flask:
             "content": sc.content,
             "site_links": sc.links,
             "effect_on": sc.enabled,
+            "site_number": sc.number,
+            "site_pages": sc.page_list,
             "PAGE_GROUPS": sc.GROUPS,
             "MINISTRY": {
                 "name": app.config["MINISTRY_NAME"],

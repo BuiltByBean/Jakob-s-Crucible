@@ -2,6 +2,14 @@
 
 User-facing change history, newest first.
 
+## 2026-08-22 — Dial the glow, choose the pages
+
+Background effects gains a strength slider for the glow (0-150%, where 100%
+is the standard look) and a per-page list, so the effects can be left on the
+home page only, switched off for reading pages, or turned off everywhere —
+without a code change. The screen moved out of "Page wording", where it
+never belonged, and untouched settings no longer claim to be edited.
+
 ## 2026-08-22 — Effects everywhere, with switches
 
 The rising sparks, the glow and the fine texture now appear on every page

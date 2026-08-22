@@ -122,10 +122,18 @@
     inset: 0;
     /* Anchored AT the bottom edge (100%), not below it — centred at 112% the
        whole gradient sat off-screen and only its faint fringe was visible. */
+    /* GLOW ONLY, authored at the slider's 150% MAXIMUM; base.html sets opacity
+       to strength/150, so the default 100% reproduces the approved look
+       exactly and there is headroom above it. The top darkening lives in
+       .atmo-shade so the strength slider doesn't wash it out too. */
     background:
-      radial-gradient(ellipse 55% 26% at 50% 100%, rgba(163, 220, 255, 0.26), transparent 65%),
-      radial-gradient(ellipse 110% 48% at 50% 103%, rgba(46, 165, 240, 0.30), transparent 72%),
-      radial-gradient(ellipse 90% 60% at 50% -25%, rgba(5, 9, 18, 0.9), transparent 70%);
+      radial-gradient(ellipse 55% 26% at 50% 100%, rgba(163, 220, 255, 0.39), transparent 65%),
+      radial-gradient(ellipse 110% 48% at 50% 103%, rgba(46, 165, 240, 0.45), transparent 72%);
+  }
+  #crucible-atmosphere .atmo-shade {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 90% 60% at 50% -25%, rgba(5, 9, 18, 0.9), transparent 70%);
   }
 
   /* ---- crucible logo glow ----
