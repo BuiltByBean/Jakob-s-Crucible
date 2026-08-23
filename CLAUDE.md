@@ -93,6 +93,11 @@ wording, links, resources, topics, manuscripts, or notes.
   (`|safe_url`) — an admin field reaching an `href` is the real stored-XSS
   surface. Admin prose renders through `manuscript_html`/`rich_text`, which
   escape before applying markup.
+- Non-episode artwork (mark, seal, portrait, the two home tiles) is
+  replaceable from /admin/images: slots in `services/site_images.py`, files on
+  DATA_DIR keyed by slot, served by `/media/<slot>` with a version stamp, and
+  templates call `site_image('slot')`. Raster only — SVG is excluded because
+  it can carry script and is served from our own origin.
 - Accounts are created by `scripts/seed_admin.py` (never resets an existing
   password) and recovered with `scripts/reset_admin_password.py`. No
   email-based reset: mail is a silent no-op unless MAIL_USERNAME is set.

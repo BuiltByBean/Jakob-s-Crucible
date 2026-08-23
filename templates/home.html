@@ -16,7 +16,7 @@
   </div>
 
   <div class="relative max-w-4xl mx-auto px-4 lg:px-6 pt-16 sm:pt-24 pb-14 text-center">
-    <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}"
+    <img src="{{ site_image('logo') }}"
          alt="A crucible holding a blue-white flame — the mark of The Wisdom Crucible"
          width="132" height="186" class="mx-auto h-36 sm:h-44 w-auto animate-fade-in logo-glow-lg">
     <h1 class="mt-8 font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-surface-50 tracking-wide animate-rise-in">
@@ -156,7 +156,7 @@
     <h2 class="section-title"><span>Find TWC elsewhere</span></h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
       <a href="{{ MINISTRY.youtube }}" target="_blank" rel="noopener" class="card card-hover p-6 flex items-center gap-5 group">
-        <img src="{{ url_for('static', filename='img/yt-avatar.jpg') }}?v={{ ASSET_V }}"
+        <img src="{{ site_image('yt_avatar') }}"
              alt="The Wisdom Crucible YouTube channel avatar" width="88" height="88"
              class="w-20 h-20 sm:w-22 sm:h-22 rounded-full object-cover border border-white/10 shrink-0">
         <span class="min-w-0">
@@ -168,7 +168,7 @@
         </span>
       </a>
       <div class="card p-6 flex items-center gap-5">
-        <img src="{{ url_for('static', filename='img/podcast-art.jpg') }}?v={{ ASSET_V }}"
+        <img src="{{ site_image('podcast_art') }}"
              alt="The Wisdom Crucible podcast artwork" width="88" height="88"
              class="w-20 h-20 sm:w-22 sm:h-22 rounded-xl object-cover border border-white/10 shrink-0">
         <span class="min-w-0">

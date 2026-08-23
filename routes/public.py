@@ -174,6 +174,29 @@ def notes_download(slug):
     abort(404)
 
 
+@bp.route("/media/<slot>")
+def media(slot):
+    """Serve an owner-uploaded image from the volume.
+
+    Falls back to the committed default, so a slot that was never replaced —
+    or whose file vanished — still renders. Content-Type comes from an
+    extension allowlist (no SVG), never from the upload."""
+    from flask import send_from_directory
+
+    from services import site_images
+
+    if slot not in site_images.BY_SLOT:
+        abort(404)
+    path = site_images.path_for(slot)
+    if path is not None:
+        resp = send_from_directory(path.parent, path.name, conditional=True,
+                                   mimetype=site_images.mimetype_for(path.suffix))
+        # Immutable: the URL carries a version stamp that changes on upload.
+        resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return resp
+    return redirect(url_for("static", filename=site_images.BY_SLOT[slot][1]))
+
+
 @bp.route("/teachings/<slug>")
 def teaching_detail(slug):
     from datetime import datetime

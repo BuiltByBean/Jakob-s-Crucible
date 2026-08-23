@@ -15,8 +15,8 @@
   <meta property="og:description" content="{{ self.meta_description() }}">
   <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   {% block og_extra %}{% endblock %}
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}">
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}">
+  <link rel="icon" type="image/png" href="{{ site_image('logo') }}">
+  <link rel="apple-touch-icon" href="{{ site_image('logo') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
@@ -50,11 +50,11 @@
     {% if effect_on('appearance.embers') %}<canvas id="crucible-embers"></canvas>{% endif %}
     {% if effect_on('appearance.grain') %}<div class="atmo-grain"></div>{% endif %}
     {%- if effect_on('appearance.glow') %}
-    {#- Gradients authored at the 150% maximum; opacity scales them down, so
+    {#- Gradients authored at the 300% maximum; opacity scales them down, so
         100% reproduces the standard look exactly. The shade is separate so
         the strength slider only moves the glow. -#}
     <div class="atmo-shade"></div>
-    <div class="atmo-vignette" style="opacity: {{ '%.3f' | format(site_number('appearance.glow_strength') / 150) }}"></div>
+    <div class="atmo-vignette" style="opacity: {{ '%.3f' | format(site_number('appearance.glow_strength') / 300) }}"></div>
     {%- endif %}
   </div>
   {% endif %}
@@ -72,7 +72,7 @@
   <header class="sticky top-0 z-40 bg-surface-950/85 backdrop-blur-md border-b border-white/5">
     <div class="max-w-6xl mx-auto px-4 lg:px-6 flex items-center gap-4 h-16">
       <a href="{{ url_for('public.home') }}" class="flex items-center gap-2.5 shrink-0 group" aria-label="{{ MINISTRY.name }} — home">
-        <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}" alt=""
+        <img src="{{ site_image('logo') }}" alt=""
              width="30" height="44" class="h-10 w-auto logo-glow transition-transform duration-300 group-hover:scale-105">
         <span class="font-display font-semibold text-surface-50 leading-tight text-[15px] tracking-wide">
           The Wisdom<br class="sm:hidden"> Crucible
@@ -172,7 +172,7 @@
       {# The ministry seal sits here like an impressed wax seal closing the
          page — Jakob uses it to open every major episode. #}
       <div class="flex items-center justify-center md:justify-start">
-        <img src="{{ url_for('static', filename='img/twc-seal.png') }}?v={{ ASSET_V }}"
+        <img src="{{ site_image('seal') }}"
              alt="The seal of The Wisdom Crucible — a crucible aflame on an open book, ringed by thorns"
              width="230" height="209" class="w-52 sm:w-56 h-auto drop-shadow-[0_0_24px_rgba(212,175,55,0.12)]">
       </div>

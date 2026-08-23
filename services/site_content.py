@@ -87,8 +87,9 @@ REGISTRY: list[Entry] = [
     Entry("appearance.glow", "appearance", "Glow from below", "toggle", "on",
           help="The blue light rising from the bottom of the screen."),
     Entry("appearance.glow_strength", "appearance", "How strong the glow is", "range", "100",
-          min=0, max=150, step=5,
-          help="100% is the standard look. Lower is subtler; above 100% is brighter."),
+          min=0, max=300, step=5,
+          help="100% is the standard look. The top of the range is deliberately "
+               "brighter than is comfortable to read over, so you can find the limit."),
     Entry("appearance.grain", "appearance", "Fine texture", "toggle", "on",
           help="A very faint grain over the background, so large dark areas don't band."),
     Entry("appearance.pages", "appearance", "Which pages show the effects", "pages", ALL_PAGES,

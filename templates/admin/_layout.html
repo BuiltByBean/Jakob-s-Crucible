@@ -10,7 +10,7 @@
   <meta name="theme-color" content="#0a0f1a">
   <meta name="robots" content="noindex, nofollow, noarchive">
   <title>{% block title %}Admin{% endblock %} — {{ MINISTRY.name }}</title>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}">
+  <link rel="icon" type="image/png" href="{{ site_image('logo') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
@@ -24,7 +24,7 @@
 <header class="sticky top-0 z-40 bg-surface-950/90 backdrop-blur-md border-b border-white/5">
   <div class="max-w-7xl mx-auto px-4 lg:px-6 flex items-center gap-4 h-16">
     <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-2.5 shrink-0">
-      <img src="{{ url_for('static', filename='img/logo-mark.png') }}?v={{ ASSET_V }}" alt=""
+      <img src="{{ site_image('logo') }}" alt=""
            width="24" height="35" class="h-8 w-auto logo-glow">
       <span class="font-display font-semibold text-surface-50 text-[15px] tracking-wide">Site admin</span>
     </a>
@@ -70,6 +70,7 @@
   ('admin.dashboard', 'dashboard', 'Overview', 'home'),
   ('admin.featured', 'featured', 'Featured teaching', 'check'),
   ('admin.teachings', 'teachings', 'Manuscripts & notes', 'document'),
+  ('admin.images', 'images', 'Pictures', 'upload'),
   ('admin.resources', 'resources', 'Study resources', 'library'),
   ('admin.topics', 'topics', 'Topics', 'tag'),
   ('admin.series', 'series', 'Series', 'library'),

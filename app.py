@@ -47,6 +47,20 @@ def _compute_asset_version() -> str:
 ASSET_V = _compute_asset_version()
 
 
+def _site_image_url(slot: str) -> str:
+    """URL for an owner-replaceable image: the uploaded one (with its version
+    stamp for cache busting) or the committed default."""
+    from flask import url_for
+
+    from services import site_images
+
+    found = site_images.stored(slot)
+    if found is not None:
+        return url_for("public.media", slot=slot) + f"?v={found[1]}"
+    default = site_images.BY_SLOT.get(slot, (None, "img/logo-mark.png", None))[1]
+    return url_for("static", filename=default) + f"?v={ASSET_V}"
+
+
 def _create_all_safely() -> None:
     """db.create_all(), tolerant of the multi-worker startup race.
 
@@ -267,6 +281,7 @@ def create_app(config_cls=Config) -> Flask:
             "effect_on": sc.enabled,
             "site_number": sc.number,
             "site_pages": sc.page_list,
+            "site_image": _site_image_url,
             "PAGE_GROUPS": sc.GROUPS,
             "MINISTRY": {
                 "name": app.config["MINISTRY_NAME"],

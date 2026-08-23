@@ -489,6 +489,32 @@ def series():
 # Teachings: manuscripts, notes, featured
 # ---------------------------------------------------------------------------
 
+@bp.route("/images", methods=["GET", "POST"])
+def images():
+    """Replace the site's non-episode artwork (mark, seal, portrait, tiles)."""
+    from services import site_images
+
+    if request.method == "POST":
+        slot = (request.form.get("slot") or "").strip()
+        if slot not in site_images.BY_SLOT:
+            abort(404)
+        label = site_images.BY_SLOT[slot][0]
+        if request.form.get("action") == "restore":
+            site_images.restore(slot)
+            flash(f"{label} is back to the original image.", "success")
+        else:
+            upload = request.files.get("image")
+            if upload is None or not upload.filename:
+                flash("Please choose an image to upload.", "error")
+            else:
+                error = site_images.save(slot, upload, current_admin().email)
+                flash(error or f"{label} updated.", "error" if error else "success")
+        return redirect(url_for("admin.images"))
+
+    return render_template("admin/images.html", slots=site_images.SLOTS,
+                           is_custom=site_images.is_custom)
+
+
 @bp.route("/featured", methods=["GET", "POST"])
 def featured():
     """Choose what the home page leads with: one pinned teaching, or always

@@ -105,7 +105,9 @@
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var target = Math.round(Math.min(90, Math.max(34, (W * H) / 26000)));
+    // Narrow screens get a denser floor: the area-based figure bottoms out
+    // on a phone, leaving too few sparks to read as an atmosphere.
+    var target = Math.round(Math.min(90, Math.max(W < 700 ? 48 : 34, (W * H) / 26000)));
     while (particles.length < target) particles.push(spawn(true));
     particles.length = target;
   }
@@ -161,6 +163,9 @@
     }
     ctx.clearRect(0, 0, W, H);
     ctx.globalCompositeOperation = 'lighter';  // embers add light, they don't occlude
+    var narrow = W < 700;
+    var floor = narrow ? 0.6 : 0.25;   // how bright a spark stays near the top
+    var scale = narrow ? 1.25 : 1;     // a touch larger against a small screen
     for (var i = 0; i < particles.length; i++) {
       var p = particles[i];
       p.life += 0.016;
@@ -168,7 +173,11 @@
       p.x += p.drift + Math.sin(p.life * p.wobble + p.phase) * 0.22;
       var fade = Math.min(1, (H - p.y) / (H * 0.12) + 0.15);
       var heightFade = Math.max(0, Math.min(1, p.y / (H * 0.55)));
-      var a = p.alpha * fade * (0.25 + heightFade * 0.75);
+      /* Sparks dim as they climb. On a phone the only part of the background
+       * not covered by content is the top of the screen — the same place this
+       * fade was taking them down to a quarter brightness — so narrow
+       * viewports keep a much higher floor. */
+      var a = p.alpha * fade * (floor + heightFade * (1 - floor));
       var flicker = (1 - p.flickerDepth) + p.flickerDepth * Math.sin(p.life * p.flickerRate + p.phase);
       if (p.y < -10 || p.x < -20 || p.x > W + 20) {
         particles[i] = spawn(false);
@@ -178,7 +187,7 @@
       // faster it climbs. Additive blending lets overlapping sparks build up
       // light the way real embers do.
       var sprite = p.bright ? sprites.hot : sprites.cool;
-      var w = p.r * 6.5;
+      var w = p.r * 6.5 * scale;
       var h = w * (1.6 + p.vy * 1.5);
       ctx.globalAlpha = Math.max(0, Math.min(1, a * flicker));
       ctx.drawImage(sprite, p.x - w / 2, p.y - h / 2, w, h);

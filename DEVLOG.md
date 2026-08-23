@@ -2,6 +2,17 @@
 
 User-facing change history, newest first.
 
+## 2026-08-23 — Replaceable pictures, brighter ceiling, mobile background
+
+A new Pictures screen in the admin: the crucible mark, the footer seal,
+Jakob's portrait and the two home-page tiles can each be swapped for a new
+file, with a one-click return to the original. The glow slider now reaches
+300% so the top of the range is deliberately brighter than is comfortable to
+read over — useful for finding where the right setting actually sits. And the
+background now reads properly on a phone: the glow is anchored higher, where
+a narrow screen actually has bare space, and the sparks keep their brightness
+as they rise instead of fading out exactly where they were most visible.
+
 ## 2026-08-22 — Dial the glow, choose the pages
 
 Background effects gains a strength slider for the glow (0-150%, where 100%
