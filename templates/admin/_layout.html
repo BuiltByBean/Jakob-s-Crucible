@@ -98,9 +98,8 @@
         </a>
       </li>
       {% endfor %}
-    </ul>
-    {# Background effects is not page wording — it belongs with the sections. #}
-    <ul class="space-y-1 mb-6">
+      {# Background effects is not page wording — it belongs in this same list
+         (its own <ul> left a stray gap above it). #}
       <li>
         <a href="{{ url_for('admin.page_group', group='appearance') }}" @click="drawer = false"
            class="flex items-center gap-2.5 min-h-[44px] px-3 rounded-xl text-sm font-medium transition-colors
