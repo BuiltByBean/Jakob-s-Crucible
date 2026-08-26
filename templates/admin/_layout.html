@@ -15,6 +15,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}?v={{ ASSET_V }}">
+  {#- Before Alpine, and deferred: defer preserves order, so the components
+      exist by the time Alpine walks the DOM. They live in a file because the
+      CSP allows 'unsafe-eval' (Alpine needs it) but not 'unsafe-inline'. -#}
+  <script defer src="{{ url_for('static', filename='js/admin.js') }}?v={{ ASSET_V }}"></script>
   <script defer src="{{ url_for('static', filename='js/alpine-collapse.min.js') }}?v={{ ASSET_V }}"></script>
   <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}?v={{ ASSET_V }}"></script>
 </head>

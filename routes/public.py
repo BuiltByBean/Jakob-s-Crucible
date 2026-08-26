@@ -197,6 +197,32 @@ def media(slot):
     return redirect(url_for("static", filename=site_images.BY_SLOT[slot][1]))
 
 
+@bp.route("/media/thumb/<youtube_id>")
+def media_thumb(youtube_id):
+    """Serve an episode thumbnail that /admin re-downloaded from YouTube.
+
+    Falls back to the copy committed under static/ (and finally to YouTube's
+    own CDN), so an episode never renders an empty tile."""
+    from flask import send_from_directory
+
+    from services import youtube_refresh
+
+    if not youtube_refresh.VIDEO_ID_RE.match(youtube_id or ""):
+        abort(404)
+    found = youtube_refresh.stored_thumb(youtube_id)
+    if found is not None:
+        path = found[0]
+        resp = send_from_directory(path.parent, path.name, conditional=True,
+                                   mimetype="image/jpeg")
+        # Immutable: the URL carries the version stamp set at download time.
+        resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return resp
+    committed = BASE_DIR / "static" / "img" / "thumbs" / f"{youtube_id}.jpg"
+    if committed.is_file():
+        return redirect(url_for("static", filename=f"img/thumbs/{youtube_id}.jpg"))
+    return redirect(f"https://i.ytimg.com/vi/{youtube_id}/hqdefault.jpg")
+
+
 @bp.route("/teachings/<slug>")
 def teaching_detail(slug):
     from datetime import datetime

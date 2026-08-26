@@ -300,7 +300,7 @@ class ContactMessage(db.Model):
     created_at = db.Column(db.DateTime, default=_utcnow)
     emailed = db.Column(db.Boolean, default=False)
     read_at = db.Column(db.DateTime)  # set when opened in the admin inbox
-    archived = db.Column(db.Boolean, default=False)  # never hard-deleted
+    archived = db.Column(db.Boolean, default=False)  # hidden from the inbox
 
 
 # ---------------------------------------------------------------------------

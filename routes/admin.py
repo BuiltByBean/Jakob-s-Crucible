@@ -16,14 +16,14 @@ import time
 from datetime import datetime, timezone
 
 from flask import (
-    Blueprint, abort, current_app, flash, redirect, render_template, request,
-    session, url_for,
+    Blueprint, abort, current_app, flash, jsonify, redirect, render_template,
+    request, session, url_for,
 )
 
 from models import (
     AdminUser, ContactMessage, Resource, Series, Teaching, Topic, db,
 )
-from services import admin_edits, documents
+from services import admin_edits, documents, youtube_refresh
 from services import site_content as sc
 from services.auth import (
     account_under_attack, admin_enabled, authenticate, check_password_hash,
@@ -558,7 +558,28 @@ def teachings():
     if kind not in ("teaching", "short"):
         kind = "teaching"
     rows = Teaching.query.filter_by(kind=kind).order_by(Teaching.published_at.desc()).all()
-    return render_template("admin/teachings.html", teachings=rows, kind=kind)
+    return render_template("admin/teachings.html", teachings=rows, kind=kind,
+                           missing_ids=youtube_refresh.missing_video_ids(),
+                           can_refresh_text=bool(current_app.config.get("YOUTUBE_API_KEY")))
+
+
+@bp.route("/teachings/recheck", methods=["POST"])
+def teachings_recheck():
+    """Re-check every video. Runs on a thread: 30-odd videos outrun the 60s
+    gunicorn timeout, and the owner should not be staring at a dead tab."""
+    error = youtube_refresh.start_sweep(current_app._get_current_object(),
+                                        current_admin().email)
+    flash(error or "Re-checking every video with YouTube now.",
+          "error" if error else "success")
+    return redirect(url_for("admin.teachings", kind=request.form.get("kind") or None))
+
+
+@bp.route("/teachings/recheck/status")
+def teachings_recheck_status():
+    """Progress for the running sweep (polled by the page, hence GET+JSON).
+
+    Read-only, so it does not break the never-mutate-on-GET rule."""
+    return jsonify(youtube_refresh.sweep_state())
 
 
 @bp.route("/teachings/<int:teaching_id>", methods=["GET", "POST"])
@@ -642,10 +663,51 @@ def teaching_form(teaching_id):
             db.session.commit()
             flash(f"“{teaching.title}” is now featured on the home page.", "success")
 
+        elif action == "recheck":
+            result = youtube_refresh.refresh_teaching(teaching, editor)
+            flash(*_recheck_message(result))
+
+        elif action == "repoint":
+            new_id = youtube_refresh.parse_video_id(request.form.get("video_url") or "")
+            if new_id is None:
+                flash("Please paste the full YouTube link for the new video.", "error")
+            else:
+                error, result = youtube_refresh.repoint(teaching, new_id, editor)
+                if error:
+                    flash(error, "error")
+                else:
+                    flash(f"This episode now points at youtu.be/{new_id}. "
+                          "Its spoken-word search results will come back after "
+                          "the next full channel sync.", "success")
+
         return redirect(url_for("admin.teaching_form", teaching_id=teaching.id))
 
+    video = youtube_refresh.state(teaching.youtube_id)
+    checked = video.get("checked_at")
     return render_template("admin/teaching_form.html", teaching=teaching,
-                           notes_path=teaching.notes_path)
+                           notes_path=teaching.notes_path, video=video,
+                           # Stored as a UTC stamp; converted for display only.
+                           video_checked=(datetime.fromtimestamp(checked, tz=timezone.utc)
+                                          .replace(tzinfo=None) if checked else None),
+                           can_refresh_text=bool(current_app.config.get("YOUTUBE_API_KEY")))
+
+
+def _recheck_message(result) -> tuple:
+    """Say exactly what changed — "done" tells the owner nothing."""
+    if result.missing:
+        return ("YouTube says this video is gone or private. If you re-uploaded "
+                "it, paste the new link below.", "error")
+    if result.error:
+        return (result.error, "error")
+    if not result.changed:
+        return ("Checked — this episode already matches YouTube.", "success")
+    words = {"title": "the title", "description": "the description",
+             "thumbnail": "the thumbnail", "length": "the length",
+             "date": "the publish date"}
+    listed = [words.get(c, c) for c in result.changed]
+    if len(listed) > 1:
+        listed = [", ".join(listed[:-1]) + " and " + listed[-1]]
+    return (f"Updated {listed[0]} from YouTube.", "success")
 
 
 def _reindex_search() -> None:
@@ -690,3 +752,21 @@ def message_archive(message_id):
     db.session.commit()
     flash("Message archived." if row.archived else "Message restored.", "success")
     return redirect(url_for("admin.messages", show="archived" if not row.archived else None))
+
+
+@bp.route("/messages/<int:message_id>/delete", methods=["POST"])
+def message_delete(message_id):
+    """Delete a message for good.
+
+    Archiving hides it; this removes it. There is no undo, so the button
+    confirms itself in place first (house rule: no browser confirm() dialogs)."""
+    row = db.session.get(ContactMessage, message_id)
+    if row is None:
+        abort(404)
+    archived, sender = bool(row.archived), (row.name or row.email or "someone")
+    db.session.delete(row)
+    db.session.commit()
+    logging.info("admin: message %d from %r deleted by %s", message_id, sender,
+                 current_admin().email)
+    flash("Message deleted.", "success")
+    return redirect(url_for("admin.messages", show="archived" if archived else None))

@@ -20,3 +20,6 @@ node_modules/
 .claude/settings.local.json
 *.log
 .DS_Store
+
+# Thumbnails re-downloaded by /admin live on the DATA_DIR volume, never here.
+data/thumbs/

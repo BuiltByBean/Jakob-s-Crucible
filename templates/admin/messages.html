@@ -8,7 +8,8 @@
   <h1 class="font-display text-3xl font-semibold text-surface-50">Messages</h1>
   <p class="mt-2 text-surface-300 max-w-2xl">
     Everything sent through the contact form. Messages are stored here whether
-    or not the notification email goes out, so nothing is ever lost.
+    or not the notification email goes out, so nothing is lost on the way in.
+    Archive what you have dealt with; delete what you never want to see again.
   </p>
 </header>
 
@@ -51,18 +52,31 @@
       <p>{{ para | nl2br }}</p>
       {% endfor %}
     </div>
+    {# Actions on the right, note on the left (owner's rule: most people are
+       right-handed), with the destructive one last. #}
     <footer class="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center gap-3">
-      <a href="mailto:{{ m.email }}?subject={{ (('Re: ' + m.subject) if m.subject else 'Re: your message') | urlencode }}"
-         class="btn-ghost !py-2 !px-3 text-sm">{{ icons.icon('mail', 16) }} Reply</a>
-      <form method="post" action="{{ url_for('admin.message_archive', message_id=m.id) }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="btn-ghost !py-2 !px-3 text-sm">
-          {{ 'Move back to inbox' if m.archived else 'Archive' }}
-        </button>
-      </form>
       {% if not m.emailed %}
-      <span class="text-xs text-surface-500 ml-auto">no notification email was sent</span>
+      <span class="text-xs text-surface-500">no notification email was sent</span>
       {% endif %}
+      <div class="ml-auto flex flex-wrap items-center justify-end gap-3">
+        <a href="mailto:{{ m.email }}?subject={{ (('Re: ' + m.subject) if m.subject else 'Re: your message') | urlencode }}"
+           class="btn-ghost !py-2 !px-3 text-sm">{{ icons.icon('mail', 16) }} Reply</a>
+        <form method="post" action="{{ url_for('admin.message_archive', message_id=m.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-ghost !py-2 !px-3 text-sm">
+            {{ 'Move back to inbox' if m.archived else 'Archive' }}
+          </button>
+        </form>
+        {# Deleting cannot be undone, so the button asks once in place —
+           the site never uses browser confirm() dialogs. #}
+        <form method="post" action="{{ url_for('admin.message_delete', message_id=m.id) }}"
+              x-data="{ sure: false }" @submit="if (!sure) { $event.preventDefault(); sure = true }">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-ghost !py-2 !px-3 text-sm"
+                  :class="sure ? '!border-red-400/50 !text-red-200' : ''"
+                  x-text="sure ? 'Tap again to delete' : 'Delete'">Delete</button>
+        </form>
+      </div>
     </footer>
   </article>
   {% endfor %}

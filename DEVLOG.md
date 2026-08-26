@@ -2,6 +2,22 @@
 
 User-facing change history, newest first.
 
+## 2026-08-26 — Delete messages, re-check videos with YouTube
+
+Messages can now be deleted outright, not just archived — the button asks
+once in place before it does it. And the admin gains a re-check against
+YouTube: one button re-checks the whole library, or re-check a single episode
+from its own page. It picks up a thumbnail or title changed on YouTube, and
+names any video that has been taken down. First run found 13 of the 32
+thumbnails had been replaced since launch and were still showing the old
+picture.
+
+If a video was removed and re-uploaded, its episode page has a "Did you
+re-upload this video?" box: paste the new link and the episode moves across,
+keeping its address, manuscript, study notes and topics. Descriptions,
+chapters and Scripture references still come from a full channel sync —
+YouTube will not serve those to the site's own server.
+
 ## 2026-08-23 — Replaceable pictures, brighter ceiling, mobile background
 
 A new Pictures screen in the admin: the crucible mark, the footer seal,

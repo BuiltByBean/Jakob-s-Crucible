@@ -91,6 +91,14 @@ class Config:
     )
     CONTACT_RECIPIENT = os.environ.get("CONTACT_RECIPIENT", "thewisdomcrucible@gmail.com")
 
+    # Optional. /admin's "re-check YouTube" always refreshes thumbnails,
+    # titles and availability through the public oEmbed endpoint, which needs
+    # no key. Descriptions cannot be read from a datacenter IP any other way
+    # (measured: the watch page bot-walls and InnerTube returns
+    # LOGIN_REQUIRED), so setting a YouTube Data API v3 key here — and only
+    # then — lets a re-check refresh descriptions too.
+    YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "")
+
     # Ministry identity — single source of truth for templates.
     MINISTRY_NAME = "The Wisdom Crucible"
     MINISTRY_TAGLINE = "Where wisdom distills transformation through the Word of God."

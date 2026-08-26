@@ -319,8 +319,16 @@ def _build_teaching(v: dict, series, position: int, podcast_by_title: dict, used
 
     # Prefer the self-hosted thumbnail (scripts/fetch_thumbnails.py) — same-
     # origin, immune to i.ytimg.com throttling. Hotlink only as a fallback.
+    # A thumbnail the owner re-downloaded from /admin lives on the volume and
+    # outranks both: it is newer than anything committed under static/, and
+    # this rebuild is exactly where it would otherwise be lost.
+    from services import youtube_refresh
+
     local_thumb = REPO / "static" / "img" / "thumbs" / f"{v['id']}.jpg"
-    if local_thumb.is_file():
+    refreshed = youtube_refresh.thumb_url(v["id"])
+    if refreshed:
+        thumbnail = refreshed
+    elif local_thumb.is_file():
         thumbnail = f"/static/img/thumbs/{v['id']}.jpg"
     else:
         thumbnail = v.get("thumbnail") or f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg"

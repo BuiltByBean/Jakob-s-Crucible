@@ -98,6 +98,26 @@ wording, links, resources, topics, manuscripts, or notes.
   DATA_DIR keyed by slot, served by `/media/<slot>` with a version stamp, and
   templates call `site_image('slot')`. Raster only — SVG is excluded because
   it can carry script and is served from our own origin.
+- `services/youtube_refresh.py` is the runtime subset of the channel sync:
+  re-check one episode or the whole library from /admin. **What YouTube
+  answers from the production container was MEASURED, not assumed** — oEmbed
+  (title + "does this still exist") and i.ytimg.com thumbnails work; the watch
+  page bot-walls and InnerTube returns LOGIN_REQUIRED. Both scrapes succeed
+  from a home connection, so never "verify" this locally. Descriptions
+  therefore refresh only when the optional `YOUTUBE_API_KEY` is set. Refreshed
+  thumbnails go on DATA_DIR (`/media/thumb/<youtube_id>?v=<content hash>`) and
+  `_build_teaching` prefers them, so a re-seed keeps them. A thumbnail is only
+  "updated" when its bytes differ from what the site is ALREADY showing
+  (volume copy, else the committed static file) — otherwise the first re-check
+  reports every video as changed.
+- The library sweep runs on a daemon thread and writes progress to
+  `site_content` under `youtube.sweep`, so any gunicorn worker can answer the
+  poll; 30-odd videos outrun the 60s request timeout.
+- Re-pointing an episode at a re-uploaded video (`repoint()`) must carry the
+  admin_edits records, uploaded notes and topic assignments across — they all
+  key on `youtube_id`, which is precisely what a re-upload changes.
+- Contact messages can be hard-deleted. Destructive admin buttons confirm
+  themselves in place (`x-data="{ sure: false }"`), never with `confirm()`.
 - Accounts are created by `scripts/seed_admin.py` (never resets an existing
   password) and recovered with `scripts/reset_admin_password.py`. No
   email-based reset: mail is a silent no-op unless MAIL_USERNAME is set.
@@ -115,7 +135,13 @@ wording, links, resources, topics, manuscripts, or notes.
 - No native `<select>` for pickers (Alpine dropdown + hidden input so plain GET
   submission still works). No `confirm()`/`alert()`. No emoji as icons — inline
   line SVGs via `templates/_icon_macros.html` (24×24, stroke=currentColor,
-  stroke-width 1.6, round caps, aria-hidden).
+  stroke-width 1.6, round caps, aria-hidden). Collapsible sections use an
+  Alpine `x-show`/`x-collapse` toggle, never `<details>`.
+- **No inline `<script>` in a template** — the CSP allows `'unsafe-eval'` (for
+  Alpine's `x-*` expressions) but NOT `'unsafe-inline'`, so an inline block is
+  silently blocked. Alpine components live in `static/js/admin.js` (loaded
+  deferred BEFORE alpine.min.js) and take their server data from `data-*`
+  attributes — never from `| tojson` inside a double-quoted attribute.
 - No autoplay ever; video embeds are click-to-load facades
   (youtube-nocookie.com iframe injected on click). Lightbox overlays for cards,
   inline player on the episode page.
@@ -191,6 +217,8 @@ python scripts/seed_admin.py            # create the admin accounts (idempotent)
 python scripts/reset_admin_password.py <email> <pw>   # forgotten-password recovery
 python scripts/seed_db.py               # (re)build DB from data/seed/*.json
 python scripts/sync_youtube.py          # re-scrape channel -> data/seed + upsert (dev deps)
+                                        # run from a HOME connection: YouTube
+                                        # bot-walls datacenter IPs
 python scripts/import_manuscripts.py    # content/manuscripts/*.md -> Teaching.manuscript
 python smoke_test.py                    # full route walk, throwaway DB
 python scripts/check_url_for_endpoints.py
@@ -199,4 +227,5 @@ python app.py                           # dev server (reloader OFF on purpose: S
 
 Env vars (all optional locally): `SECRET_KEY`, `DATA_DIR`, `DATABASE_URL`,
 `MAIL_SERVER/PORT/USE_TLS/USERNAME/PASSWORD/DEFAULT_SENDER`,
-`CONTACT_RECIPIENT` (default thewisdomcrucible@gmail.com), `TWC_FORCE_HTTPS`.
+`CONTACT_RECIPIENT` (default thewisdomcrucible@gmail.com), `TWC_FORCE_HTTPS`,
+`YOUTUBE_API_KEY` (optional; only unlocks description refresh in /admin).
