@@ -58,6 +58,17 @@ manuscript, transcript, chapters, scripture refs, and topics all hang off one
   Manuscript (Jakob's own script) is the readable form.
 - Explore-Scripture lights a book only when it is the PRIMARY passage of a
   full teaching; passing citations don't count as "opened".
+- The Statement of Faith stays ONE markdown field; `services/statement.py`
+  derives the page's structure from two conventions in it at render time —
+  `### Heading` is an article, `### A. Heading` nests inside the article above
+  it, and a `**Scripture References:**` line becomes the tappable chips. Never
+  turn it into a second table the owner has to maintain. Refs are parsed
+  SERVER-side (CCC does it in the browser) so the chips are in the first paint.
+  `static/js/scriptures.js` is the ESV bundle AND the single source of truth for
+  which passages are clickable — `bundled_keys()` reads that same file, so a
+  reference with no text renders as plain text instead of a dead button. It is
+  held under Crossway's 500-verse ceiling on purpose (91 passages, 441 verses;
+  1 Corinthians 12–14 is left out) — check the count before adding to it.
 
 ## Admin area (/admin)
 
@@ -142,6 +153,14 @@ wording, links, resources, topics, manuscripts, or notes.
   silently blocked. Alpine components live in `static/js/admin.js` (loaded
   deferred BEFORE alpine.min.js) and take their server data from `data-*`
   attributes — never from `| tojson` inside a double-quoted attribute.
+- A dialog goes in `{% block overlays %}`, NOT in the content block: the
+  overlay scripts inert `header`/`main`/`footer` while one is open, so a dialog
+  rendered inside `<main>` inerts itself. A Tailwind class survives the build
+  only if it appears in a TEMPLATE — a class used solely from a JS file is
+  purged, so style JS-built markup by element under a parent class (see
+  `.scripture-passage p`). `[hidden]` is forced `display:none !important` in
+  the base layer: any display utility on an element otherwise beats the
+  browser's own `[hidden]` rule, and `el.hidden = true` silently does nothing.
 - No autoplay ever; video embeds are click-to-load facades
   (youtube-nocookie.com iframe injected on click). Lightbox overlays for cards,
   inline player on the episode page.

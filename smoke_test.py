@@ -67,6 +67,29 @@ def run() -> int:
         r = client.get(path, follow_redirects=True)
         check(f"GET {path}", r.status_code == 200, f"-> {r.status_code}")
 
+    print("\n-- statement of faith")
+    # The page derives its whole structure from two conventions in the owner's
+    # markdown (### headings, a **Scripture References:** line). A silent
+    # regression there still returns 200, so assert on what it produced.
+    html = client.get("/statement-of-faith").get_data(as_text=True)
+    from services.site_content import content as site_text
+    from services.statement import bundled_keys, parse_sections
+
+    with app.app_context():
+        sections = parse_sections(site_text("statement_of_faith.body"))
+    subs = sum(len(s.children) for s in sections)
+    chips = html.count('class="ref-chip"')
+    check("ESV bundle loaded", len(bundled_keys()) > 0, f"got {len(bundled_keys())} passages")
+    check("statement splits into articles", len(sections) >= 10, f"got {len(sections)}")
+    check("sub-articles nest in their parent", subs >= 5, f"got {subs}")
+    check("references render as chips", chips > 50, f"got {chips}")
+    check("every chip has a passage", html.count("data-ref=") == chips, "chip without a data-ref")
+    check("the ESV overlay is on the page", 'id="scripture-popup"' in html)
+    check("the overlay sits outside <main>",
+          html.index("</main>") < html.index('id="scripture-popup"'),
+          "an overlay inside <main> is inerted along with it")
+    check("the passage bundle loads here", "js/scriptures.js" in html)
+
     print("\n-- every teaching page")
     for slug in teaching_slugs:
         r = client.get(f"/teachings/{slug}")

@@ -15,6 +15,14 @@
     display: none !important;
   }
 
+  /* el.hidden must actually hide. The browser's own [hidden] rule is a UA
+     style, so ANY display utility on the element (inline-flex, block, grid)
+     wins over it and the element stays on screen — which is exactly what the
+     Scripture popup's book link did before this rule existed. */
+  [hidden] {
+    display: none !important;
+  }
+
   body {
     /* NO background here — the canvas color comes from the inline style on
        <html> (anti-flash rule). An opaque body background would paint OVER
@@ -365,6 +373,112 @@
   }
   .prose-dark ol {
     @apply list-decimal;
+  }
+
+  /* ---- Statement of Faith: collapsible articles ------------------------
+     Every article is open on load — the page reads straight through, and
+     collapsing is a convenience for finding your way back to something. The
+     toggle is the whole heading row (full-width tap target, 44px floor). */
+  .sof-articles {
+    @apply divide-y divide-white/10 border-y border-white/10;
+  }
+  .sof-toggle {
+    @apply w-full flex items-center justify-between gap-4 text-left py-4
+      min-h-[44px] transition-colors;
+  }
+  .sof-toggle:hover .sof-heading,
+  .sof-toggle:hover .sof-subheading {
+    @apply text-flame-200;
+  }
+  .sof-heading {
+    @apply font-display text-xl sm:text-2xl font-semibold text-surface-50
+      transition-colors;
+  }
+  .sof-subheading {
+    @apply font-display text-base sm:text-lg font-semibold text-surface-100
+      transition-colors;
+  }
+  .sof-caret {
+    @apply text-surface-500 transition-transform duration-300;
+  }
+  .sof-toggle:hover .sof-caret {
+    @apply text-flame-300;
+  }
+  .sof-body {
+    @apply pb-6;
+  }
+  /* Sub-articles (the persons of the Trinity, the two ordinances) sit inside
+     their parent, marked by a rule down the left rather than a heavier box —
+     the nesting should read as one statement, not as cards within cards. */
+  .sof-sub {
+    @apply border-l border-white/10 pl-4 sm:pl-5 mt-1;
+  }
+  .sof-sub .sof-toggle {
+    @apply py-3;
+  }
+  .sof-sub .sof-body {
+    @apply pb-3;
+  }
+  .sof-collapse-all {
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold uppercase
+      tracking-wider text-surface-400 hover:text-flame-300 transition-colors
+      min-h-[44px] px-1;
+  }
+
+  /* ---- reference chips -------------------------------------------------
+     A citation you can open has to LOOK like one — bordered pill with a book
+     glyph, not secretly-clickable text. References with no bundled ESV text
+     stay plain so nothing offers a press that does nothing. */
+  .sof-refs {
+    @apply mt-4 text-sm text-surface-400 leading-loose;
+  }
+  .sof-refs-label {
+    @apply block text-xs font-semibold uppercase tracking-wider text-flame-400/90 mb-2;
+  }
+  .sof-refs-sep {
+    @apply text-surface-600;
+  }
+  .sof-refs-plain {
+    @apply text-surface-300;
+  }
+  .ref-chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-white/10
+      bg-white/[0.03] px-2.5 py-1 text-[0.8rem] font-medium text-surface-200
+      align-middle transition-all;
+  }
+  .ref-chip:hover {
+    @apply border-flame-400/50 bg-flame-500/10 text-flame-200;
+  }
+  .ref-chip:active {
+    transform: translateY(1px);
+  }
+  .ref-chip:focus-visible {
+    @apply outline-none border-flame-500;
+    box-shadow: 0 0 0 3px rgba(34, 154, 232, 0.18);
+  }
+
+  /* ---- the ESV passage overlay ----------------------------------------- */
+  .scripture-passage {
+    @apply text-surface-100 leading-relaxed;
+    /* The dialog is the scroll container; stop a flick at the end of a psalm
+       from carrying on into the page behind it. */
+    overscroll-behavior: contain;
+  }
+  /* Element selectors, not classes: the passage is built by scripture.js, and
+     Tailwind only scans templates — a class that appears solely in JS is purged
+     out of the build. Nesting under .scripture-passage (which IS in a template)
+     keeps these rules. */
+  .scripture-passage p {
+    @apply mb-2.5;
+  }
+  .scripture-passage sup {
+    @apply mr-0.5 align-super text-[0.65em] font-semibold text-flame-400;
+  }
+  .scripture-passage h3 {
+    @apply mt-5 mb-2 text-xs font-semibold uppercase tracking-wider text-surface-400;
+  }
+  .scripture-passage h3:first-child {
+    @apply mt-0;
   }
 
   /* Staggered card entrances — children 1..9 rise in 60ms apart. */

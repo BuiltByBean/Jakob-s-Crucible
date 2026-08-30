@@ -2,6 +2,32 @@
 
 User-facing change history, newest first.
 
+## 2026-08-30 — Statement of Faith: folding articles, ESV verses on tap
+
+The Statement of Faith now reads as a set of articles you can fold away. Every
+one starts open, so the page still reads straight through without a single
+click; a "Collapse all" control at the top turns the whole statement into a
+one-screen table of contents. The three persons of the Trinity and the two
+ordinances fold inside their parent article rather than sitting beside it, so
+the outline matches the way the statement is written.
+
+Every Scripture reference is now a tappable chip. Tapping one opens the full
+ESV text of that passage in place — no navigation, no waiting, and it works
+offline, because all 91 passages are shipped with the page. Where a passage
+belongs to a book the library actually teaches, the popup also offers a way
+through to that book in Explore Scripture. References are still typed the same
+way in the admin: a line beginning **Scripture References:** becomes the chip
+list, and any reference without bundled text simply stays plain text.
+
+One reference is deliberately not tappable — 1 Corinthians 12–14, three whole
+chapters. Crossway allows up to 500 ESV verses to be quoted without written
+permission, and leaving that one span as plain text keeps the page at 441.
+
+The episode link at the foot of the page is now editable: the small line above
+the title and the sentence beneath it are both under Statement of Faith in the
+admin. The episode's own title stays as it is — it follows the video, and still
+only changes by re-checking it on the episode's page.
+
 ## 2026-08-26 — Delete messages, re-check videos with YouTube
 
 Messages can now be deleted outright, not just archived — the button asks

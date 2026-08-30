@@ -259,6 +259,8 @@ def statement_of_faith():
     deploy, so an edit made in the admin would silently vanish."""
     from services.site_content import content as site_text
 
+    from services.statement import parse_sections
+
     body = site_text("statement_of_faith.body")
     if not body:  # first boot before seeding, or the row was cleared
         sof_path = BASE_DIR / "content" / "statement_of_faith.md"
@@ -266,7 +268,28 @@ def statement_of_faith():
         body = re.sub(r"^### Personal Statement of Faith\s*\n", "", body)
     teaching = Teaching.query.filter_by(is_statement_of_faith=True).first()
     # NOT named `content`: that would shadow the global content() helper.
-    return render_template("statement_of_faith.html", body=body, teaching=teaching)
+    return render_template("statement_of_faith.html", body=body, teaching=teaching,
+                           sections=parse_sections(body, _opened_book_slugs()))
+
+
+def _opened_book_slugs() -> frozenset[str]:
+    """Books a Scripture popup may link through to Explore Scripture.
+
+    Same rule the Explore Scripture shelves use — a book counts as opened only
+    when it is the PRIMARY passage of a full teaching (owner's rule: passing
+    citations don't count). Anything else would offer the reader a door into an
+    empty room."""
+    from models import ScriptureBook, ScriptureRef
+
+    rows = (
+        db.session.query(ScriptureBook.slug)
+        .join(ScriptureRef, ScriptureRef.book_id == ScriptureBook.id)
+        .join(Teaching, Teaching.id == ScriptureRef.teaching_id)
+        .filter(ScriptureRef.is_primary.is_(True), Teaching.kind != "short")
+        .distinct()
+        .all()
+    )
+    return frozenset(slug for (slug,) in rows)
 
 
 @bp.route("/resources")

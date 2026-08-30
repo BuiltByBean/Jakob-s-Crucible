@@ -149,8 +149,25 @@ REGISTRY: list[Entry] = [
           "explained here against not only the proof texts, but also the cohesive "
           "narrative of all Scripture.", rows=5),
     Entry("statement_of_faith.body", "statement_of_faith", "The statement", "markdown", "", rows=30,
-          help="Start a section with ### — e.g. “### The Trinity”. Blank line between paragraphs. "
-               "**bold**, *italic*, > quotations, and - bullet lists all work."),
+          help="Start a section with ### — e.g. “### The Trinity”. Each one becomes a "
+               "section visitors can fold away; they all start open. A section headed "
+               "“### A. Something” folds inside the section above it. A line reading "
+               "**Scripture References:** becomes the tappable verse list. Blank line "
+               "between paragraphs. **bold**, *italic*, > quotations, and - bullet lists all work."),
+    # The episode endorsement at the foot of the page. Its TITLE is deliberately
+    # absent from this registry: the title belongs to the video and changes only
+    # by re-checking it on the episode's own page (owner's rule) — an editable
+    # copy here would drift from the episode it points at.
+    Entry("statement_of_faith.episode_eyebrow", "statement_of_faith",
+          "Episode link — small line above the title", "text",
+          "Want the full treatment?",
+          help="The episode's own title is shown underneath and cannot be edited here — "
+               "it follows the video, and updates when you re-check it on its page."),
+    Entry("statement_of_faith.episode_blurb", "statement_of_faith",
+          "Episode link — line under the title", "rich",
+          "Every article examined at length, with the reasoning behind it", rows=3,
+          help="The video's length and a full stop are added to the end automatically, "
+               "so this reads “…behind it — 1:04:20.”"),
 
     # ---- resources ----
     Entry("resources.description", "resources", "Description", "rich",

@@ -5,35 +5,160 @@
 {% block title %}Statement of Faith — {{ MINISTRY.name }}{% endblock %}
 {% block meta_description %}The doctrinal foundation of The Wisdom Crucible — what Jakob McClain believes, stated plainly with the Scriptures behind each conviction.{% endblock %}
 
+{# ---- one article of the statement -------------------------------------
+   Collapsible but OPEN by default: the page reads top to bottom without a
+   single click, and closing an article is a convenience, not a prerequisite.
+   x-show/x-collapse rather than <details> (house rule), and the whole heading
+   row is the button so the tap target is the full width. #}
+{% macro article(section, level) %}
+<div x-data="{ open: true }" x-on:sof-toggle.window="open = $event.detail"
+     class="{% if level == 1 %}sof-article{% else %}sof-sub{% endif %}">
+  <h{{ level + 1 }} class="m-0">
+    {# The static aria-expanded is the pre-hydration truth (articles start open);
+       Alpine takes it over from there. #}
+    <button type="button" class="sof-toggle" @click="open = !open" aria-expanded="true"
+            :aria-expanded="open ? 'true' : 'false'" aria-controls="sof-{{ section.slug }}">
+      <span class="{% if level == 1 %}sof-heading{% else %}sof-subheading{% endif %}">{{ section.title }}</span>
+      <span class="sof-caret shrink-0" :class="open ? 'rotate-180' : ''">{{ icons.icon('chevron-down', 20) }}</span>
+    </button>
+  </h{{ level + 1 }}>
+
+  <div x-show="open" x-collapse id="sof-{{ section.slug }}">
+    <div class="sof-body">
+      {% if section.body %}
+      <div class="prose-dark">{{ section.body | manuscript_html }}</div>
+      {% endif %}
+      {% if section.refs %}{{ refs_line(section) }}{% endif %}
+      {% for child in section.children %}{{ article(child, level + 1) }}{% endfor %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{# ---- the 'Scripture References:' line as tappable chips ----------------
+   Chips carry the passage key; static/js/scripture.js reads the ESV text for
+   it out of the bundle and opens the overlay. A reference with no bundled text
+   renders as plain text — never a button that opens nothing. #}
+{% macro refs_line(section) %}
+<p class="sof-refs">
+  <span class="sof-refs-label">{{ section.refs_label or 'Scripture References:' }}</span>
+  {%- for piece in section.refs -%}
+    {%- if piece.kind == 'chip' -%}
+      <button type="button" class="ref-chip" data-ref="{{ piece.key }}"
+              {%- if piece.book_slug %} data-book-url="{{ url_for('explore.scripture_book', slug=piece.book_slug) }}"
+              data-book-name="{{ piece.book_name }}"{% endif %}
+              title="Read {{ piece.label }} (ESV)">
+        {{- icons.icon('book', 13, 'shrink-0 opacity-70') }}<span>{{ piece.label }}</span>
+      </button>
+    {%- elif piece.kind == 'sep' -%}
+      <span class="sof-refs-sep">{{ piece.label }}</span>
+    {%- else -%}
+      <span class="sof-refs-plain">{{ piece.label }}</span>
+    {%- endif -%}
+  {%- endfor -%}
+</p>
+{% endmacro %}
+
 {% block content %}
 {# Standard page container (matches Topics/Library/Scripture): header blurb
    capped like Topics', body content spans the full container. #}
 <div class="max-w-6xl mx-auto px-4 lg:px-6 pt-10">
-  <header class="mb-10 max-w-3xl">
+  <header class="mb-8 max-w-3xl">
     <h1 class="font-display text-3xl sm:text-4xl font-semibold text-surface-50">Statement of Faith</h1>
     <p class="mt-3 max-w-3xl text-surface-300 leading-relaxed prose-links">
       {{ content('statement_of_faith.description') | rich_text }}
     </p>
   </header>
 
-  <div class="prose-dark sof-prose">
-    {{ body | manuscript_html }}
+  <div class="max-w-4xl">
+    {% if sections %}
+    {# Collapse-all is a shortcut to the outline, never the starting state —
+       the articles are open on load. The event goes through window because the
+       articles are siblings of this button, not descendants of it. #}
+    <div class="flex items-center justify-end mb-4" x-data="{ allOpen: true }">
+      <button type="button" class="sof-collapse-all"
+              @click="allOpen = !allOpen; window.dispatchEvent(new CustomEvent('sof-toggle', { detail: allOpen }))">
+        <span x-text="allOpen ? 'Collapse all' : 'Expand all'">Collapse all</span>
+        <span :class="allOpen ? '' : 'rotate-180'" class="transition-transform">{{ icons.icon('chevron-down', 16) }}</span>
+      </button>
+    </div>
+
+    <div class="sof-articles">
+      {% for section in sections %}
+        {% if section.title %}
+          {{ article(section, 1) }}
+        {% elif section.body or section.refs %}
+          {# Prose before the first ### — no article of its own, but its
+             references still become chips. #}
+          <div class="mb-8">
+            {% if section.body %}<div class="prose-dark">{{ section.body | manuscript_html }}</div>{% endif %}
+            {% if section.refs %}{{ refs_line(section) }}{% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-surface-400">The statement has not been written yet.</p>
+    {% endif %}
   </div>
 
   {% if teaching %}
+  {# The endorsement's two lines are admin-editable; the title is NOT — it
+     comes from the episode itself, so it only ever changes by re-checking the
+     video on its own page (owner's rule). #}
   <a href="{{ url_for('public.teaching_detail', slug=teaching.slug) }}"
-     class="card card-hover p-5 mt-12 flex items-center gap-4 group">
+     class="card card-hover p-5 mt-12 flex items-center gap-4 group max-w-4xl">
     <img src="{{ teaching.thumbnail_url or 'https://i.ytimg.com/vi/' + teaching.youtube_id + '/hqdefault.jpg' }}"
          alt="" loading="lazy" width="120" height="68" class="w-28 aspect-video object-cover rounded-lg shrink-0">
     <span class="min-w-0">
-      <span class="block text-xs font-semibold uppercase tracking-wider text-flame-400 mb-1">Want the full treatment?</span>
+      <span class="block text-xs font-semibold uppercase tracking-wider text-flame-400 mb-1">
+        {{ content('statement_of_faith.episode_eyebrow') }}
+      </span>
       <span class="block font-display text-lg font-semibold text-surface-50 group-hover:text-flame-200 transition-colors leading-snug">
         {{ teaching.title }}
       </span>
-      <span class="block mt-1 text-xs text-surface-400">Every article examined at length, with the reasoning behind it — {{ teaching.duration_seconds | duration }}.</span>
+      <span class="block mt-1 text-xs text-surface-400">{{ content('statement_of_faith.episode_blurb') | rich_text }}{% if teaching.duration_seconds %} — {{ teaching.duration_seconds | duration }}{% endif %}.</span>
     </span>
     <span class="ml-auto text-surface-500 group-hover:text-flame-300 transition-colors shrink-0">{{ icons.icon('chevron-right', 18) }}</span>
   </a>
   {% endif %}
 </div>
+{% endblock %}
+
+{% block overlays %}
+{# ---- ESV passage overlay ------------------------------------------------
+   Same shape as the video lightbox: one instance, opened by static/js/
+   scripture.js, closed by the backdrop, the button, or Escape. The passage
+   text is already in the page's JS bundle, so opening it costs no request. #}
+<div id="scripture-popup" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 sm:p-6"
+     role="dialog" aria-modal="true" aria-labelledby="scripture-popup-title">
+  <div class="absolute inset-0 bg-black/85 backdrop-blur-sm" data-scripture-close></div>
+  <div class="relative w-full max-w-2xl card flex flex-col max-h-[85vh]">
+    <div class="flex items-start justify-between gap-3 p-5 pb-3 border-b border-white/10 shrink-0">
+      <h2 id="scripture-popup-title" class="font-display text-lg font-semibold text-surface-50 leading-snug"></h2>
+      <button type="button" data-scripture-close aria-label="Close passage"
+              class="-m-2 p-2 rounded-lg text-surface-300 hover:text-white hover:bg-white/10 transition-colors shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center">
+        {{ icons.icon('close', 22) }}
+      </button>
+    </div>
+    <div id="scripture-popup-body" class="scripture-passage p-5 overflow-y-auto"></div>
+    <div class="p-5 pt-3 border-t border-white/10 shrink-0">
+      <a id="scripture-popup-book" href="#" hidden
+         class="inline-flex items-center gap-1.5 text-sm font-semibold text-flame-300 hover:text-flame-200 transition-colors min-h-[44px]">
+        <span id="scripture-popup-book-label"></span>{{ icons.icon('arrow-right', 16) }}
+      </a>
+      <p class="text-[11px] leading-relaxed text-surface-500">
+        Scripture quotations are from the ESV&reg; Bible (The Holy Bible, English Standard
+        Version&reg;), &copy; 2001 by Crossway, a publishing ministry of Good News Publishers.
+        Used by permission. All rights reserved.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{# Loaded only here — 59KB of ESV text has no business on any other page. #}
+<script defer src="{{ url_for('static', filename='js/scriptures.js') }}?v={{ ASSET_V }}"></script>
+<script defer src="{{ url_for('static', filename='js/scripture.js') }}?v={{ ASSET_V }}"></script>
 {% endblock %}

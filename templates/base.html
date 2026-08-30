@@ -226,6 +226,10 @@
     </div>
   </div>
 
+  {# Page-specific dialogs go here, NOT in the content block: an overlay must
+     sit outside <main>, which the scripts inert while a dialog is open. #}
+  {% block overlays %}{% endblock %}
+
   {% block scripts %}{% endblock %}
 </body>
 </html>
