@@ -72,6 +72,7 @@ GROUPS = [
     ("about", "About", "The ministry description and your biography."),
     ("contact", "Contact", "The blurb above the contact form."),
     ("ministry", "Contact details & links", "Email, phone, and every link to your channels."),
+    ("birthday", "Birthday greeting", "The one-day greeting, its date, and its fireworks."),
 ]
 
 GROUP_LABELS = {slug: label for slug, label, _ in GROUPS}
@@ -94,6 +95,18 @@ REGISTRY: list[Entry] = [
           help="A very faint grain over the background, so large dark areas don't band."),
     Entry("appearance.pages", "appearance", "Which pages show the effects", "pages", ALL_PAGES,
           help="Untick a page to leave its background plain."),
+
+    # ---- birthday: shows itself for one day a year, then goes away ----
+    Entry("birthday.enabled", "birthday", "Show the birthday greeting", "toggle", "on",
+          help="The greeting only ever appears on the date below. It is not a switch "
+               "you have to remember to turn off again."),
+    Entry("birthday.date", "birthday", "The date it appears", "monthday", "08-31",
+          help="Month and day, written MM-DD — 08-31 is the 31st of August. There is "
+               "no year: it comes back on the same day every year."),
+    Entry("birthday.headline", "birthday", "The greeting", "text", "Happy Birthday, Jakob!"),
+    Entry("birthday.fireworks", "birthday", "Fireworks", "toggle", "on",
+          help="They always stay still for visitors who ask their device to reduce "
+               "motion — the greeting itself still shows."),
 
     # ---- home ----
     Entry("home.hero_subline", "home", "Hero line (under the tagline)", "text",
@@ -403,6 +416,11 @@ def validation_error(entry: Entry, value: str) -> str | None:
         valid = {k for k, _ in PAGE_CHOICES}
         if value.lower() != "none" and not {p.strip() for p in value.split(",")} <= valid:
             return "That isn't a page on this site."
+    if entry.kind == "monthday":
+        from services.birthday import parse_month_day
+
+        if parse_month_day(value) is None:
+            return "Please write the date as MM-DD, e.g. 08-31 for the 31st of August."
     if entry.kind == "url" and not safe_url(value):
         return "Please enter a full web address starting with https://"
     if entry.kind == "email":

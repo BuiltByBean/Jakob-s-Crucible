@@ -111,10 +111,18 @@
           {{ icons.icon('flame', 17) }} Background effects
         </a>
       </li>
+      {# Birthday greeting is dated, not page wording — same reasoning. #}
+      <li>
+        <a href="{{ url_for('admin.page_group', group='birthday') }}" @click="drawer = false"
+           class="flex items-center gap-2.5 min-h-[44px] px-3 rounded-xl text-sm font-medium transition-colors
+                  {{ 'bg-flame-500/10 text-flame-200' if active_group == 'birthday' else 'text-surface-200 hover:bg-white/5 hover:text-surface-50' }}">
+          {{ icons.icon('calendar', 17) }} Birthday greeting
+        </a>
+      </li>
     </ul>
     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-flame-300 mb-3">Page wording</p>
     <ul class="space-y-1">
-      {% for slug, label, _hint in PAGE_GROUPS if slug != 'appearance' %}
+      {% for slug, label, _hint in PAGE_GROUPS if slug not in ('appearance', 'birthday') %}
       <li>
         <a href="{{ url_for('admin.page_group', group=slug) }}" @click="drawer = false"
            class="flex items-center min-h-[40px] px-3 rounded-xl text-sm transition-colors

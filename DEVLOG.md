@@ -2,6 +2,19 @@
 
 User-facing change history, newest first.
 
+## 2026-08-31 — Happy birthday, Jakob
+
+The site opens with fireworks on your birthday. It shows once — dismiss it and
+it stays gone for the rest of the year — and it takes itself down when the day
+is over, so there is nothing to remember to switch off again.
+
+A new Birthday greeting screen in the admin holds the date (written MM-DD, so
+it comes back every year), the greeting itself, and a switch for the fireworks.
+The date is read on Central time rather than the server's UTC clock, so the
+greeting lasts the whole of the right day instead of starting the evening
+before. The fireworks stay still for anyone whose device asks for reduced
+motion; the greeting still shows.
+
 ## 2026-08-30 — Statement of Faith: folding articles, ESV verses on tap
 
 The Statement of Faith now reads as a set of articles you can fold away. Every

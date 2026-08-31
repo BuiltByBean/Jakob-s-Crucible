@@ -90,6 +90,38 @@ def run() -> int:
           "an overlay inside <main> is inerted along with it")
     check("the passage bundle loads here", "js/scriptures.js" in html)
 
+    print("\n-- birthday greeting")
+    # Date-gated on purpose. Two things have to hold: on the day it renders
+    # OUTSIDE <main> (an overlay inside it is inerted along with the page),
+    # and on every other day of the year it puts not one byte on the page.
+    import datetime as _dt
+
+    from services import birthday as bd
+
+    check("MM-DD parses", bd.parse_month_day("08-31") == (8, 31))
+    check("a nonsense date is refused", bd.parse_month_day("31-08") is None)
+    check("29 February is a real birthday", bd.parse_month_day("02-29") == (2, 29))
+
+    with app.app_context():
+        month, day = bd.parse_month_day(site_text("birthday.date"))
+    real_today = bd._today
+    try:
+        bd._today = lambda: _dt.date(2026, month, day)
+        on_day = client.get("/").get_data(as_text=True)
+        bd._today = lambda: _dt.date(2026, month, day) + _dt.timedelta(days=1)
+        off_day = client.get("/").get_data(as_text=True)
+    finally:
+        bd._today = real_today
+
+    check("the greeting shows on the day", 'id="birthday-greeting"' in on_day)
+    check("the fireworks canvas is there", 'id="birthday-fireworks"' in on_day)
+    check("the greeting sits outside <main>",
+          on_day.index("</main>") < on_day.index('id="birthday-greeting"'),
+          "an overlay inside <main> is inerted along with it")
+    check("it is gone again the next day", 'id="birthday-greeting"' not in off_day)
+    check("its script loads only on the day",
+          "js/birthday.js" in on_day and "js/birthday.js" not in off_day)
+
     print("\n-- every teaching page")
     for slug in teaching_slugs:
         r = client.get(f"/teachings/{slug}")

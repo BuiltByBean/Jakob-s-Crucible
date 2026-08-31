@@ -269,6 +269,7 @@ def create_app(config_cls=Config) -> Flask:
     def _globals():
         from datetime import datetime, timezone
 
+        from services import birthday as bd
         from services import site_content as sc
 
         # MINISTRY reads through the content registry: every value is
@@ -276,6 +277,8 @@ def create_app(config_cls=Config) -> Flask:
         return {
             "ASSET_V": ASSET_V,
             "now_year": datetime.now(timezone.utc).year,
+            # None on all 364 other days, so base.html emits nothing at all.
+            "birthday": bd.greeting(),
             "content": sc.content,
             "site_links": sc.links,
             "effect_on": sc.enabled,

@@ -226,6 +226,39 @@
     </div>
   </div>
 
+  {#- Birthday greeting — site-wide, but only on the one day a year that
+      services/birthday.py names. `birthday` is None every other day, so not
+      a byte of this (nor the script) reaches the page. It sits out here with
+      the other overlays on purpose: birthday.js inerts header/main/footer
+      while it is open, and a dialog rendered inside <main> inerts itself. -#}
+  {% if birthday %}
+  <div id="birthday-greeting" class="fixed inset-0 z-[10001] hidden items-center justify-center p-4"
+       role="dialog" aria-modal="true" aria-labelledby="birthday-headline"
+       data-birthday-stamp="{{ birthday.stamp }}"
+       data-birthday-fireworks="{{ 'on' if effect_on('birthday.fireworks') else 'off' }}">
+    <div class="absolute inset-0 bg-surface-950/90 backdrop-blur-sm" data-birthday-close></div>
+    {# Fireworks burst BEHIND the card but above the scrim; birthday.js only
+       ever starts the loop when motion is welcome. #}
+    <canvas id="birthday-fireworks" aria-hidden="true"></canvas>
+    <div class="birthday-card relative w-full max-w-lg rounded-2xl border border-white/10
+                bg-surface-900/85 px-6 py-9 sm:px-10 text-center shadow-2xl">
+      <button type="button" data-birthday-close aria-label="Close"
+              class="absolute top-3 right-3 p-2 rounded-lg text-surface-400 hover:text-surface-50 hover:bg-white/10 transition-colors">
+        {{ icons.icon('close', 20) }}
+      </button>
+      <img src="{{ site_image('logo') }}" alt="" width="30" height="44"
+           class="h-14 w-auto mx-auto logo-glow-lg">
+      <h2 id="birthday-headline" class="birthday-headline font-display text-3xl sm:text-4xl font-semibold mt-5">
+        {{ content('birthday.headline') }}
+      </h2>
+      <div class="mt-8 flex items-center justify-center">
+        <button type="button" data-birthday-close class="btn-primary">Thank you</button>
+      </div>
+    </div>
+  </div>
+  <script defer src="{{ url_for('static', filename='js/birthday.js') }}?v={{ ASSET_V }}"></script>
+  {% endif %}
+
   {# Page-specific dialogs go here, NOT in the content block: an overlay must
      sit outside <main>, which the scripts inert while a dialog is open. #}
   {% block overlays %}{% endblock %}

@@ -187,6 +187,18 @@ wording, links, resources, topics, manuscripts, or notes.
   Explore-Scripture book grid uses base `grid-cols-2` — 66 one-line book names
   in a single column is worse mobile UX than two narrow columns; cells keep
   the 44px min tap height.
+- The birthday greeting is DATE-GATED, not a switch someone has to remember to
+  turn off: `birthday.*` in the content registry holds the MM-DD, the wording
+  and the fireworks toggle, and `services/birthday.py` returns None on all 364
+  other days — so base.html emits no markup and no script at all. The date is
+  read on the ministry's own clock (America/Chicago, which is why `tzdata` is
+  pinned), because comparing UTC dates lights the greeting at 7pm the evening
+  before and drops it at 7pm on the day itself.
+- A canvas sized from `clientWidth` must be re-measured with a ResizeObserver,
+  NOT just `window.resize`: the element's box changes with no window resize at
+  all (a container reflow, a late web font, a scrollbar, a phone's URL bar),
+  and the first reading can land mid-layout. Measured once and left alone, a
+  32px first reading aimed every firework into the top-left corner.
 - Asset URLs carry `?v={{ ASSET_V }}` (md5 content hash computed at boot, NOT
   timestamps — timestamp versions bust every cache on every deploy).
 

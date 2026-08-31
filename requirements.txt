@@ -22,3 +22,7 @@ markupsafe==3.0.3
 itsdangerous==2.2.0
 blinker==1.9.0
 click==8.3.1
+
+# zoneinfo's data source. Slim container images ship no system tz database,
+# and services/birthday.py reads the date on the ministry's own clock.
+tzdata==2025.2
