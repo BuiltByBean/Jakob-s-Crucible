@@ -2,6 +2,17 @@
 
 User-facing change history, newest first.
 
+## 2026-09-09 — Scripture references read as chips, not a list
+
+The semicolons between the Scripture references on the Statement of Faith are
+gone from the page. The references now sit as a plain row of tappable chips.
+
+Keep the semicolons in the admin box: they are what tells the page where one
+reference ends and the next begins, which is why deleting them there stopped
+the references being clickable. They no longer show up on the page. The commas
+stay where a passage carries on in the same book — "Psalm 19:1-4, 90:2" — since
+that is what ties the shorter chip to the book named before it.
+
 ## 2026-08-31 — Happy birthday, Jakob
 
 The site opens with fireworks on your birthday. It shows once — dismiss it and

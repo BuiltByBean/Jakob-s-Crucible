@@ -64,6 +64,11 @@ manuscript, transcript, chapters, scripture refs, and topics all hang off one
   it, and a `**Scripture References:**` line becomes the tappable chips. Never
   turn it into a second table the owner has to maintain. Refs are parsed
   SERVER-side (CCC does it in the browser) so the chips are in the first paint.
+  The semicolons in a `**Scripture References:**` line are the DELIMITER, not
+  decoration: they are what splits one reference from the next, and they are
+  deliberately NOT rendered between the resulting chips. Never render a mark
+  the owner has to keep typing — he will delete it from the admin box, and the
+  chips silently become prose (he tried exactly that).
   `static/js/scriptures.js` is the ESV bundle AND the single source of truth for
   which passages are clickable — `bundled_keys()` reads that same file, so a
   reference with no text renders as plain text instead of a dead button. It is

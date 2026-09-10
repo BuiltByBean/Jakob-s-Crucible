@@ -9,6 +9,10 @@ page:
     ### A. God the Father      a sub-article of the article above it
     **Scripture References:** Matthew 28:19; 2 Corinthians 13:14.
 
+The semicolons in that line are the DELIMITER, not decoration — they are what
+separates one reference from the next, and they are deliberately not rendered
+between the resulting chips.
+
 Everything else renders as ordinary prose. Nothing here fails hard on text that
 breaks the conventions: an unparseable reference becomes plain text, a
 sub-article with no parent is promoted to top level, and a body with no
@@ -92,12 +96,17 @@ def parse_refs(line: str, opened_books: frozenset[str] = frozenset()) -> list[di
     have = bundled_keys()
     out: list[dict] = []
 
-    def separate(punctuation: str) -> None:
-        """Punctuation goes in only BETWEEN two references. Emitting it up front
-        would leave a stray semicolon hanging off the end of the line the moment
-        the owner typed one too many."""
+    def separate(gap: str) -> None:
+        """Separators go in only BETWEEN two references. Emitting one up front
+        would leave a stray mark hanging off the start of the line the moment
+        the owner typed one semicolon too many.
+
+        The semicolon that splits one reference from the next is NOT rendered:
+        the references are chips, and punctuation between two pills is noise.
+        It stays in the admin text because it is what the parsing splits on —
+        deleting it there is what silently turns the chips back into prose."""
         if out:
-            out.append({"kind": "sep", "label": punctuation})
+            out.append({"kind": "sep", "label": gap})
 
     for group in line.strip().rstrip(".").split(";"):
         group = group.strip()
@@ -105,7 +114,7 @@ def parse_refs(line: str, opened_books: frozenset[str] = frozenset()) -> list[di
             continue
         match = BOOK_RE.match(group)
         if not match:  # not a reference we understand — show it untouched
-            separate("; ")
+            separate(" ")
             out.append({"kind": "plain", "label": group})
             continue
         book, spans = match.group(1), match.group(2)
@@ -114,7 +123,7 @@ def parse_refs(line: str, opened_books: frozenset[str] = frozenset()) -> list[di
             span = span.strip()
             if not span:
                 continue
-            separate("; " if span_index == 0 else ", ")
+            separate(" " if span_index == 0 else ", ")
             key = _norm_key(f"{book} {span}")
             # The book is repeated only on the first span: "Psalm 19:1-4, 90:2"
             # reads the way it was written.
