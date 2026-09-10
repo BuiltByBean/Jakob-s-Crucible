@@ -24,6 +24,15 @@ shipped bugs elsewhere; keep them.
   tools live in `requirements-dev.txt` (yt-dlp, youtube-transcript-api).
 - Deploy: Railway — `Procfile` + `railway.json` + `runtime.txt` +
   `.python-version`. `/healthz` is auth-free, DB-free, template-free.
+- Auto-deploy is driven by a DEPLOYMENT TRIGGER, which is a SEPARATE thing
+  from the service's source repo. The service can show the correct repo and
+  still never build: from 2026-08-26 to 2026-09-09 this project had a source
+  but ZERO triggers, so a push produced no webhook, no build, and no error —
+  just silence, while `railway status` happily showed the right repo. Triggers
+  are not in `railway status`; query backboard for
+  `project { deploymentTriggers { edges { node { repository branch } } } }`.
+  `checkSuites` stays FALSE here: there is no CI in this repo, so waiting on a
+  check suite would wait for something that never reports.
 
 ## Content model (the load-bearing design decision)
 
