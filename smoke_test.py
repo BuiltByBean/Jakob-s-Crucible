@@ -283,6 +283,42 @@ def run() -> int:
               ("//evil.example", "https://evil.example", "/\\evil.example", "/teachings", "\\\\evil")))
     check("safe_next allows admin paths", safe_next("/admin/resources") == "/admin/resources")
 
+    print("\n-- what's new dialog")
+    # The point of this feature is that it appears exactly once. So assert both
+    # halves: it is there on the first signed-in page, and it is GONE after the
+    # acknowledgement — a dialog that reappears is worse than none at all.
+    from services import release_notes as _rn
+
+    _all = _rn.entries()
+    check("DEVLOG parses into entries", len(_all) >= 5, f"got {len(_all)}")
+    check("a maintainer with no marker sees only the newest",
+          [e.id for e in _rn.unseen("")] == [_all[0].id])
+    check("an acknowledged marker leaves nothing to show", _rn.unseen(_all[0].id) == [])
+    check("a marker further down shows everything above it",
+          [e.id for e in _rn.unseen(_all[2].id)] == [_all[0].id, _all[1].id])
+    check("a marker that no longer exists does not dump the archive",
+          [e.id for e in _rn.unseen("2019-01-01-gone")] == [_all[0].id])
+    check("the dialog is capped", len(_rn.unseen(_all[-1].id)) <= _rn.MAX_SHOWN,
+          f"got {len(_rn.unseen(_all[-1].id))}")
+
+    r = anon.get("/admin/")
+    check("the dialog shows on the first signed-in page", b'whats-new-title' in r.data)
+    check("the newest entry's title is in it", _all[0].title.encode() in r.data)
+    check("it sits outside <main>",
+          r.data.index(b"</main>") < r.data.index(b'whats-new-title'),
+          "a dialog inside <main> is inerted along with it")
+    check("it follows onto other admin pages",
+          b'whats-new-title' in anon.get("/admin/resources").data)
+
+    check("acknowledging it without CSRF is refused",
+          anon.post("/admin/whats-new/seen", data={}).status_code == 400)
+    r = anon.post("/admin/whats-new/seen",
+                  data={"csrf_token": _token(anon.get("/admin/").data), "next": "/admin/resources"})
+    check("acknowledging it redirects back", r.status_code == 302, f"-> {r.status_code}")
+    check("it goes back where they were", "/admin/resources" in r.headers.get("Location", ""))
+    check("it is gone afterwards", b'whats-new-title' not in anon.get("/admin/").data)
+    check("and stays gone on a later page", b'whats-new-title' not in anon.get("/admin/topics").data)
+
     r = anon.post("/admin/logout", data={"csrf_token": _token(anon.get("/admin/").data)})
     check("logout signs out", r.status_code == 302, f"-> {r.status_code}")
     r = anon.get("/admin/", follow_redirects=True)

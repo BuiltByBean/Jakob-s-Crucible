@@ -741,3 +741,30 @@
     }
   }
 }
+
+
+@layer components {
+  /* ---- what's-new dialog ----
+     manuscript_html builds this markup, and a Tailwind class used only from
+     outside a template is purged — so the release note's prose is styled by
+     ELEMENT under one parent class that does appear in the layout. */
+  .release-note-body p {
+    @apply text-sm text-surface-300 leading-relaxed;
+  }
+  .release-note-body p + p {
+    @apply mt-3;
+  }
+  .release-note-body strong {
+    @apply font-semibold text-surface-100;
+  }
+  .release-note-body em {
+    @apply italic text-surface-200;
+  }
+  .release-note-body blockquote {
+    @apply border-l-2 border-flame-500/40 pl-3 text-surface-400 italic;
+  }
+  .release-note-body h2,
+  .release-note-body h3 {
+    @apply font-display text-base font-semibold text-surface-100 mt-4 mb-1;
+  }
+}

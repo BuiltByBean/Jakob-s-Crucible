@@ -2,6 +2,17 @@
 
 User-facing change history, newest first.
 
+## 2026-09-09 — The site tells you what changed
+
+Signing in to the admin now opens with a short note of the work that has been
+done since you were last here. Read it, press "Got it", and it goes away. It
+will not come back until there is something new to say.
+
+If several updates land between visits they arrive as one list, not as one
+interruption each. It never shows on the sign-in screen, and it holds back
+while you are being asked to change your password, so it can't bury something
+more urgent than itself.
+
 ## 2026-09-09 — Scripture references read as chips, not a list
 
 The semicolons between the Scripture references on the Statement of Faith are

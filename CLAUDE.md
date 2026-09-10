@@ -134,6 +134,16 @@ wording, links, resources, topics, manuscripts, or notes.
   key on `youtube_id`, which is precisely what a re-upload changes.
 - Contact messages can be hard-deleted. Destructive admin buttons confirm
   themselves in place (`x-data="{ sure: false }"`), never with `confirm()`.
+- The what's-new dialog reads DEVLOG.md (`services/release_notes.py`), which
+  ships inside the image (`COPY . .`), so a deploy carries its own release
+  notes and there is no second changelog to keep. Entries are ordered by
+  POSITION in the file, never by date — several entries already share one.
+  DEVLOG is hard-wrapped at ~78 columns and `manuscript_html` turns a single
+  newline into `<br>`, so the body is reflowed before rendering or every
+  sentence breaks at whatever column the file wrapped. The per-maintainer
+  marker is a side table (`admin_release_seen`) keyed by email, so create_all
+  makes it on deploy with no migration entry; someone with no marker sees only
+  the NEWEST entry, never the whole archive.
 - Accounts are created by `scripts/seed_admin.py` (never resets an existing
   password) and recovered with `scripts/reset_admin_password.py`. No
   email-based reset: mail is a silent no-op unless MAIL_USERNAME is set.

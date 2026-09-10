@@ -156,5 +156,54 @@
 </main>
 {% endif %}
 
+
+{#- What's new: the DEVLOG entries this maintainer has not seen yet, shown once
+    and then acknowledged. Outside <main> like every other dialog. The button
+    is the ONLY way out — a backdrop click that merely hid it would leave the
+    acknowledgement unrecorded and the dialog waiting on the next page. The
+    dismissal is a POST: nothing in this blueprint mutates on GET. -#}
+{% if admin_user and release_notes %}
+<div class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+     role="dialog" aria-modal="true" aria-labelledby="whats-new-title">
+  <div class="absolute inset-0 bg-surface-950/85 backdrop-blur-sm"></div>
+  <div class="relative w-full max-w-xl card !p-0 overflow-hidden flex flex-col max-h-[85vh]">
+    <div class="px-6 pt-6 pb-4 border-b border-white/10 shrink-0">
+      <p class="section-title !mb-1 !min-h-0">What&#39;s new</p>
+      <h2 id="whats-new-title" class="font-display text-xl font-semibold text-surface-50">
+        {%- if release_notes | length == 1 -%}
+          Your site has been updated
+        {%- else -%}
+          {{ release_notes | length }} updates have been made to your site
+        {%- endif -%}
+      </h2>
+    </div>
+
+    {#- Scrolls inside itself so a long run of entries never drags the page
+        behind it (.scroll-list contains the overscroll). -#}
+    <div class="scroll-list flex-1 px-6 py-5 space-y-7">
+      {% for note in release_notes %}
+      <article>
+        <p class="text-xs font-semibold uppercase tracking-wider text-flame-400/90 mb-1">
+          {{ note.date }}
+        </p>
+        <h3 class="font-display text-lg font-semibold text-surface-50 mb-2">{{ note.title }}</h3>
+        <div class="release-note-body">{{ note.body | manuscript_html }}</div>
+      </article>
+      {% endfor %}
+    </div>
+
+    <form method="post" action="{{ url_for('admin.release_notes_seen') }}"
+          class="shrink-0 px-6 py-4 border-t border-white/10 bg-surface-950/60
+                 flex items-center justify-end gap-3">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ request.full_path }}">
+      <button type="submit" class="btn-primary" autofocus>
+        {{ icons.icon('check', 16) }} Got it
+      </button>
+    </form>
+  </div>
+</div>
+{% endif %}
+
 </body>
 </html>

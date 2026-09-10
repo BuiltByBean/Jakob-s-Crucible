@@ -21,9 +21,10 @@ from flask import (
 )
 
 from models import (
-    AdminUser, ContactMessage, Resource, Series, Teaching, Topic, db,
+    AdminReleaseSeen, AdminUser, ContactMessage, Resource, Series, Teaching,
+    Topic, db,
 )
-from services import admin_edits, documents, youtube_refresh
+from services import admin_edits, documents, release_notes, youtube_refresh
 from services import site_content as sc
 from services.auth import (
     account_under_attack, admin_enabled, authenticate, check_password_hash,
@@ -77,11 +78,47 @@ def _admin_headers(resp):
 @bp.app_context_processor
 def _admin_context():
     if request.blueprint != "admin":
-        return {"admin_user": None, "using_temp_password": False}
+        return {"admin_user": None, "using_temp_password": False, "release_notes": []}
+    user = current_admin()
     return {
-        "admin_user": current_admin(),
+        "admin_user": user,
         "using_temp_password": bool(session.get("admin_temp_password")),
+        "release_notes": _pending_release_notes(user),
     }
+
+
+def _pending_release_notes(user):
+    """DEVLOG entries this maintainer has not been shown yet.
+
+    Held back while a forced password change is pending: that screen is an
+    interruption of its own, and a dialog stacked on top of it buries the one
+    thing they have to do first. A missing table or an unreadable DEVLOG must
+    never 500 an admin page that was working a moment ago, so every failure
+    here degrades to "show nothing"."""
+    if user is None or user.must_change_password:
+        return []
+    try:
+        row = AdminReleaseSeen.query.filter_by(admin_email=user.email).first()
+        return release_notes.unseen(row.last_seen_id if row else "")
+    except Exception as exc:  # noqa: BLE001
+        db.session.rollback()
+        logging.warning("release notes unavailable (%s)", exc)
+        return []
+
+
+@bp.route("/whats-new/seen", methods=["POST"])
+def release_notes_seen():
+    """Acknowledge the what's-new dialog. POST because it writes."""
+    user = current_admin()
+    row = AdminReleaseSeen.query.filter_by(admin_email=user.email).first()
+    if row is None:
+        row = AdminReleaseSeen(admin_email=user.email)
+        db.session.add(row)
+    row.last_seen_id = release_notes.newest_id()
+    row.seen_at = _now()
+    db.session.commit()
+    # Back where they were, so acknowledging the dialog is not also a navigation.
+    return redirect(safe_next(request.form.get("next")) or url_for("admin.dashboard"))
 
 
 # ---------------------------------------------------------------------------

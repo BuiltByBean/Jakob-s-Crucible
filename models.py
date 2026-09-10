@@ -335,6 +335,23 @@ class AdminUser(db.Model):
     updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
 
 
+class AdminReleaseSeen(db.Model):
+    """The newest DEVLOG entry each maintainer has acknowledged.
+
+    A side table rather than a column on admin_users: create_all adds new
+    TABLES on every dialect, while a new column would need a migration entry
+    (house rule — prefer the table). Keyed by email rather than a foreign key
+    because there is nothing here worth cascading, and the marker should
+    survive an account being recreated at the same address."""
+
+    __tablename__ = "admin_release_seen"
+
+    id = db.Column(db.Integer, primary_key=True)
+    admin_email = db.Column(db.String(320), unique=True, nullable=False, index=True)
+    last_seen_id = db.Column(db.String(160), nullable=False, default="")
+    seen_at = db.Column(db.DateTime, default=_utcnow)
+
+
 class SiteContent(db.Model):
     """Admin-editable copy, keyed by a dotted registry key.
 
