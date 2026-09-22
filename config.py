@@ -98,6 +98,9 @@ class Config:
     # LOGIN_REQUIRED), so setting a YouTube Data API v3 key here — and only
     # then — lets a re-check refresh descriptions too.
     YOUTUBE_API_KEY = os.environ.get("YOUTUBE_API_KEY", "")
+    # The channel the library is built from. Not admin-editable: pointing
+    # the site at a different channel is not site maintenance.
+    YOUTUBE_CHANNEL_ID = os.environ.get("YOUTUBE_CHANNEL_ID", "UC2693bLTUhOI3UyUm8TfXSQ")
 
     # Ministry identity — single source of truth for templates.
     MINISTRY_NAME = "The Wisdom Crucible"

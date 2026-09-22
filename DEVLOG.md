@@ -2,6 +2,26 @@
 
 User-facing change history, newest first.
 
+## 2026-09-22 — Add new uploads yourself, and tag them
+
+"Manuscripts & notes" is now **Episodes & Shorts**, which is what the screen
+actually holds.
+
+Beside "Re-check all videos" there is a new **Sync with YT** button. It looks
+at the channel for episodes and Shorts the site hasn't got yet and adds them —
+with their description, chapters and Scripture references, their thumbnail, and
+the series they belong to. Anything already on the site is left alone, so
+pressing it twice changes nothing, and a video you have already found to be
+gone from YouTube is never quietly put back. It sees the 15 most recent
+uploads; an older gap still needs a full channel sync.
+
+Six videos were missing when this went in — the "Universal Christian Call to
+Action" episode and five Shorts going back to August.
+
+Every episode and Short now has a **Topics** section on its own page, so you can
+tick which topics it belongs to from the episode rather than going topic by
+topic. Shorts can carry topics now too, and show up on those topic pages.
+
 ## 2026-09-09 — The site tells you what changed
 
 Signing in to the admin now opens with a short note of the work that has been

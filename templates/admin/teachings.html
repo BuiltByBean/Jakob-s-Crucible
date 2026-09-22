@@ -1,16 +1,40 @@
 {% extends "admin/_layout.html" %}
 {% import "_icon_macros.html" as icons %}
 {% set active_admin = 'teachings' %}
-{% block title %}Manuscripts & notes{% endblock %}
+{% block title %}Episodes & Shorts{% endblock %}
 
 {% block content %}
 <header class="mb-6">
-  <h1 class="font-display text-3xl font-semibold text-surface-50">Manuscripts &amp; notes</h1>
+  <h1 class="font-display text-3xl font-semibold text-surface-50">Episodes &amp; Shorts</h1>
   <p class="mt-2 text-surface-300 max-w-2xl">
     Upload the script you taught from and the study notes people download.
     Episodes themselves come from YouTube — this is what you add on top.
   </p>
 </header>
+
+{# ---- Add uploads the site does not have yet ---- #}
+{#- Sits beside the re-check panel because the two are easy to confuse: this
+    one ADDS videos, that one re-checks the ones already here. -#}
+<section class="card p-5 sm:p-6 mb-4">
+  <div class="flex flex-wrap items-start gap-4">
+    <div class="min-w-0 flex-1">
+      <h2 class="font-display text-lg font-semibold text-surface-50">Add new uploads from YouTube</h2>
+      <p class="mt-1 text-sm text-surface-400">
+        Looks for episodes and Shorts on the channel that aren&#39;t on the site yet and
+        adds them, with their description, chapters and Scripture references. Anything
+        already here is left untouched, so pressing it twice changes nothing. It sees the
+        15 most recent uploads — an older gap still needs a full channel sync.
+      </p>
+    </div>
+    <form method="post" action="{{ url_for('admin.teachings_sync') }}" class="shrink-0">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="kind" value="{{ kind }}">
+      <button type="submit" class="btn-primary">
+        {{ icons.icon('download', 18) }} Sync with YT
+      </button>
+    </form>
+  </div>
+</section>
 
 {# ---- Re-check everything against YouTube ---- #}
 {#- The sweep runs on a background thread, so the page polls for progress

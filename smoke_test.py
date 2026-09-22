@@ -319,6 +319,137 @@ def run() -> int:
     check("it is gone afterwards", b'whats-new-title' not in anon.get("/admin/").data)
     check("and stays gone on a later page", b'whats-new-title' not in anon.get("/admin/topics").data)
 
+    print("\n-- youtube sync (add new uploads)")
+    # No network here on purpose: a smoke test that reaches YouTube fails when
+    # YouTube is slow, not when the site is broken. The feed PARSING and the
+    # "what is new" decision are what can regress, so those are tested against
+    # a fixture; reachability is a deploy-time check, not a test.
+    from services import youtube_discover as _yd
+    from services import youtube_refresh as _yr
+
+    _FEED = b"""<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015"
+      xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <yt:videoId>AAAAAAAAAAA</yt:videoId>
+    <published>2026-09-16T21:00:16+00:00</published>
+    <media:group>
+      <media:title>A Brand New Episode</media:title>
+      <media:description>Primary text: John 3:16
+
+The hook paragraph before the first divider.
+_____________________________________
+Timestamps
+0:00 - Opening
+1:30 - The point</media:description>
+      <media:thumbnail url="https://i.ytimg.com/vi/AAAAAAAAAAA/hqdefault.jpg"/>
+    </media:group>
+  </entry>
+  <entry>
+    <yt:videoId>BBBBBBBBBBB</yt:videoId>
+    <published>2026-09-13T13:00:05+00:00</published>
+    <media:group>
+      <media:title>A Brand New Short</media:title>
+      <media:description>Short and sweet.</media:description>
+    </media:group>
+  </entry>
+</feed>"""
+
+    parsed = _yd.parse_feed(_FEED)
+    check("the feed parses", len(parsed) == 2, f"got {len(parsed)}")
+    check("it reads the title", parsed[0].title == "A Brand New Episode", parsed[0].title)
+    check("it reads the full description", "John 3:16" in parsed[0].description)
+    check("it reads the published date (naive UTC)",
+          parsed[0].published is not None and parsed[0].published.tzinfo is None
+          and parsed[0].published.year == 2026)
+    check("malformed xml yields nothing rather than raising",
+          _yd.parse_feed(b"<not xml") == [])
+
+    with app.app_context():
+        from models import Series, Teaching, Topic, db as _db
+
+        shorts_series = Series.query.filter_by(kind="shorts").first()
+        real = {t.youtube_id for t in Teaching.query.all()}
+
+        # find_new(): already-present ids are skipped, and so is anything a
+        # re-check has marked gone — that is the "local delete resurrected by
+        # the next pull" trap the house rule warns about.
+        an_existing = next(iter(real))
+        feed_items = list(parsed) + [_yd.FeedItem(youtube_id=an_existing, title="Already here",
+                                                  description="", published=None)]
+        orig_uploads, orig_series, orig_missing = (
+            _yd.channel_uploads, _yd.series_by_video, _yr.missing_video_ids)
+        _yd.channel_uploads = lambda: list(feed_items)
+        _yd.series_by_video = lambda: ({}, {"BBBBBBBBBBB"})
+        _yr.missing_video_ids = lambda: {"AAAAAAAAAAA"}
+        try:
+            only_short = _yd.find_new()
+            check("a video already on the site is not offered again",
+                  all(i.youtube_id != an_existing for i in only_short))
+            check("a video a re-check found GONE is never re-added",
+                  all(i.youtube_id != "AAAAAAAAAAA" for i in only_short))
+            check("what is left is the genuinely new one",
+                  [i.youtube_id for i in only_short] == ["BBBBBBBBBBB"],
+                  str([i.youtube_id for i in only_short]))
+            check("the Shorts playlist decides the kind",
+                  only_short and only_short[0].kind == "short")
+
+            # add(): the row and everything derived from the description.
+            _yr.missing_video_ids = lambda: set()
+            _yd.series_by_video = lambda: ({"AAAAAAAAAAA": shorts_series} if False else {}, set())
+            _yr.refresh_thumbnail = lambda vid, editor="": "skipped"
+            _yr.thumb_url = lambda vid: None
+            made = _yd.add(parsed[0], editor="smoke@example.com")
+            _db.session.commit()
+            check("the new episode is created", made.id is not None)
+            check("its slug is readable", made.slug == "a-brand-new-episode", made.slug)
+            check("it is a full episode, not a Short", made.kind == "teaching")
+            check("the description was stored", "John 3:16" in (made.description or ""))
+            from models import Chapter as _Ch, ScriptureRef as _Ref
+            check("chapters came out of the description",
+                  _Ch.query.filter_by(teaching_id=made.id).count() == 2,
+                  str(_Ch.query.filter_by(teaching_id=made.id).count()))
+            check("Scripture references came out of it too",
+                  _Ref.query.filter_by(teaching_id=made.id).count() >= 1)
+            check("running it again adds nothing",
+                  all(i.youtube_id != "AAAAAAAAAAA" for i in _yd.find_new()))
+        finally:
+            _yd.channel_uploads, _yd.series_by_video = orig_uploads, orig_series
+            _yr.missing_video_ids = orig_missing
+
+    print("\n-- topics on the episode page")
+    with app.app_context():
+        from models import Teaching, Topic, db as _db
+        a_short = Teaching.query.filter_by(kind="short").first()
+        a_topic = Topic.query.first()
+        short_id, topic_slug = a_short.id, a_topic.slug
+
+    r = anon.get(f"/admin/teachings/{short_id}")
+    check("the picker is on a Short's page too", b'name="topics"' in r.data,
+          "the owner asked for episodes AND Shorts")
+    check("it posts the topics action", b'value="topics"' in r.data)
+
+    r = anon.post(f"/admin/teachings/{short_id}", data={
+        "csrf_token": _token(anon.get(f"/admin/teachings/{short_id}").data),
+        "action": "topics", "topics": topic_slug})
+    check("saving topics redirects", r.status_code == 302, f"-> {r.status_code}")
+    with app.app_context():
+        from models import AdminEdit, Teaching, Topic, db as _db
+        check("the Short is now on that topic",
+              Topic.query.filter_by(slug=topic_slug).first() in
+              _db.session.get(Teaching, short_id).topics)
+        # It must also survive a re-seed, which wipes topics and replays
+        # admin_edits — an assignment saved only on the row is lost there.
+        row = AdminEdit.query.filter_by(entity_type="topic", entity_key=topic_slug).first()
+        check("the assignment was recorded for the re-seed to replay",
+              row is not None and "youtube_ids" in (row.payload or ""),
+              "topic edit not recorded")
+
+    check("admin pages renamed to Episodes & Shorts",
+          b"Episodes &amp; Shorts" in anon.get("/admin/teachings").data)
+    check("the Sync with YT button is on the page",
+          b"Sync with YT" in anon.get("/admin/teachings").data)
+
     r = anon.post("/admin/logout", data={"csrf_token": _token(anon.get("/admin/").data)})
     check("logout signs out", r.status_code == 302, f"-> {r.status_code}")
     r = anon.get("/admin/", follow_redirects=True)

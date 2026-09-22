@@ -7,7 +7,7 @@
 <header class="mb-8">
   <p class="text-xs text-surface-400 mb-2">
     <a href="{{ url_for('admin.teachings', kind=teaching.kind) }}" class="hover:text-flame-200 transition-colors">
-      &larr; {{ 'Shorts' if teaching.kind == 'short' else 'Manuscripts & notes' }}
+      &larr; {{ 'Shorts' if teaching.kind == 'short' else 'Episodes & Shorts' }}
     </a>
   </p>
   <h1 class="font-display text-2xl sm:text-3xl font-semibold text-surface-50 leading-tight">{{ teaching.title }}</h1>
@@ -184,6 +184,45 @@
       </div>
       <p class="mt-2 text-xs text-surface-400">PDF or Word (.docx), up to 25MB.</p>
     </form>
+  </section>
+
+  {# ---- Topics ---- #}
+  {#- Offered for Shorts as well as full episodes: the owner asked for both on
+      2026-09-22, reversing his earlier "Shorts never carry topics" rule. -#}
+  <section class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold text-surface-50">Topics</h2>
+    <p class="mt-1 mb-4 text-sm text-surface-400">
+      Which topics this {{ 'Short' if teaching.kind == 'short' else 'episode' }} belongs to.
+      It appears on the page for every topic you tick.
+    </p>
+
+    {% if all_topics %}
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="topics">
+      {#- Scrolls inside itself so a long topic list doesn't drag the page. -#}
+      <div class="scroll-list max-h-72 rounded-xl border border-white/10 p-1">
+        {% for topic in all_topics %}
+        <label class="flex items-center gap-3 min-h-[44px] px-3 rounded-lg cursor-pointer
+                      hover:bg-white/5 transition-colors">
+          <input type="checkbox" name="topics" value="{{ topic.slug }}"
+                 class="shrink-0 h-4 w-4 accent-flame-500"
+                 {% if topic.slug in chosen_topics %}checked{% endif %}>
+          <span class="min-w-0 flex-1 text-sm text-surface-100">{{ topic.name }}</span>
+          <span class="shrink-0 text-xs text-surface-500">{{ topic.teachings | length }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      <div class="mt-4 flex items-center justify-end gap-3">
+        <button type="submit" class="btn-primary">Save topics</button>
+      </div>
+    </form>
+    {% else %}
+    <p class="text-sm text-surface-400">
+      No topics yet — <a class="text-flame-300 hover:text-flame-200"
+                         href="{{ url_for('admin.topics') }}">create one first</a>.
+    </p>
+    {% endif %}
   </section>
 
   {# ---- Featured ---- #}

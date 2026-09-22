@@ -97,9 +97,10 @@ def apply_all() -> dict[str, int]:
         if "youtube_ids" in payload:
             wanted = payload["youtube_ids"] or []
             rows = Teaching.query.filter(Teaching.youtube_id.in_(wanted)).all() if wanted else []
-            # Shorts never carry topics (owner's rule) — enforced here too, so
-            # a stale record can't reintroduce one.
-            topic.teachings = [t for t in rows if t.kind != "short"]
+            # Shorts DO carry topics since 2026-09-22 (the owner reversed his
+            # own rule). Stripping them here would silently undo every short
+            # he tags on the next re-seed.
+            topic.teachings = list(rows)
         counts["topics"] += 1
 
     # ---- resources: the admin owns the whole collection once he edits it ----

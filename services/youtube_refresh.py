@@ -475,6 +475,19 @@ def _apply_description(teaching, description: str) -> None:
         _add(bible.parse_references(line), False)
 
 
+def apply_description(teaching, description: str) -> None:
+    """Public alias: services/youtube_discover.py derives a NEW episode's
+    summary, chapters and Scripture refs through the same parser a re-check
+    uses. Two copies of that logic would drift, and the drift would show as an
+    episode whose references depend on how it arrived."""
+    _apply_description(teaching, description)
+
+
+def reindex() -> None:
+    """Public alias for the same reason — see apply_description."""
+    _reindex()
+
+
 def _reindex() -> None:
     try:
         from services import search as search_svc

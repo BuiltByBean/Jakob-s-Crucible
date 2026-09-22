@@ -44,8 +44,13 @@ manuscript, transcript, chapters, scripture refs, and topics all hang off one
   + Shorts — count lives in `SERIES_ORDER` in scripts/seed_db.py, which is the
   single place to touch when Jakob reorganises playlists). `Teaching.kind`
   separates `teaching` from `short`; shorts are available but de-emphasised
-  everywhere. Shorts never take topics, never show hashtags, and get related
-  teachings only from links Jakob writes into the Short's own description.
+  everywhere. Shorts never show hashtags, and get related teachings only from
+  links Jakob writes into the Short's own description. Shorts DO carry topics
+  as of 2026-09-22 — the owner reversed his own earlier "shorts never take
+  topics" rule and asked for the picker on Shorts by name. The exclusion had
+  to come out of THREE places (the topic screen's query, its save, and the
+  admin_edits replay); leaving it in the replay would have silently undone
+  every tagged Short on the next re-seed.
 - `TranscriptSegment` keeps **timestamped** auto-caption segments per teaching,
   indexed by SQLite FTS5 (`services/search.py`). This is what makes the
   long-term goals — clip search, natural-language search, timestamp deep links —
@@ -123,6 +128,18 @@ wording, links, resources, topics, manuscripts, or notes.
   DATA_DIR keyed by slot, served by `/media/<slot>` with a version stamp, and
   templates call `site_image('slot')`. Raster only — SVG is excluded because
   it can carry script and is served from our own origin.
+- `services/youtube_discover.py` is how a NEW upload reaches the site without
+  a developer: the channel's Atom feed
+  (`feeds/videos.xml?channel_id=…`) answers from the production container and
+  carries FULL descriptions — verified byte-for-byte against what the yt-dlp
+  scrape had stored. That is the one YouTube surface measured to work from the
+  datacenter IP besides oEmbed and i.ytimg.com. Two limits are structural: the
+  feed holds the 15 most recent uploads (a catch-up tool, never a backfill —
+  `scripts/sync_youtube.py` still owns history), and it carries no duration, so
+  Short-vs-episode is decided by membership of the owner's own Shorts playlist
+  feed, which is fetched anyway to place a new episode in its series. Upsert is
+  on `youtube_id`, and a video a re-check has marked GONE is never re-added —
+  otherwise the sync resurrects exactly what the re-check just buried.
 - `services/youtube_refresh.py` is the runtime subset of the channel sync:
   re-check one episode or the whole library from /admin. **What YouTube
   answers from the production container was MEASURED, not assumed** — oEmbed

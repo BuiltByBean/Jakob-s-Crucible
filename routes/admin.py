@@ -24,7 +24,9 @@ from models import (
     AdminReleaseSeen, AdminUser, ContactMessage, Resource, Series, Teaching,
     Topic, db,
 )
-from services import admin_edits, documents, release_notes, youtube_refresh
+from services import (
+    admin_edits, documents, release_notes, youtube_discover, youtube_refresh,
+)
 from services import site_content as sc
 from services.auth import (
     account_under_attack, admin_enabled, authenticate, check_password_hash,
@@ -440,10 +442,9 @@ def topic_form(topic_id=None):
     topic = db.session.get(Topic, topic_id) if topic_id else None
     if topic_id and topic is None:
         abort(404)
-    # Shorts never carry topics (owner's rule), so they are not offered here.
-    teachings = (
-        Teaching.query.filter_by(kind="teaching").order_by(Teaching.published_at.desc()).all()
-    )
+    # Shorts DO carry topics since 2026-09-22 — the owner reversed his own
+    # earlier rule and asked for them by name. See CLAUDE.md.
+    teachings = Teaching.query.order_by(Teaching.published_at.desc()).all()
 
     if request.method == "POST":
         name = (request.form.get("name") or "").strip()[:120]
@@ -459,7 +460,7 @@ def topic_form(topic_id=None):
         topic.description = (request.form.get("description") or "").strip()[:4000]
         chosen = request.form.getlist("teachings")
         rows = Teaching.query.filter(Teaching.youtube_id.in_(chosen)).all() if chosen else []
-        topic.teachings = [t for t in rows if t.kind != "short"]
+        topic.teachings = list(rows)
         db.session.flush()
         admin_edits.record(admin_edits.TOPIC, topic.slug, {
             "name": topic.name, "description": topic.description,
@@ -600,6 +601,29 @@ def teachings():
                            can_refresh_text=bool(current_app.config.get("YOUTUBE_API_KEY")))
 
 
+@bp.route("/teachings/sync", methods=["POST"])
+def teachings_sync():
+    """Add uploads the site does not have yet.
+
+    Synchronous on purpose, unlike the re-check sweep: this is a handful of
+    feed fetches rather than one round trip per video, so it finishes inside
+    the request and the owner is told what happened instead of watching a
+    progress bar for something that is usually a no-op."""
+    report = youtube_discover.sync(editor=current_admin().email)
+    if not report["ok"]:
+        flash(report["error"], "error")
+    elif not report["added"]:
+        flash("Nothing new — every recent upload is already on the site.", "success")
+    else:
+        added = report["added"]
+        names = "; ".join(a["title"] for a in added[:3])
+        more = f" and {len(added) - 3} more" if len(added) > 3 else ""
+        shorts = sum(1 for a in added if a["kind"] == "short")
+        kinds = f"{len(added) - shorts} episode(s), {shorts} Short(s)"
+        flash(f"Added {len(added)} — {kinds}: {names}{more}.", "success")
+    return redirect(url_for("admin.teachings", kind=request.form.get("kind") or None))
+
+
 @bp.route("/teachings/recheck", methods=["POST"])
 def teachings_recheck():
     """Re-check every video. Runs on a thread: 30-odd videos outrun the 60s
@@ -689,6 +713,30 @@ def teaching_form(teaching_id):
             db.session.commit()
             flash("Study notes restored.", "success")
 
+        elif action == "topics":
+            # Recorded per TOPIC, not per teaching: admin_edits replays a
+            # topic's whole youtube_ids list, so every topic this teaching
+            # joined or left has to be re-recorded with its new membership or
+            # the next re-seed puts it back the way it was.
+            chosen = set(request.form.getlist("topics"))
+            for topic in Topic.query.order_by(Topic.name).all():
+                has = teaching in topic.teachings
+                want = topic.slug in chosen
+                if has == want:
+                    continue
+                if want:
+                    topic.teachings.append(teaching)
+                else:
+                    topic.teachings.remove(teaching)
+                db.session.flush()
+                admin_edits.record(admin_edits.TOPIC, topic.slug, {
+                    "name": topic.name, "description": topic.description,
+                    "sort_order": topic.sort_order or 0,
+                    "youtube_ids": [t.youtube_id for t in topic.teachings],
+                }, editor)
+            db.session.commit()
+            flash("Topics saved.", "success")
+
         elif action == "featured":
             # Same record the dedicated picker writes, so the two agree.
             Teaching.query.filter(Teaching.is_featured.is_(True)).update(
@@ -723,6 +771,8 @@ def teaching_form(teaching_id):
     checked = video.get("checked_at")
     return render_template("admin/teaching_form.html", teaching=teaching,
                            notes_path=teaching.notes_path, video=video,
+                           all_topics=Topic.query.order_by(Topic.name).all(),
+                           chosen_topics={t.slug for t in teaching.topics},
                            # Stored as a UTC stamp; converted for display only.
                            video_checked=(datetime.fromtimestamp(checked, tz=timezone.utc)
                                           .replace(tzinfo=None) if checked else None),
