@@ -122,6 +122,58 @@ def run() -> int:
     check("its script loads only on the day",
           "js/birthday.js" in on_day and "js/birthday.js" not in off_day)
 
+    print("\n-- related episodes rail")
+    # The right-hand rail on an episode page. Three cases, because the wrong
+    # one is silent: an episode with topics, one without, and a Short (whose
+    # related content is only ever what Jakob links by hand).
+    import re as _re2
+
+    with app.app_context():
+        from models import Teaching as _T
+
+        _eps = _T.query.filter_by(kind="teaching").all()
+        _multi = next((t for t in _eps if len(t.topics) > 1), None)
+        _none = next((t for t in _eps if not t.topics), None)
+        _short = _T.query.filter_by(kind="short").first()
+        _multi_slug = _multi.slug if _multi else ""
+        _multi_id = _multi.id if _multi else 0
+        _none_slug = _none.slug if _none else ""
+        _short_slug = _short.slug if _short else ""
+
+    def _rail(slug):
+        html = client.get(f"/teachings/{slug}").get_data(as_text=True)
+        return html[html.find("<aside"):html.find("</aside>")]
+
+    if _multi_slug:
+        aside = _rail(_multi_slug)
+        check("an episode with topics gets the Related episodes rail",
+              "Related episodes" in aside)
+        check("it is not still called 'In this series'", "In this series" not in aside)
+        linked = _re2.findall(r'href="/teachings/([^"]+)"', aside)
+        check("it does not link to itself", _multi_slug not in linked)
+        check("no episode is listed twice (sharing two topics must not duplicate)",
+              len(linked) == len(set(linked)), str(linked))
+        with app.app_context():
+            from models import Teaching as _T2
+            dates = [_T2.query.filter_by(slug=s).first().published_at for s in linked]
+            dates = [d for d in dates if d]
+            check("newest first", all(a >= b for a, b in zip(dates, dates[1:])),
+                  str([str(d)[:10] for d in dates]))
+            check("only full episodes are listed",
+                  all(_T2.query.filter_by(slug=s).first().kind == "teaching" for s in linked))
+
+    if _none_slug:
+        aside = _rail(_none_slug)
+        check("an untagged episode shows no rail rather than an empty one",
+              "Related episodes" not in aside and "In this series" not in aside)
+
+    if _short_slug:
+        aside = _rail(_short_slug)
+        check("a Short keeps its series rail", "In this series" in aside)
+        check("a Short gets no topic-generated related rail",
+              "Related episodes" not in aside,
+              "the standing rule is that a Short's related content is hand-linked only")
+
     print("\n-- every teaching page")
     for slug in teaching_slugs:
         r = client.get(f"/teachings/{slug}")

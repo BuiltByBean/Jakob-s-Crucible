@@ -2,6 +2,16 @@
 
 User-facing change history, newest first.
 
+## 2026-09-22 — Related episodes, by topic
+
+The list beside an episode's description used to be "In this series". It is now
+**Related episodes**: every other episode that shares a topic with the one you
+are reading, newest first, with the month it went out.
+
+It only appears where there is something to show. An episode you haven't given
+a topic to yet has no list at all — tick its topics on its page in the admin and
+the list fills itself in. Shorts are unchanged.
+
 ## 2026-09-22 — Add new uploads yourself, and tag them
 
 "Manuscripts & notes" is now **Episodes & Shorts**, which is what the screen

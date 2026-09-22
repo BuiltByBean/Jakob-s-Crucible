@@ -70,6 +70,15 @@ manuscript, transcript, chapters, scripture refs, and topics all hang off one
   into YouTube descriptions.
 - The auto transcript is INDEXED for search but never displayed — the
   Manuscript (Jakob's own script) is the readable form.
+- The episode page's right-hand rail is RELATED EPISODES (owner's request,
+  2026-09-22): every other full episode sharing at least one topic, newest
+  first, self excluded and de-duplicated (an episode sharing two topics must
+  not appear twice — the query is a join, so it needs `.distinct()`). It is
+  hidden entirely when the episode has no topics rather than rendering an
+  empty box; the owner tags episodes from the Topics picker on each episode's
+  admin page. A SHORT keeps the old chronological "In this series" rail — the
+  standing rule that a Short's related content is only ever what Jakob links
+  by hand still holds, so nothing there is generated from shared topics.
 - Explore-Scripture lights a book only when it is the PRIMARY passage of a
   full teaching; passing citations don't count as "opened".
 - The Statement of Faith stays ONE markdown field; `services/statement.py`

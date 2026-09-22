@@ -8,7 +8,7 @@ import time
 from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 
 from config import BASE_DIR
-from models import ContactMessage, Resource, Series, Teaching, db
+from models import ContactMessage, Resource, Series, Teaching, Topic, db
 from services.content import split_description
 from services.mail import send_email_safe
 
@@ -231,12 +231,30 @@ def teaching_detail(slug):
     sections = split_description(teaching.description or "")
 
     related = _related_teachings(teaching)
-    # The series rail numbers episodes chronologically (playlist order lists
-    # newest first, which read as reversed numbering).
+    # The right-hand rail: on a full episode it lists every OTHER episode
+    # sharing a topic with this one, newest first (owner's request,
+    # 2026-09-22 — it used to list the series chronologically). A Short keeps
+    # the series rail: the standing rule is that a Short's related content is
+    # only ever what Jakob links by hand, never generated from shared topics.
+    related_episodes = []
     series_episodes = []
-    if teaching.series:
-        series_episodes = sorted(
-            teaching.series.teachings, key=lambda t: t.published_at or datetime.min
+    if teaching.kind == "short":
+        if teaching.series:
+            series_episodes = sorted(
+                teaching.series.teachings, key=lambda t: t.published_at or datetime.min
+            )
+    elif teaching.topics:
+        topic_ids = [t.id for t in teaching.topics]
+        related_episodes = (
+            Teaching.query.join(Teaching.topics)
+            .filter(
+                Topic.id.in_(topic_ids),
+                Teaching.id != teaching.id,
+                Teaching.kind == "teaching",
+            )
+            .order_by(Teaching.published_at.desc())
+            .distinct()
+            .all()
         )
     # The auto-generated transcript stays INDEXED for search but is no longer
     # displayed — the manuscript (Jakob's own script) is the readable form.
@@ -246,6 +264,7 @@ def teaching_detail(slug):
         sections=sections,
         related=related,
         series_episodes=series_episodes,
+        related_episodes=related_episodes,
     )
 
 
