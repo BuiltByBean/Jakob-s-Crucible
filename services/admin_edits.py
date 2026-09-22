@@ -132,6 +132,19 @@ def apply_all() -> dict[str, int]:
         if payload.get("manuscript") and not (teaching.manuscript or "").strip():
             teaching.manuscript = payload["manuscript"]
             counts["teachings"] += 1
+        # The description and closing note are different from the manuscript:
+        # a sync ALWAYS rewrites the description from YouTube, so "restore it
+        # only when empty" would never fire and the owner's edit would be lost
+        # on the next re-seed. His version wins outright — that is the whole
+        # point of editing it by hand (owner's instruction, 2026-09-22).
+        if payload.get("description"):
+            from services.youtube_refresh import apply_description
+
+            apply_description(teaching, payload["description"])
+            counts["teachings"] += 1
+        if "closing_note" in payload:
+            teaching.closing_note = payload["closing_note"] or ""
+            counts["teachings"] += 1
     # ---- the home page's featured teaching ----
     featured_record = _payloads(FEATURED).get("*")
     if featured_record is not None:

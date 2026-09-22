@@ -128,6 +128,26 @@ wording, links, resources, topics, manuscripts, or notes.
 - Page copy is a registry (`services/site_content.py`): every key declares the
   shipped default, so the site renders identically until edited and clearing a
   field restores the original wording. Templates call `content('key')`.
+- The episode DESCRIPTION is hand-editable and nothing overwrites it. Neither
+  "Sync with YT" (which only ever creates rows) nor "Re-check" touches it —
+  the description branch was deliberately cut out of `refresh_teaching` on
+  2026-09-22, API-key path and all, because a re-check that silently replaced
+  the owner's edit is the one thing a re-check must never do. Saving it re-runs
+  `apply_description`, so summary, chapters and Scripture refs all re-derive
+  through the same parser an import uses. It is recorded in `admin_edits` and
+  replayed UNCONDITIONALLY (unlike the manuscript, which only restores when
+  empty): a re-seed always rewrites the description from the seed, so
+  "restore only if blank" would never fire and his edit would vanish.
+- `teachings.closing_note` overrides the closing section parsed out of the
+  description; empty means "use the description's". It is a column (in
+  COLUMNS_TO_ADD) replayed through admin_edits like the manuscript.
+- The three "New here? Start with these" cards can be chosen by hand on the
+  Featured Episode screen. They live in `home.start_picks` as comma-separated
+  youtube_ids — deliberately NOT a content-registry entry, because ids are not
+  wording and it must not appear as a text box on a page-wording screen. Empty
+  means the automatic trio (channel intro, Statement of Faith, featured). The
+  three blurbs are per SLOT now, not per meaning, though the keys kept their
+  old names so existing edits survived.
 - Admin-supplied URLs are scheme-checked on write AND re-checked at render
   (`|safe_url`) — an admin field reaching an `href` is the real stored-XSS
   surface. Admin prose renders through `manuscript_html`/`rich_text`, which
@@ -211,6 +231,19 @@ wording, links, resources, topics, manuscripts, or notes.
   `.scripture-passage p`). `[hidden]` is forced `display:none !important` in
   the base layer: any display utility on an element otherwise beats the
   browser's own `[hidden]` rule, and `el.hidden = true` silently does nothing.
+- Quoted passages in manuscripts and descriptions are delimited: `>` opens and
+  `<` CLOSES. Blocks split on blank lines, so a bare per-line `>` broke a long
+  quote into one blockquote per paragraph and lost line breaks inside it. A `>`
+  with NO closing `<` still renders the old way, which is what kept the 200-odd
+  quotes already written in the manuscripts rendering unchanged — do not
+  "tidy" that fallback away. `manuscript_html` now renders episode descriptions
+  too (summary, context, closing), so both boxes obey one set of rules;
+  checked first that no existing description had a line that the block grammar
+  would reinterpret as a heading or list.
+- The home page's "Recent episodes" always shows SIX full episodes and never a
+  Short. It reads seven, because the lead card may be one of them — filtering
+  in the template silently showed five whenever the newest episode was also
+  the featured one, which is most of the time.
 - No autoplay ever; video embeds are click-to-load facades
   (youtube-nocookie.com iframe injected on click). Lightbox overlays for cards,
   inline player on the episode page.

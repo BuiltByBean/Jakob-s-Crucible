@@ -62,12 +62,19 @@ def home():
         Series.query.filter_by(kind="teaching").order_by(Series.sort_order).all()
     )
     statement = Teaching.query.filter_by(is_statement_of_faith=True).first()
-    recent = (
-        Teaching.query.filter_by(kind="teaching")
-        .order_by(Teaching.published_at.desc())
-        .limit(6)
-        .all()
-    )
+    # Always SIX full episodes, never Shorts (owner's rule). Seven are read
+    # because the lead card may be one of them: filtering in the template
+    # silently showed five whenever the newest episode was also the featured
+    # one, which is most of the time.
+    recent = [
+        t for t in (
+            Teaching.query.filter_by(kind="teaching")
+            .order_by(Teaching.published_at.desc())
+            .limit(7)
+            .all()
+        )
+        if not (latest_is_featured and featured is not None and t.id == featured.id)
+    ][:6]
     # Recommended starting points: the channel intro (the one teaching with no
     # series), the Statement of Faith, and the featured flagship study.
     intro = (
@@ -77,10 +84,22 @@ def home():
     )
     from services.site_content import content as site_text
 
+    # The owner can name the three by hand from the Featured Episode screen.
+    # home.start_picks is deliberately NOT a content-registry entry: it holds
+    # youtube_ids, which are not wording, and it should not show up as a text
+    # box on a "page wording" screen. Empty = the automatic trio below.
+    picks = [v.strip() for v in site_text("home.start_picks").split(",") if v.strip()]
+    if picks:
+        found = {t.youtube_id: t for t in Teaching.query.filter(
+            Teaching.youtube_id.in_(picks), Teaching.kind == "teaching").all()}
+        chosen = [found[v] for v in picks if v in found]
+    else:
+        chosen = [intro, statement, featured]
+
     starting_points = []
-    for t, why in ((intro, site_text("home.start_intro")),
-                   (statement, site_text("home.start_statement")),
-                   (featured, site_text("home.start_featured"))):
+    for t, why in zip(chosen, (site_text("home.start_intro"),
+                               site_text("home.start_statement"),
+                               site_text("home.start_featured"))):
         if t and all(t.id != s[0].id for s in starting_points):
             starting_points.append((t, why))
     return render_template(

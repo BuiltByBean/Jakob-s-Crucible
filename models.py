@@ -74,6 +74,9 @@ class Teaching(db.Model):
     published_at = db.Column(db.DateTime, index=True)  # UTC
 
     manuscript = db.Column(db.Text, default="")  # markdown; blog-form of the script
+    # The owner's own closing note, overriding the one parsed out of the
+    # YouTube description. Empty means "use whatever the description says".
+    closing_note = db.Column(db.Text, default="")
     # Set when the owner removes notes in the admin. Needed because the 12
     # launch-era files committed under static/notes/ cannot be deleted at
     # runtime (the image is rebuilt from git on every deploy) — so "removed"

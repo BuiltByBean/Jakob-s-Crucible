@@ -90,6 +90,32 @@
     </div>
   </section>
 
+  {# ---- Description ---- #}
+  {#- Sits between the re-check button and the manuscript on purpose: this is
+      the text an import brought in from YouTube, and nothing overwrites it
+      afterwards. Saving re-derives the summary, chapters and Scripture
+      references through the same parser the import uses. -#}
+  <section class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold text-surface-50">Description</h2>
+    <p class="mt-1 mb-4 text-sm text-surface-400">
+      Brought in from YouTube when the episode was added. Editing it here is
+      safe — neither &ldquo;Sync with YT&rdquo; nor &ldquo;Re-check&rdquo; will
+      overwrite what you write. The summary, the chapter list and the Scripture
+      references on the episode&#39;s page are all read back out of this text
+      when you save.
+    </p>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="description">
+      <label for="description" class="sr-only">Episode description</label>
+      <textarea class="input resize-y font-mono text-sm leading-relaxed" id="description"
+                name="description" rows="14">{{ teaching.description or '' }}</textarea>
+      <div class="mt-4 flex items-center justify-end gap-3">
+        <button type="submit" class="btn-primary">Save description</button>
+      </div>
+    </form>
+  </section>
+
   {# ---- Manuscript ---- #}
   <section class="card p-5 sm:p-6">
     <h2 class="font-display text-lg font-semibold text-surface-50 mb-1">Manuscript</h2>
@@ -186,6 +212,27 @@
     </form>
   </section>
 
+  {# ---- Closing note ---- #}
+  <section class="card p-5 sm:p-6">
+    <h2 class="font-display text-lg font-semibold text-surface-50">Closing note</h2>
+    <p class="mt-1 mb-4 text-sm text-surface-400">
+      The quoted note at the very bottom of the episode&#39;s page. Leave this
+      empty and the site uses the closing section of the description; write
+      something here and yours is used instead.
+    </p>
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="closing">
+      <label for="closing_note" class="sr-only">Closing note</label>
+      <textarea class="input resize-y leading-relaxed" id="closing_note"
+                name="closing_note" rows="5"
+                placeholder="{{ (sections_closing or '')[:120] }}">{{ teaching.closing_note or '' }}</textarea>
+      <div class="mt-4 flex items-center justify-end gap-3">
+        <button type="submit" class="btn-primary">Save closing note</button>
+      </div>
+    </form>
+  </section>
+
   {# ---- Topics ---- #}
   {#- Offered for Shorts as well as full episodes: the owner asked for both on
       2026-09-22, reversing his earlier "Shorts never carry topics" rule. -#}
@@ -229,7 +276,7 @@
   {% if teaching.kind == 'teaching' %}
   <section class="card p-5 sm:p-6 flex flex-wrap items-center gap-4">
     <div class="min-w-0 flex-1">
-      <h2 class="font-display text-lg font-semibold text-surface-50">Featured teaching</h2>
+      <h2 class="font-display text-lg font-semibold text-surface-50">Featured Episode</h2>
       <p class="mt-1 text-sm text-surface-400">
         {% if teaching.is_featured %}
         This teaching is featured at the top of the home page.

@@ -20,6 +20,9 @@ COLUMNS_TO_ADD: list[tuple[str, str, str, str | None]] = [
     # 2026-08 admin: "notes removed" for a file committed under static/ has to
     # be recorded, since the image is rebuilt from git on every deploy.
     ("teachings", "notes_hidden", "BOOLEAN", "false"),
+    # 2026-09 admin: the closing note became editable by hand, overriding the
+    # one parsed from the YouTube description.
+    ("teachings", "closing_note", "TEXT", None),
 ]
 
 

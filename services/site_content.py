@@ -123,11 +123,11 @@ REGISTRY: list[Entry] = [
     Entry("home.youtube_blurb", "home", "YouTube card blurb", "multiline",
           "Full teachings, shorts, and community posts."),
     Entry("home.x_handle", "home", "X handle shown on the card", "text", "@WisdomCrucible"),
-    Entry("home.start_intro", "home", "“Start with these” — intro episode", "multiline",
+    Entry("home.start_intro", "home", "“Start with these” — first card", "multiline",
           "Meet Jakob and hear what the crucible is for."),
-    Entry("home.start_statement", "home", "“Start with these” — Statement of Faith", "multiline",
+    Entry("home.start_statement", "home", "“Start with these” — second card", "multiline",
           "The doctrinal foundation, laid out at length."),
-    Entry("home.start_featured", "home", "“Start with these” — featured teaching", "multiline",
+    Entry("home.start_featured", "home", "“Start with these” — third card", "multiline",
           "The flagship study — what faith actually is."),
 
     # ---- library ----

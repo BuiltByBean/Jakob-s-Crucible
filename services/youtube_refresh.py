@@ -389,11 +389,12 @@ def refresh_teaching(teaching, editor: str = "", *, reindex: bool = True) -> Ref
             teaching.title, teaching.subtitle = main, subtitle
             result.changed.append("title")
 
+    # Descriptions are DELIBERATELY not synced here (owner's instruction,
+    # 2026-09-22). He edits them by hand on the episode's own page after the
+    # first import, and a re-check that quietly overwrote that would throw the
+    # edit away — the one thing a "re-check" must never do. The API-key path
+    # that used to do it is gone with it.
     description_changed = False
-    if info.description is not None and info.description != (teaching.description or ""):
-        _apply_description(teaching, info.description)
-        result.changed.append("description")
-        description_changed = True
     if info.duration and info.duration != (teaching.duration_seconds or 0):
         teaching.duration_seconds = info.duration
         result.changed.append("length")

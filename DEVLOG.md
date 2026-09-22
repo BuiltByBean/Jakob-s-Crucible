@@ -2,6 +2,29 @@
 
 User-facing change history, newest first.
 
+## 2026-09-22 — Edit your own descriptions, and choose the front page
+
+**Descriptions are yours now.** Each episode's page in the admin has a
+Description box, between the re-check button and the manuscript. Nothing
+overwrites it — neither Sync with YT nor Re-check will touch what you write.
+Saving re-reads the summary, the chapter list and the Scripture references out
+of it, exactly as an import does.
+
+**A closing note box**, for the quoted line at the very bottom of an episode's
+page. Leave it empty and the description's own closing is used.
+
+**Quoted passages now close.** Write `>` to open a quote and `<` to close it,
+and everything between stays one quote — line breaks and all. Quotes already
+written the old way are untouched and still look exactly the same.
+
+**Home page.** "Recent teachings" is now **Recent episodes** and always shows
+six full episodes, never Shorts. The lead card says "message" rather than
+"teaching", for episodes that aren't strictly teaching.
+
+**Featured teaching** is now **Featured Episode**, and underneath the featured
+choice you can now tick the three episodes that fill the "New here? Start with
+these" row. Untick them all and the site goes back to choosing for itself.
+
 ## 2026-09-22 — Related episodes, by topic
 
 The list beside an episode's description used to be "In this series". It is now

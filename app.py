@@ -194,11 +194,62 @@ def create_app(config_cls=Config) -> Flask:
     def nl2br(text):
         return Markup("<br>".join(escape(line) for line in (text or "").splitlines()))
 
+    _QUOTE_OPEN = re.compile(r"^\s*>")
+    _QUOTE_CLOSE = re.compile(r"<\s*$")
+
+    def _split_quoted(text):
+        """Segment text into ('quote', body) and ('text', body) pieces.
+
+        '>' opens a quoted passage and '<' CLOSES it. The closing mark is the
+        whole point: blocks are split on blank lines, so under a bare per-line
+        '>' a long quote broke into a separate blockquote at every paragraph,
+        and a line break inside a quote read as the start of a new passage.
+
+        A '>' with no matching '<' falls through to the old per-block
+        behaviour, which is what keeps the 200-odd quotes already written into
+        the manuscripts rendering exactly as they always did."""
+        src = (text or "").splitlines()
+        out, buf, i = [], [], 0
+        while i < len(src):
+            if _QUOTE_OPEN.match(src[i]):
+                close = next((j for j in range(i, len(src))
+                              if _QUOTE_CLOSE.search(src[j])), None)
+                if close is not None:
+                    if buf:
+                        out.append(("text", "\n".join(buf)))
+                        buf = []
+                    seg = src[i:close + 1]
+                    seg[0] = _QUOTE_OPEN.sub("", seg[0], count=1).lstrip()
+                    seg[-1] = _QUOTE_CLOSE.sub("", seg[-1]).rstrip()
+                    out.append(("quote", "\n".join(seg).strip()))
+                    i = close + 1
+                    continue
+            buf.append(src[i])
+            i += 1
+        if buf:
+            out.append(("text", "\n".join(buf)))
+        return out
+
     @app.template_filter("manuscript_html")
     def manuscript_html(text):
-        """Minimal, safe markdown for manuscripts (spoken essays: headings,
-        paragraphs, bold/italic, blockquotes). Everything is escaped first —
-        no raw HTML ever passes through, so no dependency and no XSS surface."""
+        """Minimal, safe markdown for manuscripts AND episode descriptions
+        (headings, paragraphs, bold/italic, lists, quoted passages).
+        Everything is escaped first, so no raw HTML ever passes through."""
+        out: list[str] = []
+        for kind, part in _split_quoted(text):
+            if kind == "quote":
+                # ONE blockquote for the whole passage: its paragraphs stay
+                # inside it, and single newlines stay as line breaks.
+                paras = [q.strip() for q in re.split(r"\n\s*\n", part) if q.strip()]
+                out.append("<blockquote>"
+                           + "".join(f"<p>{_inline_md(q)}</p>" for q in paras)
+                           + "</blockquote>")
+                continue
+            out.extend(_render_blocks(part))
+        return Markup("\n".join(out))
+
+    def _render_blocks(text):
+        """The ordinary block grammar, for everything outside a quoted passage."""
         out: list[str] = []
         for block in re.split(r"\n\s*\n", text or ""):
             block = block.strip()
@@ -225,7 +276,7 @@ def create_app(config_cls=Config) -> Flask:
                 out.append(f"<ol>{items}</ol>")
             else:
                 out.append(f"<p>{_inline_md(block)}</p>")
-        return Markup("\n".join(out))
+        return out
 
     def _inline_md(text: str) -> str:
         s = str(escape(text))

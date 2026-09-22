@@ -502,6 +502,107 @@ Timestamps
     check("the Sync with YT button is on the page",
           b"Sync with YT" in anon.get("/admin/teachings").data)
 
+    print("\n-- home page: recent episodes")
+    _home = client.get("/").get_data(as_text=True)
+    check("the section is called Recent episodes", "Recent episodes" in _home)
+    check("the old wording is gone", "Recent teachings" not in _home)
+    check("the lead card says message, not teaching",
+          ("Latest message" in _home or "Featured message" in _home)
+          and "Latest teaching" not in _home and "Featured teaching" not in _home)
+    _sec = _home[_home.find("Recent episodes"):]
+    _sec = _sec[:_sec.find("Navigate the Crucible")]
+    _n = _sec.count("data-video-open=")
+    check("it shows six, even when the newest is also the featured one",
+          _n == 6, f"got {_n}")
+    with app.app_context():
+        from models import Teaching as _T3
+        _shorts = {t.youtube_id for t in _T3.query.filter_by(kind="short").all()}
+    import re as _re3
+    check("and never a Short",
+          not (set(_re3.findall(r'data-video-open="([\w-]{11})"', _sec)) & _shorts))
+
+    print("\n-- quoted passages (>...<)")
+    with app.app_context():
+        _md = app.jinja_env.filters["manuscript_html"]
+        _new = _md("> line one,\nline two.\n\nsecond paragraph.\n<")
+        check("a >...< passage is ONE blockquote", _new.count("<blockquote>") == 1, _new[:90])
+        check("a line break inside it survives", "<br>line two." in _new)
+        check("a blank line no longer splits the quote", _new.count("<p>") == 2, _new[:120])
+        _old = _md("> an old style quote\n> second line")
+        check("a bare '>' still renders the old way",
+              _old.count("<blockquote>") == 1 and "<p>" not in _old, _old[:90])
+        _unclosed = _md("> never closed\n\nnext para")
+        check("an unclosed '>' does not swallow the rest",
+              _unclosed.count("<blockquote>") == 1 and "<p>next para</p>" in _unclosed)
+
+    print("\n-- editing a description and a closing note by hand")
+    with app.app_context():
+        from models import Teaching as _T4
+        _ep = _T4.query.filter_by(kind="teaching").first()
+        _ep_id, _ep_yt, _ep_slug = _ep.id, _ep.youtube_id, _ep.slug
+
+    _f = anon.get(f"/admin/teachings/{_ep_id}").get_data(as_text=True)
+    check("the description box is on the episode page", 'name="description"' in _f)
+    check("the closing-note box is too", 'name="closing_note"' in _f)
+
+    _desc = ("Primary text: Romans 8:1\n\nA hand written summary.\n"
+             "_____________________________________\nTimestamps\n0:00 - Start\n2:00 - Middle")
+    r = anon.post(f"/admin/teachings/{_ep_id}", data={
+        "csrf_token": _token(_f.encode()), "action": "description", "description": _desc})
+    check("saving a description redirects", r.status_code == 302, f"-> {r.status_code}")
+    with app.app_context():
+        from models import AdminEdit as _AE, Chapter as _C2, ScriptureRef as _R2, db as _db2, Teaching as _T5
+        _t = _db2.session.get(_T5, _ep_id)
+        check("the text is stored", "Romans 8:1" in (_t.description or ""))
+        check("the summary is re-derived", "hand written summary" in (_t.summary or ""))
+        check("the chapters are re-derived",
+              _C2.query.filter_by(teaching_id=_ep_id).count() == 2)
+        check("the Scripture refs are re-derived",
+              _R2.query.filter_by(teaching_id=_ep_id).count() >= 1)
+        _rec = _AE.query.filter_by(entity_type="teaching", entity_key=_ep_yt).first()
+        check("it is recorded so a re-seed cannot undo it",
+              _rec is not None and "description" in (_rec.payload or ""))
+
+    _f = anon.get(f"/admin/teachings/{_ep_id}").get_data(as_text=True)
+    anon.post(f"/admin/teachings/{_ep_id}", data={
+        "csrf_token": _token(_f.encode()), "action": "closing",
+        "closing_note": "> A closing thought,\nwith a break.\n<"})
+    _pub = client.get(f"/teachings/{_ep_slug}").get_data(as_text=True)
+    check("the hand-written closing note wins", "A closing thought" in _pub)
+    check("and keeps its line break", "<br>with a break." in _pub)
+
+    print("\n-- a re-check must never overwrite a description")
+    import inspect as _inspect
+    from services import youtube_refresh as _yr2
+    _src = _inspect.getsource(_yr2.refresh_teaching)
+    check("refresh_teaching no longer applies a description",
+          "_apply_description" not in _src,
+          "a re-check would throw away the owner's hand-written text")
+
+    print("\n-- start with these")
+    with app.app_context():
+        from models import Teaching as _T6
+        _picks = [t.youtube_id for t in _T6.query.filter_by(kind="teaching")
+                  .order_by(_T6.published_at.desc()).limit(3).all()]
+        _titles = [_T6.query.filter_by(youtube_id=p).first().title for p in _picks]
+    _f = anon.get("/admin/featured").get_data(as_text=True)
+    check("the picker is on the Featured Episode screen", 'name="start_picks"' in _f)
+    check("that screen is renamed", "Featured Episode" in _f and "Featured teaching" not in _f)
+    anon.post("/admin/featured", data={"csrf_token": _token(_f.encode()),
+                                         "featured": "", "start_picks": _picks})
+    _h2 = client.get("/").get_data(as_text=True)
+    _start = _h2[_h2.find("New here?"):]
+    _start = _start[:_start.find("Recent episodes")]
+    check("all three chosen episodes are on the home page",
+          all(t[:28] in _start for t in _titles))
+    _f = anon.get("/admin/featured").get_data(as_text=True)
+    anon.post("/admin/featured", data={"csrf_token": _token(_f.encode()), "featured": ""})
+    _h3 = client.get("/").get_data(as_text=True)
+    _start = _h3[_h3.find("New here?"):]
+    _start = _start[:_start.find("Recent episodes")]
+    check("clearing them restores the automatic three", _start.count("<a href") == 3,
+          str(_start.count("<a href")))
+
     r = anon.post("/admin/logout", data={"csrf_token": _token(anon.get("/admin/").data)})
     check("logout signs out", r.status_code == 302, f"-> {r.status_code}")
     r = anon.get("/admin/", follow_redirects=True)

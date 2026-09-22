@@ -364,6 +364,14 @@
   .prose-dark blockquote {
     @apply border-l-2 border-flame-500/50 pl-4 italic text-surface-300 my-4;
   }
+  /* A >...< passage is ONE blockquote holding its own paragraphs; the last
+     must not push the quote's rule past the end of its text. */
+  .prose-dark blockquote p {
+    @apply mb-3;
+  }
+  .prose-dark blockquote p:last-child {
+    @apply mb-0;
+  }
   .prose-dark ul,
   .prose-dark ol {
     @apply mb-4 pl-6;

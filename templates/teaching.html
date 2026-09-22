@@ -112,9 +112,7 @@
       <section class="section">
         <h2 class="section-title"><span>About this teaching</span></h2>
         <div class="prose-dark max-w-3xl">
-          {% for para in teaching.summary.split('\n\n') if para.strip() %}
-          <p>{{ para | nl2br }}</p>
-          {% endfor %}
+          {{ teaching.summary | manuscript_html }}
         </div>
         {% if sections.context %}
         <div x-data="{ open: false }" class="max-w-3xl mt-2">
@@ -124,9 +122,7 @@
             <span :class="open ? 'rotate-180' : ''" class="transition-transform">{{ icons.icon('chevron-down', 16) }}</span>
           </button>
           <div x-show="open" x-collapse x-cloak class="prose-dark pt-2">
-            {% for para in sections.context.split('\n\n') if para.strip() %}
-            <p>{{ para | nl2br }}</p>
-            {% endfor %}
+            {{ sections.context | manuscript_html }}
           </div>
         </div>
         {% endif %}
@@ -179,11 +175,16 @@
           video), but the readable form is the Manuscript section above —
           Jakob's own script, which he reads nearly word-for-word. -#}
 
-      {% if sections.closing %}
+      {#- The owner's own closing note wins over the one parsed out of the
+          description. Deliberately not a <blockquote>: the note may itself
+          contain a >...< passage, and nesting a quote inside a quote reads as
+          a double indent. -#}
+      {% set closing = teaching.closing_note or sections.closing %}
+      {% if closing %}
       <section class="section max-w-3xl">
-        <blockquote class="border-l-2 border-flame-500/50 pl-5 py-1 italic text-surface-300 leading-relaxed">
-          {{ sections.closing | nl2br }}
-        </blockquote>
+        <div class="prose-dark border-l-2 border-flame-500/50 pl-5 py-1 italic text-surface-300 leading-relaxed">
+          {{ closing | manuscript_html }}
+        </div>
       </section>
       {% endif %}
     </div>

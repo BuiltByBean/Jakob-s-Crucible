@@ -579,6 +579,12 @@ def featured():
         # FEATURED_YT on every re-sync, so "automatic" has to be stated.
         admin_edits.record(admin_edits.FEATURED, "*", {"youtube_id": choice or None},
                            current_admin().email)
+        # The three "New here? Start with these" cards. Stored as youtube_ids
+        # so a re-seed (which renumbers rows) cannot scramble them. Capped at
+        # three because the home page lays out exactly three.
+        starts = [v for v in request.form.getlist("start_picks")
+                  if any(t.youtube_id == v for t in teachings_list)][:3]
+        sc.save("home.start_picks", ",".join(starts), current_admin().email)
         db.session.commit()
         flash(f"“{picked.title}” is now featured on the home page." if picked
               else "The home page will always lead with your newest teaching.", "success")
@@ -587,7 +593,9 @@ def featured():
     current = Teaching.query.filter_by(is_featured=True, kind="teaching").first()
     newest = teachings_list[0] if teachings_list else None
     return render_template("admin/featured.html", teachings=teachings_list,
-                           current=current, newest=newest)
+                           current=current, newest=newest,
+                           start_picks=[v.strip() for v in
+                                        sc.content("home.start_picks").split(",") if v.strip()])
 
 
 @bp.route("/teachings")
@@ -685,6 +693,28 @@ def teaching_form(teaching_id):
             _reindex_search()
             flash("Manuscript saved." if teaching.manuscript else "Manuscript cleared.", "success")
 
+        elif action == "description":
+            # Re-derives the summary, chapters and Scripture references, the
+            # same way an import does — one parser, so a hand-edited episode
+            # behaves exactly like a synced one.
+            text = (request.form.get("description") or "").strip()[:400_000]
+            youtube_refresh.apply_description(teaching, text)
+            db.session.commit()
+            admin_edits.record(admin_edits.TEACHING, teaching.youtube_id,
+                               {"description": text}, editor)
+            db.session.commit()
+            _reindex_search()
+            flash("Description saved.", "success")
+
+        elif action == "closing":
+            teaching.closing_note = (request.form.get("closing_note") or "").strip()[:20_000]
+            db.session.commit()
+            admin_edits.record(admin_edits.TEACHING, teaching.youtube_id,
+                               {"closing_note": teaching.closing_note}, editor)
+            db.session.commit()
+            flash("Closing note saved." if teaching.closing_note
+                  else "Closing note cleared — the one from the description is back.", "success")
+
         elif action == "notes":
             upload = request.files.get("notes_file")
             if upload is None or not upload.filename:
@@ -769,8 +799,11 @@ def teaching_form(teaching_id):
 
     video = youtube_refresh.state(teaching.youtube_id)
     checked = video.get("checked_at")
+    from services.content import split_description as _split
+
     return render_template("admin/teaching_form.html", teaching=teaching,
                            notes_path=teaching.notes_path, video=video,
+                           sections_closing=_split(teaching.description or "").get("closing", ""),
                            all_topics=Topic.query.order_by(Topic.name).all(),
                            chosen_topics={t.slug for t in teaching.topics},
                            # Stored as a UTC stamp; converted for display only.
