@@ -295,5 +295,30 @@
   </section>
   {% endif %}
 
+  {# ---- Delete ---- #}
+  {#- Last on the page on purpose: it is the one thing here with no undo.
+      Confirms itself in place — the site never uses browser confirm(). -#}
+  <section class="card p-5 sm:p-6 border-red-400/20">
+    <h2 class="font-display text-lg font-semibold text-surface-50">
+      Delete this {{ 'Short' if teaching.kind == 'short' else 'episode' }}
+    </h2>
+    <p class="mt-1 text-sm text-surface-400 max-w-2xl">
+      Removes it from the site completely — its page, its manuscript, study notes,
+      topics, chapters and search results. The video on YouTube is not touched, and
+      &ldquo;Sync with YT&rdquo; will not add it back. This cannot be undone.
+    </p>
+    <form method="post" action="{{ url_for('admin.teaching_delete', teaching_id=teaching.id) }}"
+          class="mt-4 flex items-center justify-end gap-3"
+          x-data="{ sure: false }" @submit="if (!sure) { $event.preventDefault(); sure = true }">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="button" class="btn-ghost" x-show="sure" x-cloak @click="sure = false">Cancel</button>
+      <button type="submit" class="btn-ghost"
+              :class="sure ? '!border-red-400/50 !text-red-200' : ''"
+              x-text="sure ? 'Tap again to delete for good' : 'Delete {{ 'Short' if teaching.kind == 'short' else 'episode' }}'">
+        Delete {{ 'Short' if teaching.kind == 'short' else 'episode' }}
+      </button>
+    </form>
+  </section>
+
 </div>
 {% endblock %}

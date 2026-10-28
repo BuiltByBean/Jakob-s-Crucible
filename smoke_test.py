@@ -430,8 +430,8 @@ Timestamps
         feed_items = list(parsed) + [_yd.FeedItem(youtube_id=an_existing, title="Already here",
                                                   description="", published=None)]
         orig_uploads, orig_series, orig_missing = (
-            _yd.channel_uploads, _yd.series_by_video, _yr.missing_video_ids)
-        _yd.channel_uploads = lambda: list(feed_items)
+            _yd.tab_uploads, _yd.series_by_video, _yr.missing_video_ids)
+        _yd.tab_uploads = lambda: (list(feed_items), set())
         _yd.series_by_video = lambda: ({}, {"BBBBBBBBBBB"})
         _yr.missing_video_ids = lambda: {"AAAAAAAAAAA"}
         try:
@@ -465,8 +465,74 @@ Timestamps
                   _Ref.query.filter_by(teaching_id=made.id).count() >= 1)
             check("running it again adds nothing",
                   all(i.youtube_id != "AAAAAAAAAAA" for i in _yd.find_new()))
+
+            # Podcast copies (owner's request, 2026-10-15): the sync reads the
+            # Videos + Shorts TAB feeds, which never carry podcast-tab uploads.
+            orig_playlist = _yd.playlist_items
+            asked = []
+
+            def _fake_playlist(pid):
+                asked.append(pid[:4])
+                return [parsed[1]] if pid.startswith("UUSH") else [parsed[0], parsed[1]]
+            _yd.playlist_items = _fake_playlist
+            try:
+                tab_items, tab_shorts = orig_uploads()
+            finally:
+                _yd.playlist_items = orig_playlist
+            check("new uploads come from the Videos and Shorts tabs, not all uploads",
+                  asked == ["UULF", "UUSH"], str(asked))
+            check("a video in both tab feeds is offered once",
+                  [i.youtube_id for i in tab_items] == ["AAAAAAAAAAA", "BBBBBBBBBBB"],
+                  str([i.youtube_id for i in tab_items]))
+            check("the Shorts tab marks Shorts", tab_shorts == {"BBBBBBBBBBB"})
+
+            paired = Teaching.query.filter(Teaching.podcast_youtube_id != "").first()
+            if paired is not None:
+                _yd.tab_uploads = lambda: ([_yd.FeedItem(youtube_id=paired.podcast_youtube_id,
+                                                         title=paired.title, description="",
+                                                         published=None)], set())
+                check("a known podcast copy of an episode is never added",
+                      _yd.find_new() == [])
+
+            # Deleting an episode (owner's request): everything goes, and
+            # neither the sync nor a re-seed brings it back.
+            from models import AdminEdit as _AE
+            from services import admin_edits as _ae, episodes as _ep
+            victim = made
+            vid, vslug, vrow = victim.youtube_id, victim.slug, victim.id
+            some_topic = Topic.query.first()
+            some_topic.teachings.append(victim)
+            _ae.record(_ae.TOPIC, some_topic.slug,
+                       {"youtube_ids": [t.youtube_id for t in some_topic.teachings]})
+            _ae.record(_ae.TEACHING, vid, {"manuscript": "secret words"})
+            _ae.record(_ae.FEATURED, "*", {"youtube_id": vid})
+            _db.session.commit()
+            _ep.delete(victim, editor="smoke@example.com")
+            check("a deleted episode's row is gone",
+                  Teaching.query.filter_by(youtube_id=vid).first() is None)
+            check("its chapters and refs went with it",
+                  _Ch.query.filter_by(teaching_id=vrow).count() == 0
+                  and _Ref.query.filter_by(teaching_id=vrow).count() == 0)
+            check("its page 404s", client.get(f"/teachings/{vslug}").status_code == 404)
+            rec = _ae._payloads(_ae.TEACHING).get(vid)
+            check("only a tombstone is left of its admin record", rec == {"deleted": True}, str(rec))
+            check("topic records no longer name it",
+                  vid not in (_ae._payloads(_ae.TOPIC).get(some_topic.slug) or {}).get("youtube_ids", []))
+            check("a featured pin on it goes back to automatic",
+                  _ae._payloads(_ae.FEATURED)["*"].get("youtube_id") is None)
+            _yd.tab_uploads = lambda: ([parsed[0]], set())
+            check("Sync with YT never re-adds a deleted episode", _yd.find_new() == [])
+            # A re-seed rebuilds it from YouTube; the replay must remove it again.
+            _yd.add(parsed[0])
+            _db.session.commit()
+            _ae.apply_all()
+            check("a re-seed's replay deletes it again",
+                  Teaching.query.filter_by(youtube_id=vid).first() is None)
+            _AE.query.filter_by(entity_type=_ae.FEATURED).delete()
+            _AE.query.filter_by(entity_type=_ae.TEACHING, entity_key=vid).delete()
+            _db.session.commit()
         finally:
-            _yd.channel_uploads, _yd.series_by_video = orig_uploads, orig_series
+            _yd.tab_uploads, _yd.series_by_video = orig_uploads, orig_series
             _yr.missing_video_ids = orig_missing
 
     print("\n-- topics on the episode page")
@@ -602,6 +668,24 @@ Timestamps
     _start = _start[:_start.find("Recent episodes")]
     check("clearing them restores the automatic three", _start.count("<a href") == 3,
           str(_start.count("<a href")))
+
+    print("\n-- deleting an episode from its admin page")
+    with app.app_context():
+        from models import Teaching as _T7
+        _gone = _T7.query.filter_by(kind="short").order_by(_T7.published_at.asc()).first()
+        _gone_id, _gone_slug = _gone.id, _gone.slug
+    _f = anon.get(f"/admin/teachings/{_gone_id}").get_data(as_text=True)
+    check("the delete button is at the bottom of the page",
+          "teachings/%d/delete" % _gone_id in _f
+          and _f.rfind("/delete") > _f.rfind('name="action"'))
+    check("it confirms itself in place, never with confirm()",
+          "sure: false" in _f and "confirm(" not in _f)
+    r = anon.get(f"/admin/teachings/{_gone_id}/delete")
+    check("a GET never deletes", r.status_code == 405, f"-> {r.status_code}")
+    r = anon.post(f"/admin/teachings/{_gone_id}/delete", data={"csrf_token": _token(_f.encode())})
+    check("the delete posts and returns to the list", r.status_code == 302, f"-> {r.status_code}")
+    check("its public page is gone", client.get(f"/teachings/{_gone_slug}").status_code == 404)
+    check("its admin page is gone", anon.get(f"/admin/teachings/{_gone_id}").status_code == 404)
 
     r = anon.post("/admin/logout", data={"csrf_token": _token(anon.get("/admin/").data)})
     check("logout signs out", r.status_code == 302, f"-> {r.status_code}")

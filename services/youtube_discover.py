@@ -18,17 +18,35 @@ discipline as youtube_refresh.py, because the watch page returns a convincing
   * oEmbed / i.ytimg.com              -> as documented in youtube_refresh  OK
   * the watch page / InnerTube        -> bot wall, as documented           NO
 
-Two consequences of using the feed rather than the API:
+PODCAST COPIES. The channel's all-uploads feed (channel_id=UC...) also
+carries the podcast-tab uploads that YouTube ingests from the podcast's RSS
+feed — an audio duplicate of a main episode under the same title. One of them
+reached the home page as "the newest episode" (PYvrYYEcA48, 2026-10). So new
+uploads are read from the two TAB feeds instead, the channel's own Videos and
+Shorts tabs as uploads playlists:
 
-  * It carries the 15 most recent uploads and no further back. That is a
-    catch-up tool, not a backfill — `scripts/sync_youtube.py` is still the
-    way to rebuild history.
-  * It carries no duration, so "is this a Short?" cannot be read off the
-    video. It is decided by membership of the owner's own Shorts playlist,
-    whose feed is fetched alongside. He keeps that playlist current (checked:
-    all five missing Shorts were in it and the missing full episode was not),
-    and the series feeds have to be fetched anyway to know which series a new
-    episode belongs to.
+  * UULF<channel> — the Videos tab (long-form only).
+  * UUSH<channel> — the Shorts tab.
+
+  Measured 2026-10-28: UULF held all 15 long-form videos back to the channel
+  intro and NONE of the 13 dedicated podcast uploads; the two main videos the
+  owner also files in a podcast playlist were in it, as they should be.
+
+The owner's instruction was "ignore anything on a podcast playlist", and the
+podcast playlists themselves cannot be used for it: their Atom feeds answer
+200 with zero entries (podcast-type playlists, measured 2026-10-28), and they
+hold some MAIN videos too, which a literal exclusion would drop. Only a
+dedicated podcast upload is a duplicate, and the Videos tab is exactly the
+set without them.
+
+Two more consequences of using feeds rather than the API:
+
+  * Each feed carries its 15 most recent entries. With the long-form and
+    Shorts tabs read separately, a burst of Shorts can no longer push an
+    episode out of view; `scripts/sync_youtube.py` still rebuilds history.
+  * The feed carries no duration, so "is this a Short?" is membership of the
+    Shorts tab, or of the owner's own Shorts playlist, whose feed is fetched
+    anyway alongside the series feeds that place a new episode in its series.
 
 Upsert is keyed on the YouTube id, so running it twice adds nothing the second
 time. A video the owner has already re-checked and found GONE from YouTube is
@@ -140,7 +158,42 @@ def parse_feed(xml: bytes) -> list[FeedItem]:
 
 
 def channel_uploads() -> list[FeedItem]:
+    """Every upload, podcast copies included. Kept for diagnostics; the sync
+    reads tab_uploads() instead — see the module docstring."""
     return parse_feed(_get(f"{FEED}?channel_id={channel_id()}"))
+
+
+def _uploads_playlist(prefix: str) -> str:
+    """UC<id> -> <prefix><id>: YouTube's per-tab uploads playlists."""
+    cid = channel_id()
+    return prefix + (cid[2:] if cid.startswith("UC") else cid)
+
+
+def tab_uploads() -> tuple[list[FeedItem], set[str]]:
+    """(newest long-form + newest Shorts, the ids that are Shorts).
+
+    Podcast-tab uploads are in neither feed, which is the point. Raises
+    URLError/OSError only if BOTH feeds fail; one empty or unreachable tab
+    is logged and the other is still used."""
+    items: list[FeedItem] = []
+    shorts: set[str] = set()
+    failures = 0
+    for prefix in ("UULF", "UUSH"):
+        try:
+            entries = playlist_items(_uploads_playlist(prefix))
+        except (urllib.error.URLError, OSError) as exc:
+            logging.warning("youtube discover: %s feed unreachable (%s)", prefix, exc)
+            failures += 1
+            if failures == 2:
+                raise
+            continue
+        if prefix == "UUSH":
+            shorts.update(i.youtube_id for i in entries)
+        items.extend(entries)
+    seen: set[str] = set()
+    unique = [i for i in items if not (i.youtube_id in seen or seen.add(i.youtube_id))]
+    unique.sort(key=lambda i: i.published or datetime.min, reverse=True)
+    return unique, shorts
 
 
 def playlist_items(playlist_id: str) -> list[FeedItem]:
@@ -176,22 +229,29 @@ def series_by_video() -> tuple[dict[str, Series], set[str]]:
 def find_new() -> list[FeedItem]:
     """Uploads on the channel that the site has no Teaching for.
 
-    Skips anything a re-check has already found GONE from YouTube: that video
-    is deliberately absent, and re-adding it every sync is the "local delete
-    resurrected by the next pull" trap."""
-    from services import youtube_refresh
+    Skips anything a re-check has already found GONE from YouTube, and
+    anything the owner deleted from the admin: both are deliberately absent,
+    and re-adding them every sync is the "local delete resurrected by the next
+    pull" trap. Also skips a video already paired as some episode's podcast
+    copy, as a second guard behind reading the tab feeds."""
+    from services import admin_edits, youtube_refresh
 
-    uploads = channel_uploads()
+    uploads, tab_shorts = tab_uploads()
     if not uploads:
         return []
 
-    have = {row[0] for row in db.session.query(Teaching.youtube_id).all()}
-    gone = youtube_refresh.missing_video_ids()
-    candidates = [i for i in uploads if i.youtube_id not in have and i.youtube_id not in gone]
+    have = set()
+    for yid, podcast_id in db.session.query(Teaching.youtube_id, Teaching.podcast_youtube_id).all():
+        have.add(yid)
+        if podcast_id:
+            have.add(podcast_id)
+    skip = have | youtube_refresh.missing_video_ids() | admin_edits.deleted_teaching_ids()
+    candidates = [i for i in uploads if i.youtube_id not in skip]
     if not candidates:
         return []
 
     placing, shorts = series_by_video()
+    shorts |= tab_shorts
     for item in candidates:
         item.is_short = item.youtube_id in shorts
         item.series = placing.get(item.youtube_id)

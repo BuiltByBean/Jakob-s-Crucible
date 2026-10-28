@@ -2,6 +2,23 @@
 
 User-facing change history, newest first.
 
+## 2026-10-28 — Delete an episode, and no more podcast copies
+
+**Delete an episode or Short.** At the very bottom of each episode's admin
+page there is now a Delete button. It asks once more in place, then removes
+the episode from the site completely: its page, manuscript, study notes,
+topics, chapters and search results, and it comes off the home page and the
+"Start with these" row. Your video on YouTube is not touched, and Sync with YT
+will never add it back.
+
+**Sync with YT skips podcast copies.** The audio versions of your episodes
+that YouTube pulls in from the podcast feed are no longer added to the site.
+The sync now reads only your channel's Videos and Shorts tabs, which is also
+why its old note about "the 15 most recent uploads" is gone.
+
+**The duplicate "Are Miracles Unscientific?"** — the podcast copy that was
+showing as your newest episode — has been removed.
+
 ## 2026-09-22 — Edit your own descriptions, and choose the front page
 
 **Descriptions are yours now.** Each episode's page in the admin has a

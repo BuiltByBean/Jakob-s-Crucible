@@ -48,6 +48,12 @@ def forget(entity_type: str, entity_key: str) -> None:
     AdminEdit.query.filter_by(entity_type=entity_type, entity_key=entity_key).delete()
 
 
+def deleted_teaching_ids() -> set[str]:
+    """youtube_ids the owner deleted from the admin. Nothing may re-add them:
+    not the new-uploads sync, not a full re-seed."""
+    return {key for key, payload in _payloads(TEACHING).items() if payload.get("deleted")}
+
+
 def _payloads(entity_type: str) -> dict[str, dict]:
     out: dict[str, dict] = {}
     for row in AdminEdit.query.filter_by(entity_type=entity_type).all():
@@ -123,6 +129,15 @@ def apply_all() -> dict[str, int]:
     for youtube_id, payload in _payloads(TEACHING).items():
         teaching = Teaching.query.filter_by(youtube_id=youtube_id).first()
         if teaching is None:
+            continue
+        # A deleted episode is an intent like a deleted topic: the re-seed
+        # rebuilds every teaching in data/seed, so without this the episode
+        # the owner removed comes straight back.
+        if payload.get("deleted"):
+            from services import episodes
+
+            episodes.drop_rows(teaching)
+            counts["teachings"] += 1
             continue
         if "notes_hidden" in payload:
             teaching.notes_hidden = bool(payload["notes_hidden"])

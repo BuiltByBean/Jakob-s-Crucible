@@ -25,7 +25,8 @@ from models import (
     Topic, db,
 )
 from services import (
-    admin_edits, documents, release_notes, youtube_discover, youtube_refresh,
+    admin_edits, documents, episodes, release_notes, youtube_discover,
+    youtube_refresh,
 )
 from services import site_content as sc
 from services.auth import (
@@ -810,6 +811,22 @@ def teaching_form(teaching_id):
                            video_checked=(datetime.fromtimestamp(checked, tz=timezone.utc)
                                           .replace(tzinfo=None) if checked else None),
                            can_refresh_text=bool(current_app.config.get("YOUTUBE_API_KEY")))
+
+
+@bp.route("/teachings/<int:teaching_id>/delete", methods=["POST"])
+def teaching_delete(teaching_id):
+    """Delete an episode or Short from the site for good (owner's request).
+
+    Everything about it goes; only a tombstone with its video id stays, so
+    the YouTube sync and the full re-seed never bring it back. The button
+    confirms itself in place first (no browser confirm() dialogs)."""
+    teaching = db.session.get(Teaching, teaching_id)
+    if teaching is None:
+        abort(404)
+    kind = teaching.kind
+    title = episodes.delete(teaching, editor=current_admin().email)
+    flash(f"Deleted “{title}” from the site. A YouTube sync will not add it back.", "success")
+    return redirect(url_for("admin.teachings", kind=kind if kind == "short" else None))
 
 
 def _recheck_message(result) -> tuple:

@@ -169,6 +169,18 @@ wording, links, resources, topics, manuscripts, or notes.
   feed, which is fetched anyway to place a new episode in its series. Upsert is
   on `youtube_id`, and a video a re-check has marked GONE is never re-added —
   otherwise the sync resurrects exactly what the re-check just buried.
+- New uploads are read from the Videos and Shorts TAB feeds (`UULF<id>`,
+  `UUSH<id>` as `playlist_id`), NEVER the all-uploads `channel_id` feed: that
+  one also carries the podcast-tab uploads YouTube ingests from the podcast
+  RSS — same title, audio only — and one shipped as the home page's "newest
+  episode" (PYvrYYEcA48, Oct 2026). The podcast playlists cannot be used to
+  filter them: their Atom feeds answer 200 with ZERO entries, and they hold
+  some main videos too. Measured: UULF held every long-form video and none of
+  the 13 podcast uploads.
+- Deleting an episode (`services/episodes.py`) leaves exactly one thing: a
+  `{"deleted": true}` tombstone in its admin_edits record. Both the sync
+  (`find_new`) and the re-seed replay (`apply_all`) honour it — without it the
+  video, still on YouTube, comes straight back.
 - `services/youtube_refresh.py` is the runtime subset of the channel sync:
   re-check one episode or the whole library from /admin. **What YouTube
   answers from the production container was MEASURED, not assumed** — oEmbed
