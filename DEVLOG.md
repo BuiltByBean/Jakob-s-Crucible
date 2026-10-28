@@ -16,10 +16,9 @@ that YouTube pulls in from the podcast feed are no longer added to the site.
 The sync now reads only your channel's Videos and Shorts tabs, which is also
 why its old note about "the 15 most recent uploads" is gone.
 
-**The duplicate "Are Miracles Unscientific?"** that was showing as your
-newest episode is that kind of podcast copy. Open it in Episodes & Shorts (it
-is the one whose page address ends in "-pyvr") and delete it from the bottom
-of its page.
+**The duplicate "Are Miracles Unscientific?"** — the podcast copy that was
+showing as your newest episode — has been deleted. The real episode is now
+first on the home page.
 
 ## 2026-09-22 — Edit your own descriptions, and choose the front page
 
