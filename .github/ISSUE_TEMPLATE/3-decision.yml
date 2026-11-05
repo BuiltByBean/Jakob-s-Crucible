@@ -1,0 +1,45 @@
+name: Decision
+description: A question only Michael can answer
+labels: ["decision", "needs decision", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One question per issue. When it is answered, add a `### Decided` section with the answer
+        and the date, and close the issue.
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: The question, in one or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: Why it needs deciding now, and what waits on it.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options
+      description: Each option, with what it costs and what it changes.
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+      description: Optional. Which option, and why.
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: A checklist. A decision closes when it is made and written where it changes things.
+      value: |
+        - [ ] Michael decides
+        - [ ] The decision is written into the docs, issues or code it changes
+    validations:
+      required: true

@@ -1,0 +1,7 @@
+# The forms on the "New issue" page. Claude sessions file issues with `gh issue create`
+# using the same headings (CLAUDE.md, "Work from the issues board"); this does not affect them.
+blank_issues_enabled: true
+contact_links:
+  - name: How work is tracked here
+    url: https://github.com/BuiltByBean/Jakob-s-Crucible/blob/HEAD/CLAUDE.md
+    about: Picking, claiming and closing an issue. Read it before picking up work.

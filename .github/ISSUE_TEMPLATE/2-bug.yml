@@ -1,0 +1,49 @@
+name: Bug
+description: Something works wrong
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Say what you saw, not what you think the cause is. Whoever triages it adds its priority
+        and removes `triage`.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, word for word if there was a message. Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where
+      description: The page or URL, and the kind of login you were using.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: How to make it happen again, one step per line.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should have happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: >-
+        A checklist, one box per thing that must be true: the fix live where the bug was seen, and its guard.
+        The issue closes only when every box is ticked.
+      value: |
+        - [ ] The fix is live where the bug was seen
+        - [ ] A check or test that fails if it comes back
+    validations:
+      required: true

@@ -1,0 +1,68 @@
+name: Task
+description: Something to build, change or set up (a feature, a chore, docs, or ops work)
+labels: ["triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Write it so a Claude session can pick it up cold, with nothing but this page.
+        Whoever triages it adds its type and priority, and removes `triage`.
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: The context. What is wrong or missing, who it is for, and anything a newcomer needs to know first.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where
+      description: The files, functions, pages, services or docs it touches. Sessions working at the same time read this to stay out of each other's way.
+    validations:
+      required: true
+  - type: textarea
+    id: do
+    attributes:
+      label: Do
+      description: What to change, step by step if it helps.
+    validations:
+      required: true
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: >-
+        A checklist, one box per thing that must be true, live where it must be. Tick each box as it becomes true;
+        the issue closes only when every box is ticked.
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: how-to-test
+    attributes:
+      label: How to test
+      description: The tests, pages or steps that prove it works.
+  - type: textarea
+    id: not-here
+    attributes:
+      label: Not here
+      description: Optional. What this issue deliberately leaves out.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Optional. Links, screenshots, earlier attempts.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      description: Becomes the issue's type label.
+      options:
+        - feature (new behaviour for people using the app)
+        - chore (upkeep, refactors, dependencies, tests, CI)
+        - docs (docs only)
+        - ops (outside the code, such as hosting, DNS, accounts or data)
+    validations:
+      required: true
